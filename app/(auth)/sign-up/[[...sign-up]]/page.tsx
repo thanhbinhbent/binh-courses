@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Container } from "@/components/ui/container"
 import { toast } from "sonner"
 import { BookOpen } from "lucide-react"
 import { authService } from "@/lib/services"
@@ -86,7 +87,8 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <Container className="flex items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
@@ -198,6 +200,7 @@ export default function SignUpPage() {
           </p>
         </CardFooter>
       </Card>
+      </Container>
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/current-user"
 import { redirect } from "next/navigation"
+import { Container } from "@/components/ui/container"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { CreateQuizForm } from "./_components/create-quiz-form"
 
 export default async function NewQuizPage() {
@@ -15,15 +17,17 @@ export default async function NewQuizPage() {
   })
 
   return (
-    <div className="mx-auto max-w-5xl p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Create New Quiz</h1>
-        <p className="text-sm text-muted-foreground">
-          Fill in the basic information to create your quiz
-        </p>
-      </div>
+    <DashboardLayout showBrowseCoursesButton={false}>
+      <Container className="py-6" size="md">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Create New Quiz</h1>
+          <p className="text-sm text-muted-foreground">
+            Fill in the basic information to create your quiz
+          </p>
+        </div>
 
-      <CreateQuizForm categories={categories} />
-    </div>
+        <CreateQuizForm categories={categories} />
+      </Container>
+    </DashboardLayout>
   )
 }

@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { Container } from "@/components/ui/container"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { VideoPlayer } from "./_components/video-player"
 import { CompleteButton } from "./_components/complete-button"
 import { courseService, type ChapterViewResponse } from "@/lib/services/course.service"
@@ -78,24 +80,22 @@ export default function ChapterPage({
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href={`/courses/${courseId}`} className="flex items-center gap-2">
-              <ChevronLeft className="h-5 w-5" />
-              <span className="font-medium">{chapter.course?.title || 'Course'}</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-muted-foreground">
-                Progress: <span className="font-semibold">{progress}%</span>
-              </div>
-              <Link href="/dashboard">
-                <Button variant="ghost">Dashboard</Button>
-              </Link>
+      <header className="w-full border-b bg-white">
+        <Container className="flex items-center justify-between py-4">
+          <Link href={`/courses/${courseId}`} className="flex items-center gap-2">
+            <ChevronLeft className="h-5 w-5" />
+            <span className="font-medium">{chapter.course?.title || 'Course'}</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-muted-foreground">
+              Progress: <span className="font-semibold">{progress}%</span>
             </div>
+            <Link href="/dashboard">
+              <Button variant="ghost">Dashboard</Button>
+            </Link>
           </div>
-        </div>
-      </div>
+        </Container>
+      </header>
 
       <div className="flex flex-1">
         {/* Main Content */}
@@ -112,7 +112,7 @@ export default function ChapterPage({
           )}
 
           {/* Chapter Content */}
-          <div className="container mx-auto px-4 py-8">
+          <Container className="py-8">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h1 className="mb-2 text-3xl font-bold">{chapter.title}</h1>
@@ -191,7 +191,7 @@ export default function ChapterPage({
                 </Link>
               )}
             </div>
-          </div>
+          </Container>
         </div>
 
         {/* Sidebar - Chapter List */}

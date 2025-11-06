@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { Loader2, PlusCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Container } from "@/components/ui/container"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { QuizzesList } from "./_components/quizzes-list"
 import { instructorQuizService } from "@/lib/services/instructor-quiz.service"
 import type { QuizWithRelations } from "@/lib/types/instructor-quiz.types"
@@ -66,23 +68,25 @@ export default function InstructorQuizzesPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Your Quizzes</h1>
-          <p className="text-sm text-muted-foreground">
-            Create and manage quizzes for your students
-          </p>
+    <DashboardLayout showBrowseCoursesButton={false}>
+      <Container className="py-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Your Quizzes</h1>
+            <p className="text-sm text-muted-foreground">
+              Create and manage quizzes for your students
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/instructor/quizzes/new">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              New Quiz
+            </Link>
+          </Button>
         </div>
-        <Button asChild>
-          <Link href="/instructor/quizzes/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            New Quiz
-          </Link>
-        </Button>
-      </div>
 
-      <QuizzesList quizzes={quizzes} />
-    </div>
+        <QuizzesList quizzes={quizzes} />
+      </Container>
+    </DashboardLayout>
   )
 }

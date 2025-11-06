@@ -7,6 +7,8 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Container } from "@/components/ui/container"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { instructorCourseService, type InstructorCoursesResponse } from "@/lib/services/instructor-course.service"
 
 export default function InstructorDashboard() {
@@ -68,8 +70,9 @@ export default function InstructorDashboard() {
   const { courses, stats } = data
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
+    <DashboardLayout showBrowseCoursesButton={false}>
+      <Container className="py-8">
+        <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Instructor Dashboard</h1>
         <div className="flex gap-2">
           <Link href="/instructor/quizzes">
@@ -130,7 +133,6 @@ export default function InstructorDashboard() {
       </div>
 
       {/* Courses List */}
-      <div>
         <h2 className="mb-4 text-xl font-semibold">Your Courses</h2>
         {courses.length === 0 ? (
           <Card>
@@ -208,7 +210,7 @@ export default function InstructorDashboard() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </Container>
+    </DashboardLayout>
   )
 }

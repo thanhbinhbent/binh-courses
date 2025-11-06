@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Container } from "@/components/ui/container"
+import { PublicLayout } from "@/components/layout/public-layout"
 import { StartQuizButton } from "./_components/start-quiz-button"
 import { QuizAttemptsList } from "./_components/quiz-attempts-list"
 import { quizService } from "@/lib/services/quiz.service"
@@ -74,11 +76,9 @@ export default function QuizDetailPage({
   const { quiz, userAttempts, bestScore, totalPoints, user } = data
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-start justify-between">
+    <PublicLayout>
+      <Container className="py-8">
+        <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="mb-4 flex items-center gap-2">
                 {quiz.category && (
@@ -107,10 +107,9 @@ export default function QuizDetailPage({
               )}
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8">
+        <Separator className="my-8" />
+        
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2">
@@ -235,7 +234,7 @@ export default function QuizDetailPage({
             </Card>
           </div>
         </div>
-      </div>
-    </div>
+      </Container>
+    </PublicLayout>
   )
 }

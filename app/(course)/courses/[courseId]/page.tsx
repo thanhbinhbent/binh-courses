@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { Container } from "@/components/ui/container"
+import { PublicLayout } from "@/components/layout/public-layout"
 import { EnrollButton } from "./_components/enroll-button"
 import { CourseReviews } from "./_components/course-reviews"
 import { AddReviewForm } from "./_components/add-review-form"
@@ -75,25 +77,8 @@ export default function CourseDetailPage({
   const { course, isEnrolled, isFree, reviews, averageRating, userReview, progress, user } = data
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/courses" className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              <span className="text-xl font-bold">Modern LMS</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button variant="ghost">Dashboard</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
+    <PublicLayout>
+      <Container className="py-8">
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2">
@@ -320,7 +305,7 @@ export default function CourseDetailPage({
             </Card>
           </div>
         </div>
-      </div>
-    </div>
+      </Container>
+    </PublicLayout>
   )
 }
