@@ -70,6 +70,9 @@ export default function CoursesPage() {
               <span className="text-xl font-bold">Modern LMS</span>
             </Link>
             <div className="flex items-center gap-4">
+              <Link href="/quizzes">
+                <Button variant="ghost">Quizzes</Button>
+              </Link>
               <Link href="/dashboard">
                 <Button variant="ghost">Dashboard</Button>
               </Link>

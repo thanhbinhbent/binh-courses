@@ -52,10 +52,25 @@ export interface Quiz {
   allowRetake: boolean
   showCorrectAnswers: boolean
   questions: QuizQuestion[]
+  
+  // Optional chapter relation (for course-related quizzes)
+  chapterId?: string | null
+  chapter?: {
+    title: string
+    course: {
+      title: string
+      instructor: {
+        name: string | null
+        image: string | null
+      }
+    }
+  } | null
+  
   instructor?: {
     id: string
     name: string | null
     email: string | null
+    image?: string | null
   }
   _count?: {
     questions: number

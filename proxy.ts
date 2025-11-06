@@ -11,7 +11,9 @@ export default auth((req) => {
     pathname.startsWith('/sign-up') ||
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/api/courses') ||  // Allow public access to courses API
+    pathname.startsWith('/api/quizzes') ||  // Allow public access to quizzes API
     pathname.startsWith('/courses') ||
+    pathname.startsWith('/quizzes') ||      // Allow public access to quizzes pages
     pathname.startsWith('/search')
 
   // Redirect to sign-in if accessing protected route while not logged in

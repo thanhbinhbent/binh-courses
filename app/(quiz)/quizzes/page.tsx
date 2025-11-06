@@ -63,8 +63,31 @@ export default function QuizzesPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="mb-2 text-3xl font-bold">Practice Quizzes</h1>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <BookOpen className="h-6 w-6" />
+              <span className="text-xl font-bold">Modern LMS</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/courses">
+                <Button variant="ghost">Courses</Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button variant="ghost">Dashboard</Button>
+              </Link>
+              <Link href="/sign-in">
+                <Button>Sign In</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Practice Quizzes</h1>
           <p className="text-muted-foreground">
             Test your knowledge with our comprehensive quiz library
           </p>
@@ -108,11 +131,25 @@ export default function QuizzesPage() {
               <Card key={quiz.id} className="transition-shadow hover:shadow-lg">
                 <CardHeader>
                   <div className="mb-2 flex items-center justify-between">
-                    {quiz.category && (
-                      <Badge variant="secondary" className="text-xs">
-                        {quiz.category.name}
-                      </Badge>
-                    )}
+                    <div className="flex flex-col gap-1">
+                      {/* Standalone quiz category */}
+                      {quiz.category && (
+                        <Badge variant="secondary" className="text-xs w-fit">
+                          {quiz.category.name}
+                        </Badge>
+                      )}
+                      {/* Course-related quiz */}
+                      {quiz.chapter?.course && (
+                        <div className="flex flex-col gap-1">
+                          <Badge variant="outline" className="text-xs w-fit">
+                            {quiz.chapter.course.title}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Chapter: {quiz.chapter.title}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     {quiz.timeLimit && (
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
@@ -125,9 +162,10 @@ export default function QuizzesPage() {
                     {quiz.title}
                   </CardTitle>
 
-                  {quiz.instructor && (
+                  {/* Show instructor from quiz directly or from course */}
+                  {(quiz.instructor?.name || quiz.chapter?.course?.instructor?.name) && (
                     <p className="text-sm text-muted-foreground">
-                      by {quiz.instructor.name}
+                      by {quiz.instructor?.name || quiz.chapter?.course?.instructor?.name}
                     </p>
                   )}
                 </CardHeader>

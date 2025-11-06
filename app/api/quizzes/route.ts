@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/current-user"
 
+
+
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser()
@@ -34,17 +36,71 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser()
+    const { searchParams } = new URL(req.url)
+    const type = searchParams.get('type') // 'instructor' or 'public'
 
-    if (!user || user.role !== "INSTRUCTOR") {
-      return new NextResponse("Unauthorized", { status: 401 })
+    // If requesting instructor quizzes
+    if (type === 'instructor') {
+      if (!user || user.role !== "INSTRUCTOR") {
+        return new NextResponse("Unauthorized", { status: 401 })
+      }
+
+      const quizzes = await db.quiz.findMany({
+        where: {
+          instructorId: user.id
+        },
+        include: {
+          category: true,
+          _count: {
+            select: {
+              questions: true,
+              attempts: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      })
+
+      return NextResponse.json(quizzes)
     }
 
+    // Public access - get all published quizzes (standalone or course-related)
     const quizzes = await db.quiz.findMany({
-      where: {
-        instructorId: user.id
-      },
+      where: { isPublished: true },
       include: {
-        category: true,
+        // For quizzes that are part of a course chapter
+        chapter: {
+          select: {
+            title: true,
+            course: {
+              select: {
+                title: true,
+                instructor: {
+                  select: {
+                    name: true,
+                    image: true,
+                  }
+                }
+              }
+            }
+          }
+        },
+        // For standalone quizzes
+        category: {
+          select: {
+            name: true,
+            slug: true
+          }
+        },
+        // Quiz instructor (for both standalone and course quizzes)
+        instructor: {
+          select: {
+            name: true,
+            image: true,
+          }
+        },
         _count: {
           select: {
             questions: true,
@@ -52,12 +108,41 @@ export async function GET(req: Request) {
           }
         }
       },
-      orderBy: {
-        createdAt: "desc"
-      }
+      orderBy: { createdAt: "desc" }
     })
 
-    return NextResponse.json(quizzes)
+    // Get all categories that have quizzes (standalone or through courses)
+    const categories = await db.category.findMany({
+      where: {
+        OR: [
+          {
+            quizzes: {
+              some: {
+                isPublished: true
+              }
+            }
+          },
+          {
+            courses: {
+              some: {
+                chapters: {
+                  some: {
+                    quizzes: {
+                      some: {
+                        isPublished: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      orderBy: { name: "asc" }
+    })
+
+    return NextResponse.json({ quizzes, categories })
   } catch (error) {
     console.error("[QUIZZES]", error)
     return new NextResponse("Internal Error", { status: 500 })

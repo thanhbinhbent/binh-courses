@@ -16,6 +16,9 @@ export default function Home() {
             <Link href="/courses">
               <Button variant="ghost">Courses</Button>
             </Link>
+            <Link href="/quizzes">
+              <Button variant="ghost">Quizzes</Button>
+            </Link>
             <Link href="/sign-in">
               <Button variant="ghost">Sign In</Button>
             </Link>

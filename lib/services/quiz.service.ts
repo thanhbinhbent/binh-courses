@@ -15,7 +15,7 @@ export const quizService = {
    * Get all published quizzes with categories
    */
   async getQuizzes(): Promise<QuizzesListResponse> {
-    const res = await fetch('/api/quizzes/public', {
+    const res = await fetch('/api/quizzes', {
       cache: 'no-store'
     })
     
