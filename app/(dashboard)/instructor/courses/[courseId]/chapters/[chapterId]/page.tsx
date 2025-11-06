@@ -1,52 +1,87 @@
-import { requireInstructor } from "@/lib/current-user"
-import { db } from "@/lib/db"
-import { notFound, redirect } from "next/navigation"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
 import { ChapterDetailsForm } from "./_components/chapter-details-form"
 import { ChapterVideoForm } from "./_components/chapter-video-form"
 import { ChapterAccessForm } from "./_components/chapter-access-form"
+import { instructorCourseService } from "@/lib/services/instructor-course.service"
+import type { ChapterDetailsResponse } from "@/lib/services/instructor-course.service"
 
-export default async function ChapterEditPage({
+export default function ChapterEditPage({
   params
 }: {
   params: { courseId: string; chapterId: string }
 }) {
-  const user = await requireInstructor()
+  const router = useRouter()
+  const [data, setData] = useState<ChapterDetailsResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Get chapter with course
-  const chapter = await db.chapter.findUnique({
-    where: {
-      id: params.chapterId,
-      courseId: params.courseId
-    },
-    include: {
-      course: true,
-      resources: true
+  useEffect(() => {
+    async function loadChapterData() {
+      try {
+        setIsLoading(true)
+        const result = await instructorCourseService.getChapterWithDetails(
+          params.courseId,
+          params.chapterId
+        )
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+        
+        // Handle specific errors
+        if (errorMessage === 'UNAUTHORIZED') {
+          router.push('/sign-in')
+        } else if (errorMessage === 'FORBIDDEN' || errorMessage === 'NOT_FOUND') {
+          router.push(`/instructor/courses/${params.courseId}`)
+        }
+      } finally {
+        setIsLoading(false)
+      }
     }
-  })
 
-  if (!chapter) {
-    notFound()
+    loadChapterData()
+  }, [params.courseId, params.chapterId, router])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading chapter...</p>
+        </div>
+      </div>
+    )
   }
 
-  // Check if user is the instructor of this course
-  if (chapter.course.instructorId !== user.id && user.role !== "ADMIN") {
-    redirect("/instructor")
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">
+            {error === 'NOT_FOUND' ? 'Chapter not found' : 'Failed to load chapter'}
+          </p>
+          <Button asChild variant="outline">
+            <Link href={`/instructor/courses/${params.courseId}`}>
+              Back to Course
+            </Link>
+          </Button>
+        </div>
+      </div>
+    )
   }
 
-  const requiredFields = [
-    chapter.title,
-    chapter.description,
-    chapter.videoUrl
-  ]
-
-  const totalFields = requiredFields.length
-  const completedFields = requiredFields.filter(Boolean).length
-  const completionText = `(${completedFields}/${totalFields})`
+  const { chapter, completion } = data
+  const completionText = `(${completion.completed}/${completion.total})`
 
   return (
     <div className="container mx-auto px-4 py-8">

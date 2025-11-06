@@ -4,9 +4,11 @@ import { NextResponse } from "next/server"
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const { courseId } = await params
+
     const user = await getCurrentUser()
 
     if (!user) {
@@ -20,7 +22,7 @@ export async function POST(
 
     // Get course to verify ownership
     const course = await db.course.findUnique({
-      where: { id: params.courseId }
+      where: { id: courseId }
     })
 
     if (!course) {
@@ -40,7 +42,7 @@ export async function POST(
 
     // Get last chapter position
     const lastChapter = await db.chapter.findFirst({
-      where: { courseId: params.courseId },
+      where: { courseId: courseId },
       orderBy: { position: "desc" }
     })
 
@@ -50,7 +52,7 @@ export async function POST(
     const chapter = await db.chapter.create({
       data: {
         title,
-        courseId: params.courseId,
+        courseId: courseId,
         position: newPosition,
         isPublished: false,
         isFree: false

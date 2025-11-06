@@ -4,9 +4,11 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
   try {
+    const { courseId, chapterId } = await params
+
     const user = await getCurrentUser()
 
     if (!user) {
@@ -20,7 +22,7 @@ export async function PATCH(
 
     // Get course to verify ownership
     const course = await db.course.findUnique({
-      where: { id: params.courseId }
+      where: { id: courseId }
     })
 
     if (!course) {
@@ -36,8 +38,8 @@ export async function PATCH(
     // Update chapter
     const chapter = await db.chapter.update({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId
+        id: chapterId,
+        courseId: courseId
       },
       data: body
     })
@@ -51,9 +53,11 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: Promise<{ courseId: string; chapterId: string }> }
 ) {
   try {
+    const { courseId, chapterId } = await params
+
     const user = await getCurrentUser()
 
     if (!user) {
@@ -67,7 +71,7 @@ export async function DELETE(
 
     // Get course to verify ownership
     const course = await db.course.findUnique({
-      where: { id: params.courseId }
+      where: { id: courseId }
     })
 
     if (!course) {
@@ -81,8 +85,8 @@ export async function DELETE(
     // Delete chapter
     await db.chapter.delete({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId
+        id: chapterId,
+        courseId: courseId
       }
     })
 

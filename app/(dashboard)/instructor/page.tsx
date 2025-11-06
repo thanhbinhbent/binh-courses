@@ -1,48 +1,90 @@
-import { requireInstructor } from "@/lib/current-user"
-import { db } from "@/lib/db"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2, BookOpen, Users, DollarSign, Plus } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Users, DollarSign, Plus } from "lucide-react"
-import Link from "next/link"
+import { instructorCourseService, type InstructorCoursesResponse } from "@/lib/services/instructor-course.service"
 
-export default async function InstructorDashboard() {
-  const user = await requireInstructor()
+export default function InstructorDashboard() {
+  const router = useRouter()
+  const [data, setData] = useState<InstructorCoursesResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Get all courses created by this instructor
-  const courses = await db.course.findMany({
-    where: {
-      instructorId: user.id
-    },
-    include: {
-      _count: {
-        select: {
-          enrollments: true,
-          chapters: true
+  useEffect(() => {
+    async function loadCoursesData() {
+      try {
+        setIsLoading(true)
+        const result = await instructorCourseService.getInstructorCourses()
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+        
+        // Handle specific errors
+        if (errorMessage === 'UNAUTHORIZED') {
+          router.push('/sign-in')
+        } else if (errorMessage === 'FORBIDDEN') {
+          router.push('/')
         }
+      } finally {
+        setIsLoading(false)
       }
-    },
-    orderBy: {
-      createdAt: "desc"
     }
-  })
 
-  // Calculate total students and revenue
-  const totalStudents = courses.reduce((acc, course) => acc + course._count.enrollments, 0)
-  const totalRevenue = courses.reduce((acc, course) => {
-    return acc + (course.price || 0) * course._count.enrollments
-  }, 0)
+    loadCoursesData()
+  }, [router])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">Failed to load dashboard</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  const { courses, stats } = data
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Instructor Dashboard</h1>
-        <Link href="/instructor/courses/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Course
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/instructor/quizzes">
+            <Button variant="outline">
+              <BookOpen className="mr-2 h-4 w-4" />
+              Quizzes
+            </Button>
+          </Link>
+          <Link href="/instructor/courses/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Course
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -53,9 +95,9 @@ export default async function InstructorDashboard() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{courses.length}</div>
+            <div className="text-2xl font-bold">{stats.totalCourses}</div>
             <p className="text-xs text-muted-foreground">
-              {courses.filter(c => c.isPublished).length} published
+              {stats.publishedCount} published
             </p>
           </CardContent>
         </Card>
@@ -66,7 +108,7 @@ export default async function InstructorDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalStudents}</div>
+            <div className="text-2xl font-bold">{stats.totalStudents}</div>
             <p className="text-xs text-muted-foreground">
               Across all courses
             </p>
@@ -79,7 +121,7 @@ export default async function InstructorDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               From all enrollments
             </p>

@@ -4,9 +4,11 @@ import { getCurrentUser } from "@/lib/current-user"
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const { courseId } = await params
+
     const user = await getCurrentUser()
 
     if (!user) {
@@ -19,7 +21,7 @@ export async function POST(
     // Check if course exists and is published
     const course = await db.course.findUnique({
       where: {
-        id: params.courseId,
+        id: courseId,
         isPublished: true
       }
     })
@@ -36,7 +38,7 @@ export async function POST(
       where: {
         userId_courseId: {
           userId: user.id,
-          courseId: params.courseId
+          courseId: courseId
         }
       }
     })
@@ -54,7 +56,7 @@ export async function POST(
         where: {
           userId_courseId: {
             userId: user.id,
-            courseId: params.courseId
+            courseId: courseId
           }
         }
       })
@@ -71,7 +73,7 @@ export async function POST(
     const enrollment = await db.enrollment.create({
       data: {
         userId: user.id,
-        courseId: params.courseId
+        courseId: courseId
       }
     })
 

@@ -5,9 +5,10 @@ import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
+import type { Adapter } from "next-auth/adapters"
 
 export const authConfig = {
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -74,7 +75,7 @@ export const authConfig = {
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as string
+        session.user.role = token.role as "STUDENT" | "INSTRUCTOR" | "ADMIN"
       }
       return session
     },

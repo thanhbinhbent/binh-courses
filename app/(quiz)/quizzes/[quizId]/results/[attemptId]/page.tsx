@@ -1,0 +1,84 @@
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { QuizResultsDisplay } from "./_components/quiz-results-display"
+import { quizService } from "@/lib/services/quiz.service"
+import type { QuizResultsResponse } from "@/lib/types"
+
+export default function QuizResultsPage({
+  params
+}: {
+  params: { quizId: string; attemptId: string }
+}) {
+  const router = useRouter()
+  const [data, setData] = useState<QuizResultsResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadQuizResults() {
+      try {
+        setIsLoading(true)
+        const result = await quizService.getQuizResults(params.quizId, params.attemptId)
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+        
+        if (errorMessage === 'UNAUTHORIZED') {
+          router.push('/sign-in')
+        } else if (errorMessage === 'NOT_FOUND') {
+          router.push('/quizzes')
+        } else if (errorMessage.startsWith('NOT_COMPLETED:')) {
+          const redirectUrl = errorMessage.split(':')[1]
+          router.push(redirectUrl)
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadQuizResults()
+  }, [params.quizId, params.attemptId, router])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading results...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">Failed to load quiz results</p>
+          <Button onClick={() => router.push('/quizzes')} variant="outline">
+            Back to Quizzes
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <QuizResultsDisplay
+      attempt={data.attempt}
+      totalQuestions={data.totalQuestions}
+      answeredQuestions={data.answeredQuestions}
+      correctAnswers={data.correctAnswers}
+      totalPoints={data.totalPoints}
+      quizId={params.quizId}
+    />
+  )
+}
+

@@ -36,6 +36,8 @@ model User {
   certificates  Certificate[]
   progress      Progress[]
   comments      Comment[]
+  quizzes       Quiz[]    @relation("InstructorQuizzes")
+  quizAttempts  QuizAttempt[]
 
   @@index([email])
 }
@@ -90,6 +92,7 @@ model Category {
   name      String   @unique
   slug      String   @unique
   courses   Course[]
+  quizzes   Quiz[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -291,9 +294,18 @@ model Quiz {
   description String?  @db.Text
   passingScore Int     @default(70)
   timeLimit   Int?     // in minutes
+  isPublished Boolean  @default(false)
   
-  chapterId   String
-  chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  // Quiz can be standalone (for practice) or part of a chapter
+  chapterId   String?
+  chapter     Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  // For standalone quizzes
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  instructorId String
+  instructor  User     @relation("InstructorQuizzes", fields: [instructorId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -303,6 +315,8 @@ model Quiz {
   attempts    QuizAttempt[]
 
   @@index([chapterId])
+  @@index([categoryId])
+  @@index([instructorId])
 }
 
 model Question {
@@ -352,6 +366,7 @@ model QuizAttempt {
   completedAt DateTime?
   
   userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   quizId      String
   quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   

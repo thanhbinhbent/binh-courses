@@ -10,7 +10,6 @@ export default auth((req) => {
     pathname.startsWith('/sign-in') ||
     pathname.startsWith('/sign-up') ||
     pathname.startsWith('/api/auth') ||
-    pathname.startsWith('/api/webhook') ||
     pathname.startsWith('/courses') ||
     pathname.startsWith('/search')
 

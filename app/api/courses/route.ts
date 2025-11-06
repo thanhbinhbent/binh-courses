@@ -2,6 +2,48 @@ import { getCurrentUser } from "@/lib/current-user"
 import { db } from "@/lib/db"
 import { NextResponse } from "next/server"
 
+export async function GET() {
+  try {
+    // Get all published courses (public access)
+    const courses = await db.course.findMany({
+      where: { isPublished: true },
+      include: {
+        category: true,
+        instructor: {
+          select: {
+            name: true,
+            image: true,
+          }
+        },
+        chapters: {
+          where: { isPublished: true },
+          select: { id: true }
+        },
+        _count: {
+          select: {
+            enrollments: true,
+            reviews: true
+          }
+        }
+      },
+      orderBy: { createdAt: "desc" }
+    })
+
+    // Get all categories
+    const categories = await db.category.findMany({
+      orderBy: { name: "asc" }
+    })
+
+    return NextResponse.json({ courses, categories })
+  } catch (error) {
+    console.error("[COURSES_GET]", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser()

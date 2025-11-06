@@ -1,61 +1,82 @@
-import { requireInstructor } from "@/lib/current-user"
-import { db } from "@/lib/db"
-import { notFound, redirect } from "next/navigation"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2, BookOpen, FileText, Settings, Eye } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { BookOpen, FileText, Settings, Eye } from "lucide-react"
-import Link from "next/link"
 import { CourseSettingsForm } from "./_components/course-settings-form"
 import { ChaptersList } from "./_components/chapters-list"
 import { PublishButton } from "./_components/publish-button"
+import { instructorCourseService } from "@/lib/services/instructor-course.service"
+import type { CourseDetailsResponse } from "@/lib/services/instructor-course.service"
 
-export default async function CourseEditPage({
+export default function CourseEditPage({
   params
 }: {
   params: { courseId: string }
 }) {
-  const user = await requireInstructor()
+  const router = useRouter()
+  const [data, setData] = useState<CourseDetailsResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Get course with chapters
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId
-    },
-    include: {
-      chapters: {
-        orderBy: { position: "asc" }
-      },
-      category: true,
-      _count: {
-        select: { enrollments: true }
+  useEffect(() => {
+    async function loadCourseData() {
+      try {
+        setIsLoading(true)
+        const result = await instructorCourseService.getCourseWithDetails(params.courseId)
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+        
+        // Handle specific errors
+        if (errorMessage === 'UNAUTHORIZED') {
+          router.push('/sign-in')
+        } else if (errorMessage === 'FORBIDDEN' || errorMessage === 'NOT_FOUND') {
+          router.push('/instructor/courses')
+        }
+      } finally {
+        setIsLoading(false)
       }
     }
-  })
 
-  if (!course) {
-    notFound()
+    loadCourseData()
+  }, [params.courseId, router])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading course...</p>
+        </div>
+      </div>
+    )
   }
 
-  // Check if user is the instructor of this course
-  if (course.instructorId !== user.id && user.role !== "ADMIN") {
-    redirect("/instructor")
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">
+            {error === 'NOT_FOUND' ? 'Course not found' : 'Failed to load course'}
+          </p>
+          <Button asChild variant="outline">
+            <Link href="/instructor/courses">Back to Courses</Link>
+          </Button>
+        </div>
+      </div>
+    )
   }
 
-  // Get all categories for the settings form
-  const categories = await db.category.findMany({
-    orderBy: { name: "asc" }
-  })
-
-  // Check if course is complete and can be published
-  const isComplete = !!(
-    course.title &&
-    course.description &&
-    course.imageUrl &&
-    course.categoryId &&
-    course.chapters.some(chapter => chapter.isPublished)
-  )
+  const { course, categories, isComplete } = data
 
   return (
     <div className="container mx-auto px-4 py-8">

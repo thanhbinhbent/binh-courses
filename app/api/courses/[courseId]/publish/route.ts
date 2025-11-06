@@ -4,9 +4,11 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    const { courseId } = await params
+
     const user = await getCurrentUser()
 
     if (!user) {
@@ -20,7 +22,7 @@ export async function PATCH(
 
     // Get course to verify ownership
     const course = await db.course.findUnique({
-      where: { id: params.courseId }
+      where: { id: courseId }
     })
 
     if (!course) {
@@ -36,7 +38,7 @@ export async function PATCH(
 
     // Update course publish status
     const updatedCourse = await db.course.update({
-      where: { id: params.courseId },
+      where: { id: courseId },
       data: {
         isPublished
       }

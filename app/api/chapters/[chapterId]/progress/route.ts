@@ -4,9 +4,10 @@ import { NextResponse } from "next/server"
 
 export async function POST(
   req: Request,
-  { params }: { params: { chapterId: string } }
+  { params }: { params: Promise<{ chapterId: string }> }
 ) {
   try {
+    const { chapterId } = await params
     const user = await getCurrentUser()
 
     if (!user) {
@@ -16,7 +17,7 @@ export async function POST(
     // Get chapter to verify it exists
     const chapter = await db.chapter.findUnique({
       where: {
-        id: params.chapterId,
+        id: chapterId,
         isPublished: true
       }
     })
@@ -44,7 +45,7 @@ export async function POST(
       where: {
         userId_chapterId: {
           userId: user.id,
-          chapterId: params.chapterId
+          chapterId: chapterId
         }
       },
       update: {
@@ -52,7 +53,7 @@ export async function POST(
       },
       create: {
         userId: user.id,
-        chapterId: params.chapterId,
+        chapterId: chapterId,
         isCompleted: true
       }
     })
@@ -69,7 +70,7 @@ export async function POST(
       where: {
         userId: user.id,
         chapterId: {
-          in: allChapters.map(c => c.id)
+          in: allChapters.map((c: { id: string }) => c.id)
         },
         isCompleted: true
       }
@@ -79,39 +80,42 @@ export async function POST(
 
     // If all chapters completed, check if certificate should be awarded
     if (isAllCompleted && enrollment) {
+      // Check by certificateId pattern (since we don't have courseId in Certificate model)
+      const certificateIdPattern = `CERT-${chapter.courseId.substring(0, 8)}-${user.id.substring(0, 8)}`
+      
       const existingCertificate = await db.certificate.findFirst({
         where: {
           userId: user.id,
-          courseId: chapter.courseId
+          certificateId: {
+            startsWith: certificateIdPattern
+          }
         }
       })
 
       if (!existingCertificate) {
-        // Generate a unique certificate ID
-        const certificateId = `CERT-${chapter.courseId.substring(0, 8)}-${user.id.substring(0, 8)}-${Date.now()}`
-
-        await db.certificate.create({
-          data: {
-            certificateId,
-            userId: user.id,
-            courseId: chapter.courseId,
-            issuedAt: new Date()
+        // Fetch course and instructor details for certificate
+        const course = await db.course.findUnique({
+          where: { id: chapter.courseId },
+          include: {
+            instructor: true
           }
         })
-      }
 
-      // Update enrollment completion status
-      await db.enrollment.update({
-        where: {
-          userId_courseId: {
-            userId: user.id,
-            courseId: chapter.courseId
-          }
-        },
-        data: {
-          completedAt: new Date()
+        if (course) {
+          // Generate a unique certificate ID
+          const certificateId = `CERT-${chapter.courseId.substring(0, 8)}-${user.id.substring(0, 8)}-${Date.now()}`
+
+          await db.certificate.create({
+            data: {
+              certificateId,
+              userId: user.id,
+              courseName: course.title,
+              instructorName: course.instructor.name || 'Unknown Instructor',
+              completionDate: new Date()
+            }
+          })
         }
-      })
+      }
     }
 
     return NextResponse.json(progress)

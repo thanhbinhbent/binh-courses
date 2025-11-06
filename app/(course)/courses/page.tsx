@@ -1,39 +1,63 @@
-import { db } from "@/lib/db"
+'use client'
+
+import { useEffect, useState } from "react"
+import { Loader2, BookOpen, Clock, Star } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { BookOpen, Clock, Star } from "lucide-react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { courseService, type CoursesListResponse } from "@/lib/services/course.service"
 
-export default async function CoursesPage() {
-  const courses = await db.course.findMany({
-    where: { isPublished: true },
-    include: {
-      category: true,
-      instructor: {
-        select: {
-          name: true,
-          image: true,
-        }
-      },
-      chapters: {
-        where: { isPublished: true },
-        select: { id: true }
-      },
-      _count: {
-        select: {
-          enrollments: true,
-          reviews: true
-        }
+export default function CoursesPage() {
+  const [data, setData] = useState<CoursesListResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadCoursesData() {
+      try {
+        setIsLoading(true)
+        const result = await courseService.getCourses()
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+      } finally {
+        setIsLoading(false)
       }
-    },
-    orderBy: { createdAt: "desc" }
-  })
+    }
 
-  const categories = await db.category.findMany({
-    orderBy: { name: "asc" }
-  })
+    loadCoursesData()
+  }, [])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading courses...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">Failed to load courses</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  const { courses, categories } = data
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -145,7 +169,7 @@ export default async function CoursesPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span>{course._count.enrollments} students</span>
+                      <span>{course._count?.enrollments || 0} students</span>
                     </div>
                   </div>
 

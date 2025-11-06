@@ -1,79 +1,77 @@
-import { db } from "@/lib/db"
-import { getCurrentUser } from "@/lib/current-user"
-import { redirect } from "next/navigation"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2, BookOpen, Clock, Award, CheckCircle2, PlayCircle } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { BookOpen, Clock, Award, CheckCircle2, PlayCircle } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
 import { EnrollButton } from "./_components/enroll-button"
+import { CourseReviews } from "./_components/course-reviews"
+import { AddReviewForm } from "./_components/add-review-form"
+import { courseService, type CourseDetailsResponse } from "@/lib/services/course.service"
 
-export default async function CourseDetailPage({
+export default function CourseDetailPage({
   params
 }: {
   params: { courseId: string }
 }) {
-  const user = await getCurrentUser()
-  
-  const course = await db.course.findUnique({
-    where: { 
-      id: params.courseId,
-      isPublished: true
-    },
-    include: {
-      category: true,
-      instructor: {
-        select: {
-          name: true,
-          image: true,
-          bio: true
+  const router = useRouter()
+  const [data, setData] = useState<CourseDetailsResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadCourseData() {
+      try {
+        setIsLoading(true)
+        const result = await courseService.getCourseDetails(params.courseId)
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+        
+        if (errorMessage === 'NOT_FOUND') {
+          router.push('/courses')
         }
-      },
-      chapters: {
-        where: { isPublished: true },
-        orderBy: { position: "asc" },
-        include: {
-          userProgress: user ? {
-            where: { userId: user.id }
-          } : false
-        }
-      },
-      _count: {
-        select: {
-          enrollments: true,
-          reviews: true
-        }
+      } finally {
+        setIsLoading(false)
       }
     }
-  })
 
-  if (!course) {
-    redirect("/courses")
+    loadCourseData()
+  }, [params.courseId, router])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading course...</p>
+        </div>
+      </div>
+    )
   }
 
-  // Check if user is enrolled
-  const enrollment = user ? await db.enrollment.findUnique({
-    where: {
-      userId_courseId: {
-        userId: user.id,
-        courseId: course.id
-      }
-    }
-  }) : null
-
-  const isEnrolled = !!enrollment
-  const isFree = !course.price || course.price === 0
-
-  // Calculate progress if enrolled
-  let progress = 0
-  if (isEnrolled && course.chapters.length > 0) {
-    const completedChapters = course.chapters.filter(
-      chapter => chapter.userProgress?.[0]?.isCompleted
-    ).length
-    progress = Math.round((completedChapters / course.chapters.length) * 100)
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">Failed to load course</p>
+          <Button onClick={() => router.push('/courses')} variant="outline">
+            Back to Courses
+          </Button>
+        </div>
+      </div>
+    )
   }
+
+  const { course, isEnrolled, isFree, reviews, averageRating, userReview, progress, user } = data
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -135,7 +133,7 @@ export default async function CourseDetailPage({
                 </div>
                 <div className="flex items-center gap-2">
                   <Award className="h-4 w-4" />
-                  <span>{course._count.enrollments} students</span>
+                  <span>{course._count?.enrollments || 0} students</span>
                 </div>
               </div>
             </div>
@@ -143,37 +141,37 @@ export default async function CourseDetailPage({
             <Separator className="my-6" />
 
             {/* Instructor */}
-            <div className="mb-6">
-              <h2 className="mb-4 text-xl font-semibold">Instructor</h2>
-              <div className="flex items-start gap-4">
-                {course.instructor.image && (
-                  <div className="relative h-16 w-16 overflow-hidden rounded-full">
-                    <Image
-                      src={course.instructor.image}
-                      alt={course.instructor.name || "Instructor"}
-                      fill
-                      className="object-cover"
-                    />
+            {course.instructor && (
+              <>
+                <div className="mb-6">
+                  <h2 className="mb-4 text-xl font-semibold">Instructor</h2>
+                  <div className="flex items-start gap-4">
+                    {course.instructor.image && (
+                      <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                        <Image
+                          src={course.instructor.image}
+                          alt={course.instructor.name || "Instructor"}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-semibold">{course.instructor.name}</p>
+                    </div>
                   </div>
-                )}
-                <div>
-                  <p className="font-semibold">{course.instructor.name}</p>
-                  {course.instructor.bio && (
-                    <p className="text-sm text-muted-foreground">
-                      {course.instructor.bio}
-                    </p>
-                  )}
                 </div>
-              </div>
-            </div>
 
-            <Separator className="my-6" />
+                <Separator className="my-6" />
+              </>
+            )}
 
             {/* Chapters */}
             <div>
               <h2 className="mb-4 text-xl font-semibold">Course Content</h2>
               <div className="space-y-2">
-                {course.chapters.map((chapter, index) => (
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {course.chapters.map((chapter: any, index: number) => (
                   <Card key={chapter.id}>
                     <CardContent className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-3">
@@ -212,6 +210,35 @@ export default async function CourseDetailPage({
                   </Card>
                 ))}
               </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div>
+              <h2 className="mb-4 text-xl font-semibold">Student Reviews</h2>
+              
+              {/* Add/Edit Review Form (only for enrolled students) */}
+              {isEnrolled && user && (
+                <div className="mb-6">
+                  <AddReviewForm courseId={course.id} existingReview={userReview || undefined} />
+                </div>
+              )}
+
+              {/* Reviews List */}
+              <CourseReviews
+                reviews={reviews as Array<{
+                  id: string
+                  rating: number
+                  comment: string | null
+                  userId: string
+                  user: {
+                    name: string | null
+                    image: string | null
+                  }
+                  createdAt: Date
+                }>}
+                averageRating={averageRating}
+                totalReviews={reviews.length}
+              />
             </div>
           </div>
 

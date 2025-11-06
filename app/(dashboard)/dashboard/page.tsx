@@ -1,66 +1,69 @@
-import { redirect } from "next/navigation"
-import { getCurrentUser } from "@/lib/current-user"
-import { db } from "@/lib/db"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Loader2, BookOpen, Award, Clock, TrendingUp } from "lucide-react"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, Award, Clock, TrendingUp } from "lucide-react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { studentService } from "@/lib/services/student.service"
+import type { StudentDashboardResponse } from "@/lib/types"
 
-export default async function StudentDashboard() {
-  const user = await getCurrentUser()
-  
-  if (!user) {
-    redirect("/sign-in")
+export default function StudentDashboard() {
+  const router = useRouter()
+  const [data, setData] = useState<StudentDashboardResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      try {
+        setIsLoading(true)
+        const result = await studentService.getDashboard()
+        setData(result)
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+        setError(errorMessage)
+        
+        if (errorMessage === 'UNAUTHORIZED') {
+          router.push('/sign-in')
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadDashboardData()
+  }, [router])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    )
   }
 
-  // Get enrolled courses with progress
-  const enrollments = await db.enrollment.findMany({
-    where: { userId: user.id },
-    include: {
-      course: {
-        include: {
-          chapters: {
-            orderBy: { position: "asc" },
-            include: {
-              userProgress: {
-                where: { userId: user.id }
-              }
-            }
-          },
-          category: true,
-        }
-      }
-    },
-    orderBy: { createdAt: "desc" }
-  })
+  // Error state
+  if (error || !data) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">Failed to load dashboard</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
-  // Calculate progress for each course
-  const coursesWithProgress = enrollments.map(enrollment => {
-    const course = enrollment.course
-    const completedChapters = course.chapters.filter(
-      chapter => chapter.userProgress?.[0]?.isCompleted
-    ).length
-    const totalChapters = course.chapters.length
-    const progress = totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0
-
-    return {
-      ...course,
-      progress: Math.round(progress),
-      completedChapters,
-      totalChapters
-    }
-  })
-
-  const inProgressCourses = coursesWithProgress.filter(c => c.progress > 0 && c.progress < 100)
-  const completedCourses = coursesWithProgress.filter(c => c.progress === 100)
-
-  // Get certificates
-  const certificates = await db.certificate.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    take: 5
-  })
+  const { enrollments, inProgressCourses, completedCourses, certificates, stats, user } = data
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,7 +97,7 @@ export default async function StudentDashboard() {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{enrollments.length}</div>
+              <div className="text-2xl font-bold">{stats.totalCourses}</div>
             </CardContent>
           </Card>
 
@@ -104,7 +107,7 @@ export default async function StudentDashboard() {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{inProgressCourses.length}</div>
+              <div className="text-2xl font-bold">{stats.inProgress}</div>
             </CardContent>
           </Card>
 
@@ -114,7 +117,7 @@ export default async function StudentDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{completedCourses.length}</div>
+              <div className="text-2xl font-bold">{stats.completed}</div>
             </CardContent>
           </Card>
 
@@ -124,7 +127,7 @@ export default async function StudentDashboard() {
               <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{certificates.length}</div>
+              <div className="text-2xl font-bold">{stats.certificatesCount}</div>
             </CardContent>
           </Card>
         </div>

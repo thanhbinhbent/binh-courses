@@ -192,6 +192,161 @@ async function main() {
 
     console.log('✅ Enrolled student in Azure Fundamentals course')
 
+    // Create sample quizzes
+    const awsQuiz = await db.quiz.create({
+      data: {
+        title: 'AWS Solutions Architect Practice Quiz',
+        description: 'Test your knowledge of AWS core services and architecture best practices',
+        categoryId: awsCategoryId,
+        instructorId: instructor.id,
+        timeLimit: 30,
+        passingScore: 70,
+        isPublished: true,
+        questions: {
+          create: [
+            {
+              type: 'MULTIPLE_CHOICE',
+              question: 'Which AWS service provides object storage?',
+              points: 10,
+              order: 0,
+              options: {
+                create: [
+                  { text: 'EC2', isCorrect: false, order: 0 },
+                  { text: 'S3', isCorrect: true, order: 1 },
+                  { text: 'RDS', isCorrect: false, order: 2 },
+                  { text: 'Lambda', isCorrect: false, order: 3 },
+                ]
+              }
+            },
+            {
+              type: 'TRUE_FALSE',
+              question: 'AWS Lambda allows you to run code without provisioning servers.',
+              points: 10,
+              order: 1,
+              options: {
+                create: [
+                  { text: 'True', isCorrect: true, order: 0 },
+                  { text: 'False', isCorrect: false, order: 1 },
+                ]
+              }
+            },
+            {
+              type: 'MULTIPLE_CHOICE',
+              question: 'What does VPC stand for in AWS?',
+              points: 10,
+              order: 2,
+              options: {
+                create: [
+                  { text: 'Virtual Private Cloud', isCorrect: true, order: 0 },
+                  { text: 'Virtual Public Cloud', isCorrect: false, order: 1 },
+                  { text: 'Virtual Processing Center', isCorrect: false, order: 2 },
+                  { text: 'Virtual Protection Cloud', isCorrect: false, order: 3 },
+                ]
+              }
+            },
+          ]
+        }
+      }
+    })
+
+    const azureQuiz = await db.quiz.create({
+      data: {
+        title: 'Azure Fundamentals AZ-900 Practice',
+        description: 'Practice quiz for Azure Fundamentals certification exam',
+        categoryId: azureCategoryId,
+        instructorId: instructor.id,
+        timeLimit: 45,
+        passingScore: 75,
+        isPublished: true,
+        questions: {
+          create: [
+            {
+              type: 'MULTIPLE_CHOICE',
+              question: 'Which Azure service is used for hosting web applications?',
+              points: 10,
+              order: 0,
+              options: {
+                create: [
+                  { text: 'Azure Virtual Machines', isCorrect: false, order: 0 },
+                  { text: 'Azure App Service', isCorrect: true, order: 1 },
+                  { text: 'Azure Storage', isCorrect: false, order: 2 },
+                  { text: 'Azure SQL Database', isCorrect: false, order: 3 },
+                ]
+              }
+            },
+            {
+              type: 'TRUE_FALSE',
+              question: 'Azure Active Directory is used for identity and access management.',
+              points: 10,
+              order: 1,
+              options: {
+                create: [
+                  { text: 'True', isCorrect: true, order: 0 },
+                  { text: 'False', isCorrect: false, order: 1 },
+                ]
+              }
+            },
+            {
+              type: 'SHORT_ANSWER',
+              question: 'What are the three main cloud service models?',
+              points: 15,
+              order: 2,
+            },
+          ]
+        }
+      }
+    })
+
+    const istqbQuiz = await db.quiz.create({
+      data: {
+        title: 'ISTQB Foundation Level Practice Test',
+        description: 'Comprehensive practice test for ISTQB Foundation Level certification',
+        categoryId: istqbCategoryId,
+        instructorId: instructor.id,
+        timeLimit: 60,
+        passingScore: 65,
+        isPublished: true,
+        questions: {
+          create: [
+            {
+              type: 'MULTIPLE_CHOICE',
+              question: 'Which of the following is a black-box testing technique?',
+              points: 10,
+              order: 0,
+              options: {
+                create: [
+                  { text: 'Statement coverage', isCorrect: false, order: 0 },
+                  { text: 'Equivalence partitioning', isCorrect: true, order: 1 },
+                  { text: 'Branch coverage', isCorrect: false, order: 2 },
+                  { text: 'Path coverage', isCorrect: false, order: 3 },
+                ]
+              }
+            },
+            {
+              type: 'TRUE_FALSE',
+              question: 'Testing can prove that software is defect-free.',
+              points: 10,
+              order: 1,
+              options: {
+                create: [
+                  { text: 'True', isCorrect: false, order: 0 },
+                  { text: 'False', isCorrect: true, order: 1 },
+                ]
+              }
+            },
+            {
+              type: 'ESSAY',
+              question: 'Explain the difference between validation and verification in software testing.',
+              points: 20,
+              order: 2,
+            },
+          ]
+        }
+      }
+    })
+
+    console.log('✅ Created sample quizzes')
+
     console.log('\n🎉 Database seeded successfully!')
     console.log('\n📝 Login credentials:')
     console.log('   Instructor: instructor@example.com / password123')
