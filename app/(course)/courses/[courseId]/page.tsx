@@ -161,7 +161,7 @@ export default function CourseDetailPage({
                   <Card key={chapter.id}>
                     <CardContent className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
                           {index + 1}
                         </div>
                         <div>
@@ -182,7 +182,7 @@ export default function CourseDetailPage({
                           </Badge>
                         )}
                         {isEnrolled && chapter.userProgress?.[0]?.isCompleted && (
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          <CheckCircle2 className="h-5 w-5 text-success" />
                         )}
                         {(isEnrolled || chapter.isFree) && (
                           <Link href={`/courses/${course.id}/chapters/${chapter.id}`}>
@@ -234,11 +234,11 @@ export default function CourseDetailPage({
               <CardHeader>
                 <CardTitle>
                   {isEnrolled ? (
-                    <div className="text-green-600">Enrolled</div>
+                    <div className="text-success">Enrolled</div>
                   ) : isFree ? (
-                    <div className="text-2xl font-bold">Free</div>
+                    <div className="text-2xl font-bold text-foreground">Free</div>
                   ) : (
-                    <div className="text-2xl font-bold">${course.price}</div>
+                    <div className="text-2xl font-bold text-foreground">${course.price}</div>
                   )}
                 </CardTitle>
               </CardHeader>
@@ -251,9 +251,9 @@ export default function CourseDetailPage({
                         <span>Your Progress</span>
                         <span className="font-semibold">{progress}%</span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
                         <div
-                          className="h-full bg-green-600"
+                          className="h-full bg-success"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -288,15 +288,15 @@ export default function CourseDetailPage({
                   <h3 className="mb-3 font-semibold">This course includes:</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                       <span>{course.chapters.length} chapters</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                       <span>Lifetime access</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                       <span>Certificate of completion</span>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Loader2, BookOpen, Clock, Award, Filter } from "lucide-react"
+import { Loader2, BookOpen, Clock, Award } from "lucide-react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -73,27 +73,26 @@ export default function QuizzesPage() {
           </p>
         </div>
         
-        {/* Filters */}
-        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">Filter by category:</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link href="/quizzes">
-              <Badge variant="default" className="cursor-pointer hover:bg-primary/90 transition-colors">
-                All Categories
-              </Badge>
-            </Link>
-            {categories.map((category) => (
-              <Link key={category.id} href={`/quizzes?category=${category.slug || category.id}`}>
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary transition-colors">
-                  {category.name}
+        {/* Categories */}
+        {categories.length > 0 && (
+          <div className="mb-8">
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Browse by Category</h2>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/quizzes">
+                <Badge variant="default" className="cursor-pointer px-4 py-2 text-sm hover:bg-primary/90 transition-colors">
+                  All Quizzes
                 </Badge>
               </Link>
-            ))}
+              {categories.map((category) => (
+                <Link key={category.id} href={`/quizzes?category=${category.slug || category.id}`}>
+                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm hover:bg-secondary transition-colors">
+                    {category.name}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Quiz Grid */}
         {quizzes.length === 0 ? (

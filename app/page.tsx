@@ -104,9 +104,9 @@ export default function Home() {
       </section>
 
       {/* Popular Categories */}
-      <section className="bg-gray-50 py-20">
+      <section className="bg-secondary/20 py-20">
         <Container>
-          <h2 className="mb-12 text-center text-3xl font-bold">Popular Categories</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold text-foreground">Popular Categories</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <CategoryCard name="AWS Certification" courses={15} />
             <CategoryCard name="Azure Certification" courses={12} />

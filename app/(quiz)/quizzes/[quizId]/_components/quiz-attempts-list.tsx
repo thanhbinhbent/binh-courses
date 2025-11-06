@@ -28,12 +28,12 @@ export function QuizAttemptsList({ attempts, passingScore }: QuizAttemptsListPro
             <div className="flex items-center gap-3">
               {isCompleted ? (
                 isPassed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-red-600" />
+                  <XCircle className="h-5 w-5 text-error" />
                 )
               ) : (
-                <Clock className="h-5 w-5 text-amber-600" />
+                <Clock className="h-5 w-5 text-warning" />
               )}
 
               <div>

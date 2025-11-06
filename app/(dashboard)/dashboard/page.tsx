@@ -195,7 +195,7 @@ export default function StudentDashboard() {
                       )}
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center gap-2 text-green-600">
+                      <div className="flex items-center gap-2 text-success">
                         <Award className="h-4 w-4" />
                         <span className="text-sm font-medium">Completed</span>
                       </div>

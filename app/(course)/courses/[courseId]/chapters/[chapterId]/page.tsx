@@ -80,7 +80,7 @@ export default function ChapterPage({
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="w-full border-b bg-white">
+      <header className="w-full border-b bg-card">
         <Container className="flex items-center justify-between py-4">
           <Link href={`/courses/${courseId}`} className="flex items-center gap-2">
             <ChevronLeft className="h-5 w-5" />
@@ -102,7 +102,7 @@ export default function ChapterPage({
         <div className="flex-1 overflow-y-auto">
           {/* Video Player */}
           {chapter.videoUrl && (
-            <div className="aspect-video w-full bg-black">
+            <div className="aspect-video w-full bg-muted">
               <VideoPlayer
                 chapterId={chapter.id}
                 videoUrl={chapter.videoUrl}
@@ -115,9 +115,9 @@ export default function ChapterPage({
           <Container className="py-8">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h1 className="mb-2 text-3xl font-bold">{chapter.title}</h1>
+                <h1 className="mb-2 text-3xl font-bold text-foreground">{chapter.title}</h1>
                 {isCompleted && (
-                  <Badge variant="default" className="bg-green-600">
+                  <Badge variant="default" className="bg-success text-success-foreground">
                     <CheckCircle2 className="mr-1 h-3 w-3" />
                     Completed
                   </Badge>
@@ -195,9 +195,9 @@ export default function ChapterPage({
         </div>
 
         {/* Sidebar - Chapter List */}
-        <div className="hidden w-80 border-l bg-white lg:block">
+        <div className="hidden w-80 border-l bg-card lg:block">
           <div className="sticky top-0 h-screen overflow-y-auto p-4">
-            <h3 className="mb-4 font-semibold">Course Content</h3>
+            <h3 className="mb-4 font-semibold text-foreground">Course Content</h3>
             <div className="space-y-1">
               {chapter.course?.chapters?.map((courseChapter: Chapter, index: number) => {
                 const isCurrentChapter = courseChapter.id === chapterId
@@ -213,20 +213,20 @@ export default function ChapterPage({
                     <div
                       className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${
                         isCurrentChapter
-                          ? 'bg-blue-50 text-blue-600'
-                          : 'hover:bg-gray-50'
+                          ? 'bg-primary/10 text-primary'
+                          : 'hover:bg-secondary'
                       }`}
                     >
                       <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
                         isCurrentChapter
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 text-gray-600'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground'
                       }`}>
                         {index + 1}
                       </div>
                       <div className="flex-1">
                         <p className={`text-sm font-medium ${
-                          isCurrentChapter ? 'text-blue-600' : ''
+                          isCurrentChapter ? 'text-primary' : 'text-foreground'
                         }`}>
                           {courseChapter.title}
                         </p>
@@ -239,7 +239,7 @@ export default function ChapterPage({
                       <div className="flex items-center gap-1">
                         {isLocked && <Lock className="h-4 w-4 text-muted-foreground" />}
                         {isChapterCompleted && (
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <CheckCircle2 className="h-4 w-4 text-success" />
                         )}
                       </div>
                     </div>

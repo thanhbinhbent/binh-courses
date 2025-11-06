@@ -156,12 +156,12 @@ export default function QuizDetailPage({
                 {bestScore !== null && (
                   <>
                     <Separator />
-                    <div className="rounded-lg bg-blue-50 p-4">
+                    <div className="rounded-lg bg-primary/10 p-4">
                       <div className="flex items-center gap-2">
-                        <Award className="h-5 w-5 text-blue-600" />
+                        <Award className="h-5 w-5 text-primary" />
                         <div>
-                          <p className="font-semibold text-blue-900">Your Best Score</p>
-                          <p className="text-2xl font-bold text-blue-600">
+                          <p className="font-semibold text-foreground">Your Best Score</p>
+                          <p className="text-2xl font-bold text-primary">
                             {bestScore.toFixed(1)}%
                           </p>
                         </div>
