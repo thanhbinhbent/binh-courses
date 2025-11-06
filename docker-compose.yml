@@ -1,6 +1,6 @@
-# Docker Setup for Modern LMS
+# Docker Setup for Binh Courses
 
-# Modern LMS - Docker Compose (Database Only)
+# Binh Courses - Docker Compose (Database Only)
 services:
   postgres:
     image: postgres:15-alpine

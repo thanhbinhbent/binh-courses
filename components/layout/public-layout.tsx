@@ -16,7 +16,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
         <Container className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-foreground">Modern LMS</span>
+            <span className="text-xl font-bold text-foreground">Binh Courses</span>
           </Link>
           <nav className="flex items-center gap-4">
             <Link href="/courses">

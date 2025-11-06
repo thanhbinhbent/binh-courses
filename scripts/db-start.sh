@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Modern LMS - Simple Database Start
+# Binh Courses - Simple Database Start
 echo "🚀 Starting PostgreSQL database..."
 
 # Start database

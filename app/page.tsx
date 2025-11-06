@@ -12,7 +12,7 @@ export default function Home() {
         <Container className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-foreground">Modern LMS</span>
+            <span className="text-xl font-bold text-foreground">Binh Courses</span>
           </div>
           <nav className="flex items-center gap-4">
             <Link href="/courses">
@@ -23,9 +23,6 @@ export default function Home() {
             </Link>
             <Link href="/sign-in">
               <Button variant="ghost">Sign In</Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button>Get Started</Button>
             </Link>
             <ThemeToggle />
           </nav>
@@ -77,7 +74,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-20">
         <Container>
-          <h2 className="mb-12 text-center text-3xl font-bold">Why Choose Modern LMS?</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold">Why Choose Binh Courses?</h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
               icon={<BookOpen className="h-10 w-10" />}
@@ -124,7 +121,7 @@ export default function Home() {
           <div className="rounded-lg bg-primary px-6 py-16 text-center text-primary-foreground">
             <h2 className="text-3xl font-bold">Ready to Start Learning?</h2>
             <p className="mt-4 text-lg opacity-90">
-              Join thousands of students already learning on Modern LMS
+              Join thousands of students already learning on Binh Courses
             </p>
             <Link href="/sign-up">
               <Button size="lg" variant="secondary" className="mt-8 h-12">
@@ -138,7 +135,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="w-full border-t py-8">
         <Container className="text-center text-sm text-muted-foreground">
-          <p>© 2025 Modern LMS. All rights reserved.</p>
+          <p>© 2025 Binh Courses. All rights reserved.</p>
         </Container>
       </footer>
     </div>

@@ -66,7 +66,7 @@ export default function SignInPage() {
           </div>
           <CardTitle className="text-2xl font-bold text-foreground">Welcome Back</CardTitle>
           <CardDescription>
-            Sign in to your Modern LMS account
+            Sign in to your Binh Courses account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

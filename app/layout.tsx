@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Modern LMS - Learn & Grow",
+  title: "Binh Courses - Learn & Grow",
   description: "A modern learning management system for AWS, Azure, ISTQB certifications and more",
 };
 

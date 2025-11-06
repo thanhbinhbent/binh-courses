@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Modern LMS - Quick Setup
-echo "🚀 Modern LMS - Quick Setup"
+# Binh Courses - Quick Setup
+echo "🚀 Binh Courses - Quick Setup"
 echo "=========================="
 
 # Install dependencies
