@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modern LMS Platform
+
+A modern, scalable Learning Management System built with Next.js 15, TypeScript, Tailwind CSS, and PostgreSQL.
+
+## Features
+
+### 🎓 Core LMS Features
+- **Course Management**: Create, edit, and organize courses with chapters
+- **Video Streaming**: Integrated video hosting with progress tracking
+- **Quizzes & Assessments**: Multiple question types (multiple choice, true/false, short answer, essay)
+- **Progress Tracking**: Track student progress through courses
+- **Certificates**: Generate certificates upon course completion
+- **Reviews & Ratings**: Course review system
+- **Comments & Discussions**: Chapter-level discussions
+
+### 💰 E-commerce Features
+- **Course Sales**: Sell courses with Stripe integration
+- **Enrollment System**: Automatic enrollment after purchase
+- **Pricing Management**: Flexible pricing options
+
+### 👥 User Management
+- **Role-based Access Control**: Admin, Instructor, and Student roles
+- **Authentication**: Secure authentication with Clerk
+- **User Profiles**: Customizable user profiles
+
+### 📚 Content Management
+- **Rich Text Editor**: Create engaging course content
+- **File Attachments**: Upload course materials (PDFs, documents, etc.)
+- **Resource Library**: Organize learning resources per chapter
+- **Categories**: Organize courses by categories (AWS, Azure, ISTQB, etc.)
+
+### 📊 Analytics & Reporting
+- **Dashboard**: Comprehensive analytics for instructors
+- **Progress Reports**: Track student performance
+- **Revenue Analytics**: Monitor course sales
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: Clerk
+- **Payments**: Stripe
+- **State Management**: Zustand
+- **File Upload**: UploadThing
+- **Video Streaming**: Mux
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- PostgreSQL database
+- Clerk account (for authentication)
+- Stripe account (for payments)
+- UploadThing account (for file uploads)
+- Mux account (for video streaming)
+
+### Installation
+
+1. Clone the repository
+
+2. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Fill in the required environment variables in `.env`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Set up the database:
+```bash
+# Generate Prisma Client
+npx prisma generate
 
-## Learn More
+# Run migrations
+npx prisma migrate dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Run the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+modern-lms/
+├── app/                      # Next.js app directory
+│   ├── (auth)/              # Authentication routes
+│   ├── (dashboard)/         # Dashboard routes
+│   ├── (course)/            # Course routes
+│   └── api/                 # API routes
+├── components/              # React components
+│   ├── ui/                  # shadcn/ui components
+│   └── ...                  # Custom components
+├── lib/                     # Utility functions
+├── prisma/                  # Database schema and migrations
+├── actions/                 # Server actions
+├── hooks/                   # Custom React hooks
+├── stores/                  # Zustand stores
+├── types/                   # TypeScript types
+└── public/                  # Static assets
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License - feel free to use this project for your own purposes.
+

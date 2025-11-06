@@ -1,0 +1,263 @@
+import { db } from "@/lib/db"
+import { getCurrentUser } from "@/lib/current-user"
+import { redirect } from "next/navigation"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge"
+import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Lock } from "lucide-react"
+import Link from "next/link"
+import { VideoPlayer } from "./_components/video-player"
+import { CompleteButton } from "./_components/complete-button"
+
+export default async function ChapterPage({
+  params
+}: {
+  params: { courseId: string; chapterId: string }
+}) {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/sign-in")
+  }
+
+  // Get chapter with course info
+  const chapter = await db.chapter.findUnique({
+    where: {
+      id: params.chapterId,
+      courseId: params.courseId
+    },
+    include: {
+      course: {
+        include: {
+          chapters: {
+            where: { isPublished: true },
+            orderBy: { position: "asc" },
+            include: {
+              userProgress: {
+                where: { userId: user.id }
+              }
+            }
+          }
+        }
+      },
+      userProgress: {
+        where: { userId: user.id }
+      },
+      resources: true
+    }
+  })
+
+  if (!chapter || !chapter.course) {
+    redirect("/courses")
+  }
+
+  // Check if user is enrolled or chapter is free
+  const enrollment = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId: user.id,
+        courseId: params.courseId
+      }
+    }
+  })
+
+  const isEnrolled = !!enrollment
+  const canAccess = isEnrolled || chapter.isFree
+
+  if (!canAccess) {
+    redirect(`/courses/${params.courseId}`)
+  }
+
+  // Get current chapter index and navigation
+  const currentIndex = chapter.course.chapters.findIndex(c => c.id === params.chapterId)
+  const previousChapter = currentIndex > 0 ? chapter.course.chapters[currentIndex - 1] : null
+  const nextChapter = currentIndex < chapter.course.chapters.length - 1 
+    ? chapter.course.chapters[currentIndex + 1] 
+    : null
+
+  const isCompleted = !!chapter.userProgress?.[0]?.isCompleted
+
+  // Calculate course progress
+  const completedChapters = chapter.course.chapters.filter(
+    c => c.userProgress?.[0]?.isCompleted
+  ).length
+  const progress = Math.round((completedChapters / chapter.course.chapters.length) * 100)
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      {/* Header */}
+      <div className="border-b bg-white">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href={`/courses/${params.courseId}`} className="flex items-center gap-2">
+              <ChevronLeft className="h-5 w-5" />
+              <span className="font-medium">{chapter.course.title}</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground">
+                Progress: <span className="font-semibold">{progress}%</span>
+              </div>
+              <Link href="/dashboard">
+                <Button variant="ghost">Dashboard</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-1">
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Video Player */}
+          {chapter.videoUrl && (
+            <div className="aspect-video w-full bg-black">
+              <VideoPlayer
+                chapterId={chapter.id}
+                videoUrl={chapter.videoUrl}
+                isCompleted={isCompleted}
+              />
+            </div>
+          )}
+
+          {/* Chapter Content */}
+          <div className="container mx-auto px-4 py-8">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h1 className="mb-2 text-3xl font-bold">{chapter.title}</h1>
+                {isCompleted && (
+                  <Badge variant="default" className="bg-green-600">
+                    <CheckCircle2 className="mr-1 h-3 w-3" />
+                    Completed
+                  </Badge>
+                )}
+              </div>
+              {!isCompleted && (
+                <CompleteButton chapterId={chapter.id} />
+              )}
+            </div>
+
+            <Separator className="my-6" />
+
+            {/* Description */}
+            {chapter.description && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold">About this chapter</h2>
+                <p className="whitespace-pre-wrap text-muted-foreground">
+                  {chapter.description}
+                </p>
+              </div>
+            )}
+
+            {/* Resources */}
+            {chapter.resources && chapter.resources.length > 0 && (
+              <div className="mb-8">
+                <h2 className="mb-4 text-xl font-semibold">Resources</h2>
+                <div className="space-y-2">
+                  {chapter.resources.map(resource => (
+                    <Card key={resource.id}>
+                      <CardContent className="flex items-center justify-between p-4">
+                        <div className="flex items-center gap-3">
+                          <BookOpen className="h-5 w-5 text-muted-foreground" />
+                          <span>{resource.name}</span>
+                        </div>
+                        <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                          <Button variant="ghost" size="sm">
+                            Open
+                          </Button>
+                        </a>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Navigation */}
+            <div className="flex items-center justify-between">
+              {previousChapter ? (
+                <Link href={`/courses/${params.courseId}/chapters/${previousChapter.id}`}>
+                  <Button variant="outline">
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                    Previous
+                  </Button>
+                </Link>
+              ) : (
+                <div />
+              )}
+
+              {nextChapter ? (
+                <Link href={`/courses/${params.courseId}/chapters/${nextChapter.id}`}>
+                  <Button>
+                    Next
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href={`/courses/${params.courseId}`}>
+                  <Button variant="outline">Back to Course</Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar - Chapter List */}
+        <div className="hidden w-80 border-l bg-white lg:block">
+          <div className="sticky top-0 h-screen overflow-y-auto p-4">
+            <h3 className="mb-4 font-semibold">Course Content</h3>
+            <div className="space-y-1">
+              {chapter.course.chapters.map((courseChapter, index) => {
+                const isCurrentChapter = courseChapter.id === params.chapterId
+                const isChapterCompleted = !!courseChapter.userProgress?.[0]?.isCompleted
+                const isLocked = !isEnrolled && !courseChapter.isFree
+
+                return (
+                  <Link
+                    key={courseChapter.id}
+                    href={isLocked ? '#' : `/courses/${params.courseId}/chapters/${courseChapter.id}`}
+                    className={`block ${isLocked ? 'cursor-not-allowed opacity-50' : ''}`}
+                  >
+                    <div
+                      className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${
+                        isCurrentChapter
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
+                        isCurrentChapter
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`text-sm font-medium ${
+                          isCurrentChapter ? 'text-blue-600' : ''
+                        }`}>
+                          {courseChapter.title}
+                        </p>
+                        {courseChapter.duration && (
+                          <p className="text-xs text-muted-foreground">
+                            {Math.round(courseChapter.duration / 60)} min
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {isLocked && <Lock className="h-4 w-4 text-muted-foreground" />}
+                        {isChapterCompleted && (
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
