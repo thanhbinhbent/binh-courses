@@ -28,9 +28,15 @@ export async function GET(
           where: { isPublished: true },
           orderBy: { position: "asc" },
           include: {
-            userProgress: user ? {
-              where: { userId: user.id }
-            } : false
+            lessons: {
+              where: { isPublished: true },
+              orderBy: { position: "asc" },
+              include: {
+                progress: user ? {
+                  where: { userId: user.id }
+                } : false
+              }
+            }
           }
         },
         _count: {
@@ -86,12 +92,26 @@ export async function GET(
 
     // Calculate progress if enrolled
     let progress = 0
-    if (enrollment && course.chapters.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const courseWithChapters = course as any
+    if (enrollment && courseWithChapters.chapters && courseWithChapters.chapters.length > 0) {
+      // Count total lessons across all chapters
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const completedChapters = course.chapters.filter((chapter: any) =>
-        chapter.userProgress && chapter.userProgress.length > 0 && chapter.userProgress[0].isCompleted
-      )
-      progress = Math.round((completedChapters.length / course.chapters.length) * 100)
+      const totalLessons = courseWithChapters.chapters.reduce((acc: number, chapter: any) => acc + (chapter.lessons?.length || 0), 0)
+      
+      if (totalLessons > 0) {
+        // Count completed lessons
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const completedLessons = courseWithChapters.chapters.reduce((acc: number, chapter: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const chapterCompleted = chapter.lessons?.filter((lesson: any) => 
+            lesson.progress && lesson.progress.length > 0 && lesson.progress[0].isCompleted
+          ).length || 0
+          return acc + chapterCompleted
+        }, 0)
+        
+        progress = Math.round((completedLessons / totalLessons) * 100)
+      }
     }
 
     return NextResponse.json({

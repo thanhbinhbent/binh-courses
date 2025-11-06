@@ -36,15 +36,16 @@ export async function GET(
     }
 
     // Check ownership
-    if (chapter.course.instructorId !== user.id && user.role !== "ADMIN") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chapterWithCourse = chapter as any
+    if (chapterWithCourse.course.instructorId !== user.id && user.role !== "ADMIN") {
       return new NextResponse("Forbidden - Not your course", { status: 403 })
     }
 
     // Calculate completion
     const requiredFields = [
       chapter.title,
-      chapter.description,
-      chapter.videoUrl
+      chapter.description
     ]
     const totalFields = requiredFields.length
     const completedFields = requiredFields.filter(Boolean).length

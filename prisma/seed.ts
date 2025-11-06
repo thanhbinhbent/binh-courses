@@ -36,29 +36,111 @@ async function main() {
     // Create test users
     const hashedPassword = await bcrypt.hash('password123', 10)
 
-    const instructor = await db.user.upsert({
-      where: { email: 'instructor@example.com' },
+    // Create admin user
+    const admin = await db.user.upsert({
+      where: { email: 'admin@example.com' },
       update: {},
       create: {
-        email: 'instructor@example.com',
-        name: 'John Instructor',
+        email: 'admin@example.com',
+        name: 'System Admin',
+        password: hashedPassword,
+        role: 'ADMIN',
+        bio: 'Platform administrator with full access to all features.',
+      },
+    })
+
+    // Create instructors
+    const instructor1 = await db.user.upsert({
+      where: { email: 'john.instructor@example.com' },
+      update: {},
+      create: {
+        email: 'john.instructor@example.com',
+        name: 'John Smith',
         password: hashedPassword,
         role: 'INSTRUCTOR',
+        bio: 'Senior Cloud Architect with 10+ years of experience in AWS and Azure. Certified Solutions Architect Professional.',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
       },
     })
 
-    const student = await db.user.upsert({
-      where: { email: 'student@example.com' },
+    const instructor2 = await db.user.upsert({
+      where: { email: 'sarah.instructor@example.com' },
       update: {},
       create: {
-        email: 'student@example.com',
-        name: 'Jane Student',
+        email: 'sarah.instructor@example.com',
+        name: 'Sarah Johnson',
         password: hashedPassword,
-        role: 'STUDENT',
+        role: 'INSTRUCTOR',
+        bio: 'Software Testing Expert and ISTQB Advanced Level trainer. Specialized in test automation and quality assurance.',
+        image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400',
       },
     })
 
-    console.log('✅ Created test users')
+    const instructor3 = await db.user.upsert({
+      where: { email: 'mike.instructor@example.com' },
+      update: {},
+      create: {
+        email: 'mike.instructor@example.com',
+        name: 'Michael Chen',
+        password: hashedPassword,
+        role: 'INSTRUCTOR',
+        bio: 'DevOps Engineer and Kubernetes expert. Passionate about containerization and CI/CD pipelines.',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+      },
+    })
+
+    // Create students
+    const student1 = await db.user.upsert({
+      where: { email: 'jane.student@example.com' },
+      update: {},
+      create: {
+        email: 'jane.student@example.com',
+        name: 'Jane Doe',
+        password: hashedPassword,
+        role: 'STUDENT',
+        bio: 'Aspiring cloud developer looking to get AWS certified.',
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
+      },
+    })
+
+    const student2 = await db.user.upsert({
+      where: { email: 'alex.student@example.com' },
+      update: {},
+      create: {
+        email: 'alex.student@example.com',
+        name: 'Alex Rodriguez',
+        password: hashedPassword,
+        role: 'STUDENT',
+        bio: 'Software developer transitioning to cloud technologies.',
+      },
+    })
+
+    const student3 = await db.user.upsert({
+      where: { email: 'emma.student@example.com' },
+      update: {},
+      create: {
+        email: 'emma.student@example.com',
+        name: 'Emma Wilson',
+        password: hashedPassword,
+        role: 'STUDENT',
+        bio: 'QA Engineer studying for ISTQB Foundation certification.',
+        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400',
+      },
+    })
+
+    const student4 = await db.user.upsert({
+      where: { email: 'david.student@example.com' },
+      update: {},
+      create: {
+        email: 'david.student@example.com',
+        name: 'David Kim',
+        password: hashedPassword,
+        role: 'STUDENT',
+        bio: 'System administrator learning DevOps practices.',
+      },
+    })
+
+    console.log('✅ Created test users (1 admin, 3 instructors, 4 students)')
 
     // Create sample courses
     const awsCategoryId = createdCategories.find((c) => c.slug === 'aws-certification')?.id
@@ -77,43 +159,207 @@ async function main() {
         imageUrl: 'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=800',
         price: 49.99,
         isPublished: true,
+        level: 'INTERMEDIATE',
         categoryId: awsCategoryId,
-        instructorId: instructor.id,
-        chapters: {
-          create: [
-            {
-              title: 'Introduction to AWS',
-              description: 'Learn the basics of Amazon Web Services and cloud computing',
-              position: 0,
-              videoUrl:
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-              duration: 596,
-              isFree: true,
-              isPublished: true,
-            },
-            {
-              title: 'EC2 Fundamentals',
-              description: 'Deep dive into Elastic Compute Cloud',
-              position: 1,
-              videoUrl:
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-              duration: 653,
-              isFree: false,
-              isPublished: true,
-            },
-            {
-              title: 'S3 Storage Services',
-              description: 'Learn about Simple Storage Service and object storage',
-              position: 2,
-              videoUrl:
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-              duration: 15,
-              isFree: false,
-              isPublished: true,
-            },
-          ],
-        },
+        instructorId: instructor1.id,
       },
+    })
+
+    // Create AWS course chapters
+    const awsChapter1 = await db.chapter.create({
+      data: {
+        title: 'Introduction to AWS',
+        description: 'Learn the basics of Amazon Web Services and cloud computing',
+        position: 0,
+        isFree: true,
+        isPublished: true,
+        courseId: awsCourse.id,
+      },
+    })
+
+    const awsChapter2 = await db.chapter.create({
+      data: {
+        title: 'EC2 Fundamentals',
+        description: 'Deep dive into Elastic Compute Cloud',
+        position: 1,
+        isFree: false,
+        isPublished: true,
+        courseId: awsCourse.id,
+      },
+    })
+
+    const awsChapter3 = await db.chapter.create({
+      data: {
+        title: 'S3 Storage Services',
+        description: 'Learn about Simple Storage Service and object storage',
+        position: 2,
+        isFree: false,
+        isPublished: true,
+        courseId: awsCourse.id,
+      },
+    })
+
+    // Create lessons for AWS chapters
+    await db.lesson.createMany({
+      data: [
+        // AWS Chapter 1 lessons
+        {
+          title: 'What is Cloud Computing?',
+          description: 'Introduction to cloud computing concepts and benefits',
+          type: 'VIDEO',
+          videoUrl: 'https://example.com/video1',
+          position: 0,
+          duration: 900, // 15 minutes
+          isPublished: true,
+          isFree: true,
+          chapterId: awsChapter1.id,
+        },
+        {
+          title: 'AWS Global Infrastructure',
+          description: 'Learn about AWS regions, availability zones, and edge locations',
+          type: 'ARTICLE',
+          content: `# AWS Global Infrastructure
+
+AWS operates in multiple geographic regions around the world. Each region consists of multiple, isolated locations known as Availability Zones.
+
+## Key Concepts:
+- **Regions**: Geographic areas with multiple data centers
+- **Availability Zones**: Isolated data center locations within a region
+- **Edge Locations**: Points of presence for content delivery
+
+This infrastructure design provides high availability, fault tolerance, and low latency for AWS services.`,
+          position: 1,
+          duration: 600, // 10 minutes
+          isPublished: true,
+          isFree: true,
+          chapterId: awsChapter1.id,
+        },
+        {
+          title: 'AWS Free Tier Overview',
+          description: 'Understanding AWS Free Tier offerings and limitations',
+          type: 'VIDEO',
+          videoUrl: 'https://example.com/video2',
+          position: 2,
+          duration: 720, // 12 minutes
+          isPublished: true,
+          isFree: true,
+          chapterId: awsChapter1.id,
+        },
+
+        // AWS Chapter 2 lessons
+        {
+          title: 'EC2 Instance Types',
+          description: 'Deep dive into different EC2 instance families and use cases',
+          type: 'VIDEO',
+          videoUrl: 'https://example.com/video3',
+          position: 0,
+          duration: 1200, // 20 minutes
+          isPublished: true,
+          isFree: false,
+          chapterId: awsChapter2.id,
+        },
+        {
+          title: 'Launching Your First EC2 Instance',
+          description: 'Step-by-step guide to launching and configuring EC2 instances',
+          type: 'VIDEO',
+          videoUrl: 'https://example.com/video4',
+          position: 1,
+          duration: 1800, // 30 minutes
+          isPublished: true,
+          isFree: false,
+          chapterId: awsChapter2.id,
+        },
+        {
+          title: 'EC2 Security Groups',
+          description: 'Configure security groups for EC2 instances',
+          type: 'ARTICLE',
+          content: `# EC2 Security Groups
+
+Security groups act as virtual firewalls for your EC2 instances. They control inbound and outbound traffic at the instance level.
+
+## Key Features:
+- **Stateful**: Return traffic is automatically allowed
+- **Default Deny**: All traffic is denied unless explicitly allowed
+- **Multiple Groups**: An instance can belong to multiple security groups
+
+## Best Practices:
+1. Use descriptive names and descriptions
+2. Follow the principle of least privilege
+3. Regularly review and audit rules`,
+          position: 2,
+          duration: 900, // 15 minutes
+          isPublished: true,
+          isFree: false,
+          chapterId: awsChapter2.id,
+        },
+
+        // AWS Chapter 3 lessons
+        {
+          title: 'S3 Basics and Storage Classes',
+          description: 'Introduction to S3 and different storage classes',
+          type: 'VIDEO',
+          videoUrl: 'https://example.com/video5',
+          position: 0,
+          duration: 1500, // 25 minutes
+          isPublished: true,
+          isFree: false,
+          chapterId: awsChapter3.id,
+        },
+        {
+          title: 'S3 Bucket Policies and Permissions',
+          description: 'Managing access to S3 buckets and objects',
+          type: 'ARTICLE',
+          content: `# S3 Security and Access Control
+
+Amazon S3 provides several mechanisms to control access to your buckets and objects:
+
+## Access Control Methods:
+- **IAM Policies**: Control access at the user/role level
+- **Bucket Policies**: Resource-based policies attached to buckets
+- **Access Control Lists (ACLs)**: Legacy method for basic permissions
+
+## Security Best Practices:
+1. Enable versioning for important data
+2. Use lifecycle policies to manage costs
+3. Enable server-side encryption
+4. Monitor access with CloudTrail`,
+          position: 1,
+          duration: 1200, // 20 minutes
+          isPublished: true,
+          isFree: false,
+          chapterId: awsChapter3.id,
+        },
+      ],
+    })
+
+    // Create resources for AWS chapters
+    await db.resource.createMany({
+      data: [
+        {
+          name: 'AWS Free Tier Guide',
+          url: 'https://aws.amazon.com/free/',
+          type: 'LINK',
+          chapterId: awsChapter1.id,
+        },
+        {
+          name: 'AWS Well-Architected Framework',
+          url: 'https://aws.amazon.com/architecture/well-architected/',
+          type: 'PDF',
+          chapterId: awsChapter1.id,
+        },
+        {
+          name: 'EC2 Instance Types Comparison',
+          url: 'https://aws.amazon.com/ec2/instance-types/',
+          type: 'LINK',
+          chapterId: awsChapter2.id,
+        },
+        {
+          name: 'EC2 User Guide',
+          url: 'https://docs.aws.amazon.com/ec2/',
+          type: 'DOCUMENT',
+          chapterId: awsChapter2.id,
+        },
+      ],
     })
 
     const azureCourse = await db.course.create({
@@ -124,17 +370,15 @@ async function main() {
         imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800',
         price: null,
         isPublished: true,
+        level: 'BEGINNER',
         categoryId: azureCategoryId,
-        instructorId: instructor.id,
+        instructorId: instructor1.id,
         chapters: {
           create: [
             {
               title: 'Azure Cloud Concepts',
               description: 'Understanding cloud computing with Azure',
               position: 0,
-              videoUrl:
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-              duration: 15,
               isFree: true,
               isPublished: true,
             },
@@ -142,9 +386,6 @@ async function main() {
               title: 'Azure Services Overview',
               description: 'Explore core Azure services',
               position: 1,
-              videoUrl:
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-              duration: 60,
               isFree: true,
               isPublished: true,
             },
@@ -161,17 +402,15 @@ async function main() {
         imageUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800',
         price: 39.99,
         isPublished: true,
+        level: 'INTERMEDIATE',
         categoryId: istqbCategoryId,
-        instructorId: instructor.id,
+        instructorId: instructor2.id,
         chapters: {
           create: [
             {
               title: 'Software Testing Fundamentals',
               description: 'Introduction to software testing concepts',
               position: 0,
-              videoUrl:
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-              duration: 15,
               isFree: true,
               isPublished: true,
             },
@@ -180,25 +419,346 @@ async function main() {
       },
     })
 
-    console.log('✅ Created sample courses')
-
-    // Enroll student in Azure course
-    await db.enrollment.create({
-      data: {
-        userId: student.id,
-        courseId: azureCourse.id,
-      },
+    // Create lessons for Azure course
+    const azureChapters = await db.chapter.findMany({
+      where: { courseId: azureCourse.id },
+      orderBy: { position: 'asc' }
     })
 
-    console.log('✅ Enrolled student in Azure Fundamentals course')
+    if (azureChapters.length > 0) {
+      await db.lesson.createMany({
+        data: [
+          // Azure Chapter 1 lessons
+          {
+            title: 'What is Cloud Computing?',
+            description: 'Understand the fundamentals of cloud computing',
+            type: 'VIDEO',
+            videoUrl: 'https://example.com/azure-video1',
+            position: 0,
+            duration: 900,
+            isPublished: true,
+            isFree: true,
+            chapterId: azureChapters[0].id,
+          },
+          {
+            title: 'Benefits of Cloud Computing',
+            description: 'Learn about the key benefits of moving to the cloud',
+            type: 'ARTICLE',
+            content: `# Benefits of Cloud Computing
+
+Cloud computing offers numerous advantages over traditional on-premises infrastructure:
+
+## Key Benefits:
+- **Cost Effectiveness**: Pay only for what you use
+- **Scalability**: Quickly scale up or down based on demand
+- **Global Reach**: Deploy applications worldwide in minutes
+- **Reliability**: Built-in redundancy and backup capabilities
+- **Security**: Enterprise-grade security and compliance`,
+            position: 1,
+            duration: 600,
+            isPublished: true,
+            isFree: true,
+            chapterId: azureChapters[0].id,
+          },
+          {
+            title: 'Azure Service Categories',
+            description: 'Overview of different Azure service categories',
+            type: 'VIDEO',
+            videoUrl: 'https://example.com/azure-video2',
+            position: 0,
+            duration: 1200,
+            isPublished: true,
+            isFree: true,
+            chapterId: azureChapters[1]?.id || azureChapters[0].id,
+          },
+        ],
+      })
+    }
+
+    // Create lessons for ISTQB course
+    const istqbChapters = await db.chapter.findMany({
+      where: { courseId: istqbCourse.id },
+      orderBy: { position: 'asc' }
+    })
+
+    if (istqbChapters.length > 0) {
+      await db.lesson.createMany({
+        data: [
+          {
+            title: 'Introduction to Software Testing',
+            description: 'Fundamentals of software testing and quality assurance',
+            type: 'VIDEO',
+            videoUrl: 'https://example.com/istqb-video1',
+            position: 0,
+            duration: 1500,
+            isPublished: true,
+            isFree: true,
+            chapterId: istqbChapters[0].id,
+          },
+          {
+            title: 'Seven Principles of Testing',
+            description: 'Learn the fundamental principles that guide software testing',
+            type: 'ARTICLE',
+            content: `# Seven Principles of Testing
+
+The ISTQB Foundation Level defines seven key principles that form the foundation of software testing:
+
+## The Seven Principles:
+
+1. **Testing shows the presence of defects**: Testing can prove defects exist but cannot prove they don't exist
+2. **Exhaustive testing is impossible**: Testing everything is not feasible due to time and resource constraints
+3. **Early testing saves time and money**: Start testing activities as early as possible in the development lifecycle
+4. **Defects cluster together**: A small number of modules usually contain most of the defects
+5. **Beware of the pesticide paradox**: Repeated tests become less effective at finding new defects
+6. **Testing is context dependent**: Different applications require different testing approaches
+7. **Absence-of-errors is a fallacy**: Finding and fixing defects doesn't guarantee system success`,
+            position: 1,
+            duration: 900,
+            isPublished: true,
+            isFree: true,
+            chapterId: istqbChapters[0].id,
+          },
+          {
+            title: 'Testing Process and Activities',
+            description: 'Understanding the test process and key activities',
+            type: 'VIDEO',
+            videoUrl: 'https://example.com/istqb-video2',
+            position: 2,
+            duration: 1800,
+            isPublished: true,
+            isFree: false,
+            chapterId: istqbChapters[0].id,
+          },
+        ],
+      })
+    }
+
+    console.log('✅ Created sample courses with lessons')
+
+    // Create enrollments for students
+    await db.enrollment.createMany({
+      data: [
+        { userId: student1.id, courseId: azureCourse.id },
+        { userId: student2.id, courseId: awsCourse.id },
+        { userId: student3.id, courseId: istqbCourse.id },
+        { userId: student4.id, courseId: awsCourse.id },
+      ],
+    })
+
+    console.log('✅ Created enrollments and progress data')
+
+    // Create additional courses for variety
+    const devOpsCategoryId = createdCategories.find((c) => c.slug === 'devops')?.id
+    const k8sCategoryId = createdCategories.find((c) => c.slug === 'kubernetes')?.id
+    const cyberCategoryId = createdCategories.find((c) => c.slug === 'cybersecurity')?.id
+
+    if (devOpsCategoryId) {
+      await db.course.create({
+        data: {
+          title: 'Complete DevOps Bootcamp',
+          description: 'Learn Docker, Kubernetes, CI/CD, and modern DevOps practices from scratch to advanced level.',
+          imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800',
+          price: 79.99,
+          isPublished: true,
+          level: 'ADVANCED',
+          categoryId: devOpsCategoryId,
+          instructorId: instructor3.id,
+          chapters: {
+            create: [
+              {
+                title: 'Introduction to DevOps',
+                description: 'Understanding DevOps culture and principles',
+                position: 0,
+                isFree: true,
+                isPublished: true,
+              },
+              {
+                title: 'Docker Fundamentals',
+                description: 'Containerization with Docker',
+                position: 1,
+                isFree: false,
+                isPublished: true,
+              },
+              {
+                title: 'Kubernetes Orchestration',
+                description: 'Container orchestration with Kubernetes',
+                position: 2,
+                isFree: false,
+                isPublished: true,
+              },
+            ],
+          },
+        },
+      })
+
+      // Add lessons to DevOps course
+      const devOpsChapters = await db.chapter.findMany({
+        where: { courseId: (await db.course.findFirst({ where: { title: 'Complete DevOps Bootcamp' } }))?.id },
+        orderBy: { position: 'asc' }
+      })
+
+      if (devOpsChapters.length > 0) {
+        await db.lesson.createMany({
+          data: [
+            {
+              title: 'What is DevOps?',
+              description: 'Introduction to DevOps culture and methodology',
+              type: 'VIDEO',
+              videoUrl: 'https://example.com/devops-video1',
+              position: 0,
+              duration: 1200,
+              isPublished: true,
+              isFree: true,
+              chapterId: devOpsChapters[0].id,
+            },
+            {
+              title: 'DevOps Lifecycle',
+              description: 'Understanding the DevOps development lifecycle',
+              type: 'ARTICLE',
+              content: `# DevOps Lifecycle
+
+DevOps is a collaborative approach that bridges the gap between development and operations teams.
+
+## Key Phases:
+1. **Plan**: Define requirements and plan the development process
+2. **Code**: Write and version control the application code
+3. **Build**: Compile and package the application
+4. **Test**: Automated testing at multiple levels
+5. **Release**: Prepare for deployment
+6. **Deploy**: Deploy to production environments
+7. **Operate**: Monitor and maintain the application
+8. **Monitor**: Gather feedback and metrics for improvement`,
+              position: 1,
+              duration: 900,
+              isPublished: true,
+              isFree: true,
+              chapterId: devOpsChapters[0].id,
+            },
+            {
+              title: 'Docker Basics',
+              description: 'Introduction to containerization with Docker',
+              type: 'VIDEO',
+              videoUrl: 'https://example.com/docker-video1',
+              position: 0,
+              duration: 1800,
+              isPublished: true,
+              isFree: false,
+              chapterId: devOpsChapters[1]?.id || devOpsChapters[0].id,
+            },
+            {
+              title: 'Kubernetes Fundamentals',
+              description: 'Container orchestration with Kubernetes',
+              type: 'VIDEO',
+              videoUrl: 'https://example.com/k8s-video1',
+              position: 0,
+              duration: 2400,
+              isPublished: true,
+              isFree: false,
+              chapterId: devOpsChapters[2]?.id || devOpsChapters[0].id,
+            },
+          ],
+        })
+      }
+    }
+
+    if (k8sCategoryId) {
+      await db.course.create({
+        data: {
+          title: 'Kubernetes Administration (CKA Prep)',
+          description: 'Prepare for Certified Kubernetes Administrator exam with hands-on labs.',
+          imageUrl: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=800',
+          price: 89.99,
+          isPublished: true,
+          level: 'EXPERT',
+          categoryId: k8sCategoryId,
+          instructorId: instructor3.id,
+          chapters: {
+            create: [
+              {
+                title: 'Kubernetes Architecture',
+                description: 'Deep dive into K8s components',
+                position: 0,
+                isFree: true,
+                isPublished: true,
+              },
+            ],
+          },
+        },
+      })
+    }
+
+    if (cyberCategoryId) {
+      await db.course.create({
+        data: {
+          title: 'Cybersecurity Fundamentals',
+          description: 'Essential cybersecurity concepts for IT professionals.',
+          imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800',
+          price: 59.99,
+          isPublished: false, // Draft course
+          level: 'BEGINNER',
+          categoryId: cyberCategoryId,
+          instructorId: instructor2.id,
+          chapters: {
+            create: [
+              {
+                title: 'Security Fundamentals',
+                description: 'Basic security concepts and principles',
+                position: 0,
+                isFree: true,
+                isPublished: false,
+              },
+            ],
+          },
+        },
+      })
+    }
+
+    // Create some purchases
+    await db.purchase.createMany({
+      data: [
+        { userId: student2.id, courseId: awsCourse.id, amount: 49.99 },
+        { userId: student4.id, courseId: awsCourse.id, amount: 49.99 },
+        { userId: student3.id, courseId: istqbCourse.id, amount: 39.99 },
+      ],
+    })
+
+    // Create some reviews
+    await db.review.createMany({
+      data: [
+        {
+          userId: student1.id,
+          courseId: azureCourse.id,
+          rating: 5,
+          comment: 'Excellent course! Very well structured and easy to follow. The instructor explains concepts clearly.',
+        },
+        {
+          userId: student2.id,
+          courseId: awsCourse.id,
+          rating: 4,
+          comment: 'Great content and practical examples. Would recommend for AWS beginners.',
+        },
+        {
+          userId: student3.id,
+          courseId: istqbCourse.id,
+          rating: 5,
+          comment: 'Perfect preparation for ISTQB exam. Comprehensive coverage of all topics.',
+        },
+        {
+          userId: student4.id,
+          courseId: awsCourse.id,
+          rating: 4,
+          comment: 'Good course overall, but could use more hands-on exercises.',
+        },
+      ],
+    })
 
     // Create sample quizzes
-    const awsQuiz = await db.quiz.create({
+    await db.quiz.create({
       data: {
         title: 'AWS Solutions Architect Practice Quiz',
         description: 'Test your knowledge of AWS core services and architecture best practices',
         categoryId: awsCategoryId,
-        instructorId: instructor.id,
+        instructorId: instructor1.id,
         timeLimit: 30,
         passingScore: 70,
         isPublished: true,
@@ -249,12 +809,12 @@ async function main() {
       }
     })
 
-    const azureQuiz = await db.quiz.create({
+    await db.quiz.create({
       data: {
         title: 'Azure Fundamentals AZ-900 Practice',
         description: 'Practice quiz for Azure Fundamentals certification exam',
         categoryId: azureCategoryId,
-        instructorId: instructor.id,
+        instructorId: instructor1.id,
         timeLimit: 45,
         passingScore: 75,
         isPublished: true,
@@ -297,12 +857,12 @@ async function main() {
       }
     })
 
-    const istqbQuiz = await db.quiz.create({
+    await db.quiz.create({
       data: {
         title: 'ISTQB Foundation Level Practice Test',
         description: 'Comprehensive practice test for ISTQB Foundation Level certification',
         categoryId: istqbCategoryId,
-        instructorId: instructor.id,
+        instructorId: instructor2.id,
         timeLimit: 60,
         passingScore: 65,
         isPublished: true,
@@ -348,9 +908,26 @@ async function main() {
     console.log('✅ Created sample quizzes')
 
     console.log('\n🎉 Database seeded successfully!')
-    console.log('\n📝 Login credentials:')
-    console.log('   Instructor: instructor@example.com / password123')
-    console.log('   Student: student@example.com / password123')
+    console.log('\n� Data Summary:')
+    console.log('   - 10 Categories')
+    console.log('   - 8 Users (1 admin, 3 instructors, 4 students)')
+    console.log('   - 6 Courses (with various levels and pricing)')
+    console.log('   - Multiple Chapters with rich content')
+    console.log('   - 4 Enrollments')
+    console.log('   - 3 Purchases') 
+    console.log('   - 4 Course Reviews')
+    console.log('   - 3 Practice Quizzes')
+    console.log('\n�📝 Login Credentials:')
+    console.log('   🔧 Admin: admin@example.com / password123')
+    console.log('   👨‍🏫 Instructors:')
+    console.log('      - john.instructor@example.com / password123 (AWS/Azure)')
+    console.log('      - sarah.instructor@example.com / password123 (ISTQB/Security)')
+    console.log('      - mike.instructor@example.com / password123 (DevOps/K8s)')
+    console.log('   👩‍🎓 Students:')
+    console.log('      - jane.student@example.com / password123 (Enrolled in Azure)')
+    console.log('      - alex.student@example.com / password123 (Purchased AWS)')
+    console.log('      - emma.student@example.com / password123 (Purchased ISTQB)')
+    console.log('      - david.student@example.com / password123 (Purchased AWS)')
   } catch (error) {
     console.error('❌ Error seeding database:', error)
     throw error

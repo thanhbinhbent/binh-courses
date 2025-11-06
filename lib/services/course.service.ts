@@ -4,23 +4,51 @@
  */
 
 import type {
-  Course,
-  CourseCategory,
   Chapter,
+  Course,
+  Category,
   Enrollment,
-  UserProgress
-} from "@/lib/types"
+} from "@prisma/client"
 
 export interface CoursesListResponse {
-  courses: Course[]
-  categories: CourseCategory[]
+  courses: (Course & {
+    category: Category | null
+    instructor: {
+      name: string | null
+      image: string | null
+    }
+    chapters: { id: string }[]
+    _count: {
+      enrollments: number
+      reviews: number
+    }
+  })[]
+  categories: Category[]
 }
 
 export interface CourseDetailsResponse {
   course: Course & {
+    category: Category | null
+    instructor: {
+      name: string | null
+      image: string | null
+      bio: string | null
+    }
     chapters: (Chapter & {
-      userProgress: UserProgress | null
+      lessons: {
+        id: string
+        title: string
+        type: 'VIDEO' | 'ARTICLE' | 'QUIZ' | 'EXERCISE'
+        duration?: number | null
+        isFree: boolean
+        progress?: { isCompleted: boolean }[]
+      }[]
+      userProgress?: { isCompleted: boolean }[]
     })[]
+    _count: {
+      enrollments: number
+      reviews: number
+    }
   }
   enrollment: Enrollment | null
   isEnrolled: boolean
@@ -50,7 +78,38 @@ export interface CourseDetailsResponse {
 }
 
 export interface ChapterViewResponse {
-  chapter: Chapter
+  chapter: Chapter & {
+    resources?: {
+      id: string
+      name: string
+      url: string
+      type: string
+    }[]
+    course: {
+      id: string
+      title: string
+      chapters: (Chapter & {
+        lessons: {
+          id: string
+          title: string
+          type: 'VIDEO' | 'ARTICLE' | 'QUIZ' | 'EXERCISE'
+          videoUrl?: string | null
+          duration?: number | null
+          isFree: boolean
+          progress?: { isCompleted: boolean }[]
+        }[]
+      })[]
+    }
+    lessons: {
+      id: string
+      title: string
+      type: 'VIDEO' | 'ARTICLE' | 'QUIZ' | 'EXERCISE'
+      videoUrl?: string | null
+      duration?: number | null
+      isFree: boolean
+      progress?: { isCompleted: boolean }[]
+    }[]
+  }
   isEnrolled: boolean
   canAccess: boolean
   currentIndex: number

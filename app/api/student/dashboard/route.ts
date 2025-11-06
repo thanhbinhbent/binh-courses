@@ -19,8 +19,14 @@ export async function GET() {
             chapters: {
               orderBy: { position: "asc" },
               include: {
-                userProgress: {
-                  where: { userId: user.id }
+                lessons: {
+                  where: { isPublished: true },
+                  orderBy: { position: "asc" },
+                  include: {
+                    progress: {
+                      where: { userId: user.id }
+                    }
+                  }
                 }
               }
             },
@@ -31,24 +37,32 @@ export async function GET() {
       orderBy: { createdAt: "desc" }
     })
 
-    // Calculate progress for each course
-    const coursesWithProgress = enrollments.map((enrollment: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      course: any
-    }) => {
+    // Calculate progress for each course based on lessons
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const coursesWithProgress = enrollments.map((enrollment: any) => {
       const course = enrollment.course
-      const completedChapters = course.chapters.filter(
+      
+      // Count total lessons and completed lessons across all chapters
+      let totalLessons = 0
+      let completedLessons = 0
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      course.chapters.forEach((chapter: any) => {
+        const lessons = chapter.lessons || []
+        totalLessons += lessons.length
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (chapter: any) => chapter.userProgress?.[0]?.isCompleted
-      ).length
-      const totalChapters = course.chapters.length
-      const progress = totalChapters > 0 ? (completedChapters / totalChapters) * 100 : 0
+        completedLessons += lessons.filter((lesson: any) => 
+          lesson.progress && lesson.progress.length > 0 && lesson.progress[0].isCompleted
+        ).length
+      })
+      
+      const progress = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0
 
       return {
         ...course,
         progress: Math.round(progress),
-        completedChapters,
-        totalChapters
+        completedLessons,
+        totalLessons
       }
     })
 

@@ -1,83 +1,11 @@
+import { Chapter, Course, Category, Review, Lesson, LessonProgress, Resource, Quiz } from '@prisma/client'
+
 /**
  * Course Domain Types
  * Centralized type definitions for course-related features
  */
 
-export interface CourseCategory {
-  id: string
-  name: string
-  slug?: string
-}
-
-export interface CourseAttachment {
-  id: string
-  name: string
-  url: string
-}
-
-export interface Review {
-  id: string
-  rating: number
-  comment: string | null
-  userId: string
-  courseId: string
-  user: {
-    name: string | null
-    image: string | null
-  }
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface Chapter {
-  id: string
-  title: string
-  description: string | null
-  videoUrl: string | null
-  position: number
-  isPublished: boolean
-  isFree: boolean
-  courseId: string
-  duration?: number | null
-  resources?: Array<{
-    id: string
-    name: string
-    url: string
-  }>
-  course?: {
-    id: string
-    title: string
-    chapters?: Chapter[]
-  }
-}
-
-export interface Course {
-  id: string
-  title: string
-  description: string | null
-  imageUrl: string | null
-  price: number | null
-  isPublished: boolean
-  categoryId: string | null
-  category: CourseCategory | null
-  instructorId: string
-  level?: string | null
-  chapters: Chapter[]
-  attachments: CourseAttachment[]
-  instructor?: {
-    id: string
-    name: string | null
-    email: string | null
-    image: string | null
-  }
-  _count?: {
-    enrollments: number
-    chapters: number
-  }
-  createdAt: Date
-  updatedAt: Date
-}
-
+// Basic Types (extending Prisma types)
 export interface UserProgress {
   id: string
   userId: string
@@ -104,14 +32,47 @@ export interface Purchase {
 }
 
 // Composite Types
-export interface ChapterWithProgress extends Chapter {
-  userProgress: UserProgress | null
+
+export type CourseWithChaptersAndProgress = Course & {
+  chapters: ChapterWithLessons[]
+  category: Category | null
+  reviews: Review[]
+  progress: number // Calculated progress percentage
+  isFavorite?: boolean
 }
 
-export interface CourseWithProgress extends Course {
-  chapters: ChapterWithProgress[]
-  enrollment: Enrollment | null
-  purchase: Purchase | null
+export type ChapterWithLessons = Chapter & {
+  lessons: LessonWithProgress[]
+  resources?: Resource[]
+  quizzes?: Quiz[]
+  userProgress?: { isCompleted: boolean }[]
+  course?: Course
+}
+
+export type LessonWithProgress = Lesson & {
+  progress?: LessonProgress[]
+  resources?: Resource[]
+  quizzes?: Quiz[]
+}
+
+// Extended types for detailed views
+export type DetailedChapter = Chapter & {
+  course: Course
+  lessons: DetailedLesson[]
+  resources: Resource[]
+  quizzes: Quiz[]
+  userProgress?: { isCompleted: boolean }[]
+}
+
+export type DetailedLesson = Lesson & {
+  progress?: LessonProgress[]
+  resources: Resource[]
+  quizzes: Quiz[]
+  chapter: {
+    id: string
+    title: string
+    courseId: string
+  }
 }
 
 export interface CourseWithEnrollmentCount extends Course {
@@ -123,13 +84,56 @@ export interface CourseWithEnrollmentCount extends Course {
 
 // API Response Types
 export interface CoursesListResponse {
-  courses: Course[]
-  categories: CourseCategory[]
+  courses: (Course & {
+    category: Category | null
+    instructor: {
+      name: string | null
+      image: string | null
+    }
+    chapters: { id: string }[]
+    _count: {
+      enrollments: number
+      reviews: number
+    }
+  })[]
+  categories: Category[]
 }
 
 export interface CourseDetailsResponse {
-  course: CourseWithProgress
-  progressPercentage: number
+  course: Course & {
+    category: Category | null
+    instructor: {
+      name: string | null
+      image: string | null
+      bio: string | null
+    }
+    chapters: (Chapter & {
+      lessons: (Lesson & {
+        progress?: LessonProgress[]
+      })[]
+    })[]
+    _count: {
+      enrollments: number
+      reviews: number
+    }
+  }
+  enrollment: Enrollment | null
+  isEnrolled: boolean
+  isFree: boolean
+  reviews: (Review & {
+    user: {
+      name: string | null
+      image: string | null
+    }
+  })[]
+  averageRating: number
+  userReview: Review | null
+  progress: number
+  user: {
+    id: string
+    name: string | null
+    email: string | null
+  } | null
 }
 
 export interface ChapterViewResponse {
@@ -155,7 +159,7 @@ export interface InstructorCoursesResponse {
 
 export interface InstructorCourseDetailsResponse {
   course: Course
-  categories: CourseCategory[]
+  categories: Category[]
 }
 
 export interface InstructorChapterDetailsResponse {

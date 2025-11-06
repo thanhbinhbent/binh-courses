@@ -27,21 +27,35 @@ export async function GET(
               where: { isPublished: true },
               orderBy: { position: "asc" },
               include: {
-                userProgress: {
-                  where: { userId: user.id }
+                lessons: {
+                  where: { isPublished: true },
+                  orderBy: { position: "asc" },
+                  include: {
+                    progress: {
+                      where: { userId: user.id }
+                    }
+                  }
                 }
               }
             }
           }
         },
-        userProgress: {
-          where: { userId: user.id }
+        lessons: {
+          where: { isPublished: true },
+          orderBy: { position: "asc" },
+          include: {
+            progress: {
+              where: { userId: user.id }
+            }
+          }
         },
         resources: true
       }
     })
 
-    if (!chapter || !chapter.course) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chapterWithCourse = chapter as any
+    if (!chapter || !chapterWithCourse.course) {
       return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 })
     }
 
@@ -63,20 +77,36 @@ export async function GET(
     }
 
     // Get current chapter index and navigation
-    const currentIndex = chapter.course.chapters.findIndex((c: { id: string }) => c.id === chapterId)
-    const previousChapter = currentIndex > 0 ? chapter.course.chapters[currentIndex - 1] : null
-    const nextChapter = currentIndex < chapter.course.chapters.length - 1 
-      ? chapter.course.chapters[currentIndex + 1] 
+    const currentIndex = chapterWithCourse.course.chapters.findIndex((c: { id: string }) => c.id === chapterId)
+    const previousChapter = currentIndex > 0 ? chapterWithCourse.course.chapters[currentIndex - 1] : null
+    const nextChapter = currentIndex < chapterWithCourse.course.chapters.length - 1 
+      ? chapterWithCourse.course.chapters[currentIndex + 1] 
       : null
 
-    const isCompleted = !!chapter.userProgress?.[0]?.isCompleted
-
-    // Calculate course progress
-    const completedChapters = chapter.course.chapters.filter(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (c: any) => c.userProgress?.[0]?.isCompleted
+    // Calculate chapter completion based on lessons
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chapterLessons = (chapterWithCourse as any).lessons || []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const completedLessons = chapterLessons.filter((lesson: any) => 
+      lesson.progress && lesson.progress.length > 0 && lesson.progress[0].isCompleted
     ).length
-    const progress = Math.round((completedChapters / chapter.course.chapters.length) * 100)
+    const isCompleted = chapterLessons.length > 0 && completedLessons === chapterLessons.length
+
+    // Calculate course progress based on lessons
+    let totalLessons = 0
+    let totalCompletedLessons = 0
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chapterWithCourse.course.chapters.forEach((c: any) => {
+      const lessons = c.lessons || []
+      totalLessons += lessons.length
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      totalCompletedLessons += lessons.filter((l: any) => 
+        l.progress && l.progress.length > 0 && l.progress[0].isCompleted
+      ).length
+    })
+    
+    const progress = totalLessons > 0 ? Math.round((totalCompletedLessons / totalLessons) * 100) : 0
 
     return NextResponse.json({
       chapter,

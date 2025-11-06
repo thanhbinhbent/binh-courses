@@ -15,6 +15,7 @@ import { EnrollButton } from "./_components/enroll-button"
 import { CourseReviews } from "./_components/course-reviews"
 import { AddReviewForm } from "./_components/add-review-form"
 import { courseService, type CourseDetailsResponse } from "@/lib/services/course.service"
+import type { ChapterWithLessons, Lesson } from "@/types/course.d"
 
 export default function CourseDetailPage({
   params
@@ -75,6 +76,7 @@ export default function CourseDetailPage({
   }
 
   const { course, isEnrolled, isFree, reviews, averageRating, userReview, progress, user } = data
+  const chapters = course.chapters as ChapterWithLessons[]
 
   return (
     <PublicLayout>
@@ -156,42 +158,99 @@ export default function CourseDetailPage({
             <div>
               <h2 className="mb-4 text-xl font-semibold">Course Content</h2>
               <div className="space-y-2">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {course.chapters.map((chapter: any, index: number) => (
-                  <Card key={chapter.id}>
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <p className="font-medium">{chapter.title}</p>
-                          {chapter.duration && (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              <span>{Math.round(chapter.duration / 60)} min</span>
+                {chapters.map((chapter, index) => (
+                  <Card key={chapter.id} className="overflow-hidden">
+                    <CardContent className="p-0">
+                      {/* Chapter Header */}
+                      <div className="flex items-center justify-between border-b p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                            {index + 1}
+                          </div>
+                          <div>
+                            <p className="font-medium">{chapter.title}</p>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <PlayCircle className="h-3 w-3" />
+                                <span>{chapter.lessons?.length || 0} lessons</span>
+                              </div>
+                              {/* Calculate total duration of lessons */}
+                              {chapter.lessons?.some(lesson => lesson.duration) && (
+                                <div className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  <span>
+                                    {Math.round(
+                                      chapter.lessons.reduce(
+                                        (total, lesson) => total + (lesson.duration || 0), 
+                                        0
+                                      ) / 60
+                                    )} min
+                                  </span>
+                                </div>
+                              )}
                             </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {chapter.isFree && (
+                            <Badge variant="outline" className="text-xs">
+                              Preview
+                            </Badge>
+                          )}
+                          {isEnrolled && chapter.userProgress?.[0]?.isCompleted && (
+                            <CheckCircle2 className="h-5 w-5 text-success" />
+                          )}
+                          {(isEnrolled || chapter.isFree) && (
+                            <Link href={`/courses/${course.id}/chapters/${chapter.id}`}>
+                              <Button size="sm" variant="ghost">
+                                <PlayCircle className="h-4 w-4" />
+                              </Button>
+                            </Link>
                           )}
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        {chapter.isFree && (
-                          <Badge variant="outline" className="text-xs">
-                            Preview
-                          </Badge>
-                        )}
-                        {isEnrolled && chapter.userProgress?.[0]?.isCompleted && (
-                          <CheckCircle2 className="h-5 w-5 text-success" />
-                        )}
-                        {(isEnrolled || chapter.isFree) && (
-                          <Link href={`/courses/${course.id}/chapters/${chapter.id}`}>
-                            <Button size="sm" variant="ghost">
-                              <PlayCircle className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
+                      
+                      {/* Lessons List */}
+                      {chapter.lessons && chapter.lessons.length > 0 && (
+                        <div className="divide-y bg-muted/50">
+                          {chapter.lessons.map((lesson, lessonIndex) => (
+                            <div
+                              key={lesson.id}
+                              className="flex items-center justify-between px-4 py-2"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="text-sm text-muted-foreground">
+                                  {lessonIndex + 1}.
+                                </div>
+                                <div>
+                                  <p className="text-sm">{lesson.title}</p>
+                                  {lesson.duration && lesson.duration > 0 && (
+                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                      <Clock className="h-3 w-3" />
+                                      <span>{Math.round(lesson.duration / 60)} min</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {lesson.isFree && (
+                                  <Badge variant="outline" className="text-xs">
+                                    Free
+                                  </Badge>
+                                )}
+                                {(isEnrolled || lesson.isFree) && (
+                                  <Link href={`/courses/${course.id}/chapters/${chapter.id}/lessons/${lesson.id}`}>
+                                    <Button size="sm" variant="ghost">
+                                      <PlayCircle className="h-3 w-3" />
+                                    </Button>
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}

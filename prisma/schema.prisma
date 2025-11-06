@@ -35,6 +35,7 @@ model User {
   reviews       Review[]
   certificates  Certificate[]
   progress      Progress[]
+  lessonProgress LessonProgress[] // Add this relation
   comments      Comment[]
   quizzes       Quiz[]    @relation("InstructorQuizzes")
   quizAttempts  QuizAttempt[]
@@ -140,11 +141,9 @@ model Chapter {
   id          String   @id @default(uuid())
   title       String
   description String?  @db.Text
-  videoUrl    String?  @db.Text
   position    Int
   isPublished Boolean  @default(false)
   isFree      Boolean  @default(false)
-  duration    Int?     // in seconds
   
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -153,6 +152,7 @@ model Chapter {
   updatedAt   DateTime @updatedAt
 
   // Relations
+  lessons     Lesson[]
   userProgress Progress[]
   resources    Resource[]
   quizzes      Quiz[]
@@ -160,6 +160,59 @@ model Chapter {
 
   @@index([courseId])
   @@index([position])
+}
+
+enum LessonType {
+  VIDEO
+  ARTICLE
+  QUIZ
+  EXERCISE
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  type        LessonType @default(VIDEO)
+  videoUrl    String?  @db.Text
+  content     String?  @db.Text  // For ARTICLE type lessons
+  position    Int
+  duration    Int?     // in seconds
+  isPublished Boolean  @default(false)
+  isFree      Boolean  @default(false)
+  
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  progress    LessonProgress[]
+  resources   Resource[]
+  quizzes     Quiz[]
+  comments    Comment[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([chapterId])
+  @@index([position])
+}
+
+model LessonProgress {
+  id          String   @id @default(uuid())
+  isCompleted Boolean  @default(false)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
 }
 
 model Attachment {
@@ -181,12 +234,16 @@ model Resource {
   url       String   @db.Text
   type      ResourceType
   
-  chapterId String
-  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId String?
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  lessonId  String?
+  lesson    Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now())
 
   @@index([chapterId])
+  @@index([lessonId])
 }
 
 enum ResourceType {
@@ -296,9 +353,12 @@ model Quiz {
   timeLimit   Int?     // in minutes
   isPublished Boolean  @default(false)
   
-  // Quiz can be standalone (for practice) or part of a chapter
+  // Quiz can be standalone (for practice) or part of a chapter/lesson
   chapterId   String?
   chapter     Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  lessonId    String?
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   
   // For standalone quizzes
   categoryId  String?
@@ -315,6 +375,7 @@ model Quiz {
   attempts    QuizAttempt[]
 
   @@index([chapterId])
+  @@index([lessonId])
   @@index([categoryId])
   @@index([instructorId])
 }
@@ -402,8 +463,11 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  chapterId String
-  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId String?
+  chapter   Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  lessonId  String?
+  lesson    Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   
   parentId  String?
   parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
@@ -414,5 +478,6 @@ model Comment {
 
   @@index([userId])
   @@index([chapterId])
+  @@index([lessonId])
   @@index([parentId])
 }

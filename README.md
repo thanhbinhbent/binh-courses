@@ -1,4 +1,4 @@
-# Modern LMS Platform 🎓
+# Binh Courses Platform 🎓
 
 A comprehensive Learning Management System built with modern technologies.
 

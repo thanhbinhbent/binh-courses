@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Lock } from "lucide-react"
+import { Loader2, ChevronLeft, ChevronRight, CheckCircle2, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,8 +10,8 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { VideoPlayer } from "./_components/video-player"
 import { CompleteButton } from "./_components/complete-button"
+import { CourseSidebar } from "@/components/course/course-sidebar"
 import { courseService, type ChapterViewResponse } from "@/lib/services/course.service"
-import type { Chapter } from "@/lib/types"
 
 export default function ChapterPage({
   params
@@ -99,11 +99,11 @@ export default function ChapterPage({
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
           {/* Video Player */}
-          {chapter.videoUrl && (
+          {chapter.lessons && chapter.lessons.length > 0 && chapter.lessons[0].videoUrl && (
             <div className="aspect-video w-full bg-muted">
               <VideoPlayer
                 chapterId={chapter.id}
-                videoUrl={chapter.videoUrl}
+                videoUrl={chapter.lessons[0].videoUrl}
                 isCompleted={isCompleted}
               />
             </div>
@@ -193,60 +193,13 @@ export default function ChapterPage({
         </div>
 
         {/* Sidebar - Chapter List */}
-        <div className="hidden w-80 border-l bg-card lg:block">
-          <div className="sticky top-0 h-screen overflow-y-auto p-4">
-            <h3 className="mb-4 font-semibold text-foreground">Course Content</h3>
-            <div className="space-y-1">
-              {chapter.course?.chapters?.map((courseChapter: Chapter, index: number) => {
-                const isCurrentChapter = courseChapter.id === chapterId
-                const isChapterCompleted = false // Progress info not included in this response
-                const isLocked = !isEnrolled && !courseChapter.isFree
-
-                return (
-                  <Link
-                    key={courseChapter.id}
-                    href={isLocked ? '#' : `/courses/${courseId}/chapters/${courseChapter.id}`}
-                    className={`block ${isLocked ? 'cursor-not-allowed opacity-50' : ''}`}
-                  >
-                    <div
-                      className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${
-                        isCurrentChapter
-                          ? 'bg-primary/10 text-primary'
-                          : 'hover:bg-secondary'
-                      }`}
-                    >
-                      <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                        isCurrentChapter
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <p className={`text-sm font-medium ${
-                          isCurrentChapter ? 'text-primary' : 'text-foreground'
-                        }`}>
-                          {courseChapter.title}
-                        </p>
-                        {courseChapter.duration && (
-                          <p className="text-xs text-muted-foreground">
-                            {Math.round(courseChapter.duration / 60)} min
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {isLocked && <Lock className="h-4 w-4 text-muted-foreground" />}
-                        {isChapterCompleted && (
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        </div>
+        {data?.chapter?.course && (
+          <CourseSidebar 
+            course={data.chapter.course}
+            currentChapterId={chapterId}
+            isEnrolled={data.isEnrolled || false}
+          />
+        )}
       </div>
     </div>
   )
