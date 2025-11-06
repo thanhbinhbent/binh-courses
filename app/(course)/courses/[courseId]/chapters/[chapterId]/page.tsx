@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Lock } from "lucide-react"
 import Link from "next/link"
@@ -11,12 +11,14 @@ import { Badge } from "@/components/ui/badge"
 import { VideoPlayer } from "./_components/video-player"
 import { CompleteButton } from "./_components/complete-button"
 import { courseService, type ChapterViewResponse } from "@/lib/services/course.service"
+import type { Chapter } from "@/lib/types"
 
 export default function ChapterPage({
   params
 }: {
-  params: { courseId: string; chapterId: string }
+  params: Promise<{ courseId: string; chapterId: string }>
 }) {
+  const { courseId, chapterId } = use(params)
   const router = useRouter()
   const [data, setData] = useState<ChapterViewResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -26,7 +28,7 @@ export default function ChapterPage({
     async function loadChapterData() {
       try {
         setIsLoading(true)
-        const result = await courseService.getChapterView(params.courseId, params.chapterId)
+        const result = await courseService.getChapterView(courseId, chapterId)
         setData(result)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
@@ -35,7 +37,7 @@ export default function ChapterPage({
         if (errorMessage === 'UNAUTHORIZED') {
           router.push('/sign-in')
         } else if (errorMessage === 'FORBIDDEN' || errorMessage === 'NOT_FOUND') {
-          router.push(`/courses/${params.courseId}`)
+          router.push(`/courses/${courseId}`)
         }
       } finally {
         setIsLoading(false)
@@ -43,7 +45,7 @@ export default function ChapterPage({
     }
 
     loadChapterData()
-  }, [params.courseId, params.chapterId, router])
+  }, [courseId, chapterId, router])
 
   // Loading state
   if (isLoading) {
@@ -63,7 +65,7 @@ export default function ChapterPage({
       <div className="flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <p className="text-destructive">Failed to load chapter</p>
-          <Button onClick={() => router.push(`/courses/${params.courseId}`)} variant="outline">
+          <Button onClick={() => router.push(`/courses/${courseId}`)} variant="outline">
             Back to Course
           </Button>
         </div>
@@ -79,7 +81,7 @@ export default function ChapterPage({
       <div className="border-b bg-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href={`/courses/${params.courseId}`} className="flex items-center gap-2">
+            <Link href={`/courses/${courseId}`} className="flex items-center gap-2">
               <ChevronLeft className="h-5 w-5" />
               <span className="font-medium">{chapter.course?.title || 'Course'}</span>
             </Link>
@@ -166,7 +168,7 @@ export default function ChapterPage({
             {/* Navigation */}
             <div className="flex items-center justify-between">
               {previousChapter ? (
-                <Link href={`/courses/${params.courseId}/chapters/${previousChapter.id}`}>
+                <Link href={`/courses/${courseId}/chapters/${previousChapter.id}`}>
                   <Button variant="outline">
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Previous
@@ -177,14 +179,14 @@ export default function ChapterPage({
               )}
 
               {nextChapter ? (
-                <Link href={`/courses/${params.courseId}/chapters/${nextChapter.id}`}>
+                <Link href={`/courses/${courseId}/chapters/${nextChapter.id}`}>
                   <Button>
                     Next
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               ) : (
-                <Link href={`/courses/${params.courseId}`}>
+                <Link href={`/courses/${courseId}`}>
                   <Button variant="outline">Back to Course</Button>
                 </Link>
               )}
@@ -197,15 +199,15 @@ export default function ChapterPage({
           <div className="sticky top-0 h-screen overflow-y-auto p-4">
             <h3 className="mb-4 font-semibold">Course Content</h3>
             <div className="space-y-1">
-              {chapter.course?.chapters?.map((courseChapter, index: number) => {
-                const isCurrentChapter = courseChapter.id === params.chapterId
-                const isChapterCompleted = false // Simplified for now
+              {chapter.course?.chapters?.map((courseChapter: Chapter, index: number) => {
+                const isCurrentChapter = courseChapter.id === chapterId
+                const isChapterCompleted = false // Progress info not included in this response
                 const isLocked = !isEnrolled && !courseChapter.isFree
 
                 return (
                   <Link
                     key={courseChapter.id}
-                    href={isLocked ? '#' : `/courses/${params.courseId}/chapters/${courseChapter.id}`}
+                    href={isLocked ? '#' : `/courses/${courseId}/chapters/${courseChapter.id}`}
                     className={`block ${isLocked ? 'cursor-not-allowed opacity-50' : ''}`}
                   >
                     <div

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, BookOpen, FileText, Settings, Eye } from "lucide-react"
 import Link from "next/link"
@@ -17,8 +17,9 @@ import type { CourseDetailsResponse } from "@/lib/services/instructor-course.ser
 export default function CourseEditPage({
   params
 }: {
-  params: { courseId: string }
+  params: Promise<{ courseId: string }>
 }) {
+  const { courseId } = use(params)
   const router = useRouter()
   const [data, setData] = useState<CourseDetailsResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -28,7 +29,7 @@ export default function CourseEditPage({
     async function loadCourseData() {
       try {
         setIsLoading(true)
-        const result = await instructorCourseService.getCourseWithDetails(params.courseId)
+        const result = await instructorCourseService.getCourseWithDetails(courseId)
         setData(result)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
@@ -46,7 +47,7 @@ export default function CourseEditPage({
     }
 
     loadCourseData()
-  }, [params.courseId, router])
+  }, [courseId, router])
 
   // Loading state
   if (isLoading) {
@@ -88,9 +89,9 @@ export default function CourseEditPage({
             <Badge variant={course.isPublished ? "default" : "secondary"}>
               {course.isPublished ? "Published" : "Draft"}
             </Badge>
-            {course._count.enrollments > 0 && (
+            {(course._count?.enrollments || 0) > 0 && (
               <Badge variant="outline">
-                {course._count.enrollments} student{course._count.enrollments !== 1 ? "s" : ""}
+                {course._count?.enrollments || 0} student{(course._count?.enrollments || 0) !== 1 ? "s" : ""}
               </Badge>
             )}
           </div>

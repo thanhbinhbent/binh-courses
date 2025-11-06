@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { Star } from "lucide-react"
+import { courseService } from "@/lib/services"
 
 interface AddReviewFormProps {
   courseId: string
@@ -37,16 +37,10 @@ export function AddReviewForm({ courseId, existingReview }: AddReviewFormProps) 
       setIsSubmitting(true)
 
       if (existingReview) {
-        await axios.patch(`/api/courses/${courseId}/reviews/${existingReview.id}`, {
-          rating,
-          comment,
-        })
+        await courseService.updateReview(courseId, existingReview.id, rating, comment)
         toast.success("Review updated!")
       } else {
-        await axios.post(`/api/courses/${courseId}/reviews`, {
-          rating,
-          comment,
-        })
+        await courseService.addReview(courseId, rating, comment)
         toast.success("Review added!")
       }
 

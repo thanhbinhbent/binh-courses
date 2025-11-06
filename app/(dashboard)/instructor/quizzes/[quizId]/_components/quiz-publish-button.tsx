@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Check, Lock } from "lucide-react"
+import { instructorQuizService } from "@/lib/services"
 
 interface QuizPublishButtonProps {
   quizId: string
@@ -26,10 +26,10 @@ export function QuizPublishButton({
       setIsLoading(true)
 
       if (isPublished) {
-        await axios.patch(`/api/quizzes/${quizId}/unpublish`)
+        await instructorQuizService.unpublishQuiz(quizId)
         toast.success("Quiz unpublished")
       } else {
-        await axios.patch(`/api/quizzes/${quizId}/publish`)
+        await instructorQuizService.publishQuiz(quizId)
         toast.success("Quiz published!")
       }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,8 +11,9 @@ import type { QuizTakeResponse } from "@/lib/types"
 export default function TakeQuizPage({
   params
 }: {
-  params: { quizId: string; attemptId: string }
+  params: Promise<{ quizId: string; attemptId: string }>
 }) {
+  const { quizId, attemptId } = use(params)
   const router = useRouter()
   const [data, setData] = useState<QuizTakeResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -22,7 +23,7 @@ export default function TakeQuizPage({
     async function loadQuizAttempt() {
       try {
         setIsLoading(true)
-        const result = await quizService.getQuizAttempt(params.quizId, params.attemptId)
+        const result = await quizService.getQuizAttempt(quizId, attemptId)
         setData(result)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
@@ -42,7 +43,7 @@ export default function TakeQuizPage({
     }
 
     loadQuizAttempt()
-  }, [params.quizId, params.attemptId, router])
+  }, [quizId, attemptId, router])
 
   // Loading state
   if (isLoading) {

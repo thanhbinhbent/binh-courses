@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -16,8 +16,9 @@ import type { ChapterDetailsResponse } from "@/lib/services/instructor-course.se
 export default function ChapterEditPage({
   params
 }: {
-  params: { courseId: string; chapterId: string }
+  params: Promise<{ courseId: string; chapterId: string }>
 }) {
+  const { courseId, chapterId } = use(params)
   const router = useRouter()
   const [data, setData] = useState<ChapterDetailsResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -28,8 +29,8 @@ export default function ChapterEditPage({
       try {
         setIsLoading(true)
         const result = await instructorCourseService.getChapterWithDetails(
-          params.courseId,
-          params.chapterId
+          courseId,
+          chapterId
         )
         setData(result)
       } catch (err) {
@@ -40,7 +41,7 @@ export default function ChapterEditPage({
         if (errorMessage === 'UNAUTHORIZED') {
           router.push('/sign-in')
         } else if (errorMessage === 'FORBIDDEN' || errorMessage === 'NOT_FOUND') {
-          router.push(`/instructor/courses/${params.courseId}`)
+          router.push(`/instructor/courses/${courseId}`)
         }
       } finally {
         setIsLoading(false)
@@ -48,7 +49,7 @@ export default function ChapterEditPage({
     }
 
     loadChapterData()
-  }, [params.courseId, params.chapterId, router])
+  }, [courseId, chapterId, router])
 
   // Loading state
   if (isLoading) {
@@ -71,7 +72,7 @@ export default function ChapterEditPage({
             {error === 'NOT_FOUND' ? 'Chapter not found' : 'Failed to load chapter'}
           </p>
           <Button asChild variant="outline">
-            <Link href={`/instructor/courses/${params.courseId}`}>
+            <Link href={`/instructor/courses/${courseId}`}>
               Back to Course
             </Link>
           </Button>
@@ -88,7 +89,7 @@ export default function ChapterEditPage({
       {/* Header */}
       <div className="mb-8">
         <Link
-          href={`/instructor/courses/${params.courseId}`}
+          href={`/instructor/courses/${courseId}`}
           className="mb-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -117,8 +118,8 @@ export default function ChapterEditPage({
             </CardHeader>
             <CardContent>
               <ChapterDetailsForm
-                courseId={params.courseId}
-                chapterId={params.chapterId}
+                courseId={courseId}
+                chapterId={chapterId}
                 initialData={{
                   title: chapter.title,
                   description: chapter.description || ""
@@ -133,8 +134,8 @@ export default function ChapterEditPage({
             </CardHeader>
             <CardContent>
               <ChapterAccessForm
-                courseId={params.courseId}
-                chapterId={params.chapterId}
+                courseId={courseId}
+                chapterId={chapterId}
                 initialData={{
                   isFree: chapter.isFree,
                   isPublished: chapter.isPublished
@@ -152,8 +153,8 @@ export default function ChapterEditPage({
             </CardHeader>
             <CardContent>
               <ChapterVideoForm
-                courseId={params.courseId}
-                chapterId={params.chapterId}
+                courseId={courseId}
+                chapterId={chapterId}
                 initialData={{
                   videoUrl: chapter.videoUrl || "",
                   duration: chapter.duration || 0
@@ -194,7 +195,7 @@ export default function ChapterEditPage({
 
       {/* Actions */}
       <div className="mt-8 flex justify-end gap-4">
-        <Link href={`/instructor/courses/${params.courseId}`}>
+        <Link href={`/instructor/courses/${courseId}`}>
           <Button variant="outline">Done</Button>
         </Link>
       </div>

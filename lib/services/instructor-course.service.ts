@@ -108,5 +108,160 @@ export const instructorCourseService = {
     }
     
     return res.json()
+  },
+
+  /**
+   * Update course details
+   */
+  async updateCourse(courseId: string, data: {
+    title?: string
+    description?: string
+    imageUrl?: string
+    price?: number
+    categoryId?: string
+  }): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(data),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      throw new Error('Failed to update course')
+    }
+  },
+
+  /**
+   * Create new chapter
+   */
+  async createChapter(courseId: string, title: string): Promise<{ id: string }> {
+    const res = await fetch(`/api/courses/${courseId}/chapters`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ title }),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      throw new Error('Failed to create chapter')
+    }
+    
+    return res.json()
+  },
+
+  /**
+   * Update chapter details
+   */
+  async updateChapter(courseId: string, chapterId: string, data: {
+    title?: string
+    description?: string
+    videoUrl?: string
+    isFree?: boolean
+    isPublished?: boolean
+  }): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(data),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      throw new Error('Failed to update chapter')
+    }
+  },
+
+  /**
+   * Delete chapter
+   */
+  async deleteChapter(courseId: string, chapterId: string): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      throw new Error('Failed to delete chapter')
+    }
+  },
+
+  /**
+   * Publish/unpublish course
+   */
+  async toggleCoursePublish(courseId: string): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}/publish`, {
+      method: 'PATCH',
+      credentials: 'include',
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      if (res.status === 400) {
+        throw new Error('INVALID_COURSE_STATE')
+      }
+      throw new Error('Failed to publish/unpublish course')
+    }
+  },
+
+  /**
+   * Create new course
+   */
+  async createCourse(title: string): Promise<{ id: string }> {
+    const res = await fetch("/api/courses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: 'include',
+      body: JSON.stringify({ title }),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      throw new Error('Failed to create course')
+    }
+    
+    return res.json()
   }
 }

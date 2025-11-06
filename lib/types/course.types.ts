@@ -72,6 +72,7 @@ export interface Course {
   }
   _count?: {
     enrollments: number
+    chapters: number
   }
   createdAt: Date
   updatedAt: Date
@@ -116,6 +117,7 @@ export interface CourseWithProgress extends Course {
 export interface CourseWithEnrollmentCount extends Course {
   _count: {
     enrollments: number
+    chapters: number
   }
 }
 
@@ -131,14 +133,20 @@ export interface CourseDetailsResponse {
 }
 
 export interface ChapterViewResponse {
-  chapter: Chapter
-  course: {
-    id: string
-    title: string
+  chapter: Chapter & {
+    course: {
+      id: string
+      title: string
+      chapters: Chapter[]
+    }
   }
-  enrollment: Enrollment | null
-  userProgress: UserProgress | null
+  isEnrolled: boolean
+  canAccess: boolean
+  currentIndex: number
+  previousChapter: Chapter | null
   nextChapter: Chapter | null
+  isCompleted: boolean
+  progress: number
 }
 
 export interface InstructorCoursesResponse {

@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { QuizQuestion } from "@/lib/types"
+import { instructorQuizService } from "@/lib/services"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
-import { PlusCircle, Trash2, Check } from "lucide-react"
+import { PlusCircle, Trash2 } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const formSchema = z.object({
@@ -44,18 +45,7 @@ interface Option {
 
 interface QuestionBuilderProps {
   quizId: string
-  question?: {
-    id: string
-    type: string
-    text: string
-    points: number
-    options: Array<{
-      id: string
-      text: string
-      isCorrect: boolean
-      order: number
-    }>
-  }
+  question?: QuizQuestion
   onCancel: () => void
   onSuccess: () => void
 }
@@ -78,8 +68,8 @@ export function QuestionBuilder({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      type: (question?.type as any) || "MULTIPLE_CHOICE",
-      text: question?.text || "",
+      type: (question?.type as "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER" | "ESSAY") || "MULTIPLE_CHOICE",
+      text: question?.question || "",
       points: question?.points.toString() || "1",
     },
   })
@@ -94,7 +84,7 @@ export function QuestionBuilder({
     setOptions(options.filter((_, i) => i !== index))
   }
 
-  const updateOption = (index: number, field: keyof Option, value: any) => {
+  const updateOption = (index: number, field: keyof Option, value: string | boolean | number) => {
     const newOptions = [...options]
     newOptions[index] = { ...newOptions[index], [field]: value }
     setOptions(newOptions)
@@ -140,17 +130,17 @@ export function QuestionBuilder({
 
       if (question) {
         // Update existing question
-        await axios.patch(`/api/quizzes/${quizId}/questions/${question.id}`, data)
+        await instructorQuizService.updateQuestion(quizId, question.id, data)
         toast.success("Question updated!")
       } else {
         // Create new question
-        await axios.post(`/api/quizzes/${quizId}/questions`, data)
+        await instructorQuizService.createQuestion(quizId, data)
         toast.success("Question added!")
       }
 
       onSuccess()
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong")
     } finally {
       setIsSubmitting(false)

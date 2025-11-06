@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    // Get all published courses (public access)
+    // Get all published courses (public access - no auth required)
     const courses = await db.course.findMany({
       where: { isPublished: true },
       include: {

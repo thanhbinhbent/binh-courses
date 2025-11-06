@@ -6,25 +6,10 @@ import { Button } from "@/components/ui/button"
 import { BookOpen, Clock, Eye, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import axios from "axios"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-
-interface Quiz {
-  id: string
-  title: string
-  description: string | null
-  timeLimit: number | null
-  passingScore: number
-  isPublished: boolean
-  category: {
-    name: string
-  } | null
-  _count: {
-    questions: number
-    attempts: number
-  }
-}
+import { Quiz } from "@/lib/types"
+import { instructorQuizService } from "@/lib/services"
 
 interface QuizzesListProps {
   quizzes: Quiz[]
@@ -41,7 +26,7 @@ export function QuizzesList({ quizzes }: QuizzesListProps) {
 
     try {
       setDeletingId(quizId)
-      await axios.delete(`/api/quizzes/${quizId}`)
+      await instructorQuizService.deleteQuiz(quizId)
       toast.success("Quiz deleted successfully")
       router.refresh()
     } catch (error) {
@@ -93,11 +78,11 @@ export function QuizzesList({ quizzes }: QuizzesListProps) {
             <div className="mb-4 space-y-2 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <BookOpen className="h-4 w-4" />
-                <span>{quiz._count.questions} questions</span>
+                <span>{quiz._count?.questions || 0} questions</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Eye className="h-4 w-4" />
-                <span>{quiz._count.attempts} attempts</span>
+                <span>{quiz._count?.attempts || 0} attempts</span>
               </div>
               {quiz.timeLimit && (
                 <div className="flex items-center gap-2 text-muted-foreground">

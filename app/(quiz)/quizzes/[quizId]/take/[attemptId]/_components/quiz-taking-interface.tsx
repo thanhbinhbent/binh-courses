@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -19,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { quizService } from "@/lib/services"
 
 interface Answer {
   id: string
@@ -86,10 +86,10 @@ export function QuizTakingInterface({
 
     // Auto-save answer
     try {
-      await axios.patch(`/api/quizzes/${quiz.id}/attempt/${attempt.id}`, {
+      await quizService.saveQuizAnswers(quiz.id, attempt.id, [{
         questionId,
         answer: answer.selectedOptionId || answer.textAnswer || ""
-      })
+      }])
     } catch (err) {
       console.error("Failed to save answer:", err)
     }
@@ -99,7 +99,7 @@ export function QuizTakingInterface({
     try {
       setIsSubmitting(true)
 
-      await axios.post(`/api/quizzes/${quiz.id}/attempt/${attempt.id}/submit`)
+      await quizService.submitQuizAttempt(quiz.id, attempt.id)
 
       toast.success("Quiz submitted successfully!")
       router.push(`/quizzes/${quiz.id}/results/${attempt.id}`)

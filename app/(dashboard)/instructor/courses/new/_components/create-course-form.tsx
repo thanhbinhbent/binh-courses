@@ -16,6 +16,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { instructorCourseService } from "@/lib/services"
 
 interface CreateCourseFormProps {
   categories: Array<{
@@ -45,22 +46,7 @@ export function CreateCourseForm({ categories }: CreateCourseFormProps) {
     try {
       setIsLoading(true)
 
-      const response = await fetch("/api/courses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...formData,
-          price: formData.price ? parseFloat(formData.price) : null
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to create course")
-      }
-
-      const course = await response.json()
+      const course = await instructorCourseService.createCourse(formData.title)
 
       toast.success("Course created successfully!")
       router.push(`/instructor/courses/${course.id}`)

@@ -17,11 +17,6 @@ export interface QuizAttemptWithDetails extends QuizAttempt {
 }
 
 export interface DashboardStats {
-  enrolledCourses: number
-  completedCourses: number
-  inProgressCourses: number
-  quizzesTaken: number
-  // Legacy field names (for backward compatibility)
   totalCourses: number
   inProgress: number
   completed: number
@@ -35,11 +30,12 @@ export interface StudentDashboardResponse {
     email: string | null
   }
   stats: DashboardStats
-  recentEnrollments: EnrollmentWithCourse[]
-  recentQuizAttempts: QuizAttemptWithDetails[]
-  // Legacy fields (for backward compatibility)
   enrollments: EnrollmentWithCourse[]
-  inProgressCourses: Array<Course & { progress?: number }>
+  inProgressCourses: Array<Course & { 
+    progress?: number
+    completedChapters?: number
+    totalChapters?: number
+  }>
   completedCourses: Array<Course & { progress?: number }>
   certificates: Array<{
     id: string

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { courseService } from "@/lib/services"
 
 interface EnrollButtonProps {
   courseId: string
@@ -18,21 +19,21 @@ export function EnrollButton({ courseId, isFree }: EnrollButtonProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/courses/${courseId}/enroll`, {
-        method: "POST"
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to enroll")
-      }
+      await courseService.enrollInCourse(courseId)
 
       toast.success("Successfully enrolled!")
       router.refresh()
     } catch (error) {
       const err = error as Error
-      toast.error(err.message || "Something went wrong")
+      if (err.message === 'UNAUTHORIZED') {
+        toast.error("Please sign in to enroll")
+      } else if (err.message === 'ALREADY_ENROLLED') {
+        toast.error("You are already enrolled in this course")
+      } else if (err.message === 'PURCHASE_REQUIRED') {
+        toast.error("Please purchase this course first")
+      } else {
+        toast.error("Something went wrong")
+      }
     } finally {
       setIsLoading(false)
     }

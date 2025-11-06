@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { Loader2, Upload } from "lucide-react"
 import { toast } from "sonner"
+import { instructorCourseService } from "@/lib/services"
 
 interface CourseSettingsFormProps {
   course: {
@@ -53,25 +54,25 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
     try {
       setIsLoading(true)
 
-      const response = await fetch(`/api/courses/${course.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ...formData,
-          price: formData.price ? parseFloat(formData.price) : null
-        })
+      await instructorCourseService.updateCourse(course.id, {
+        ...formData,
+        price: formData.price ? parseFloat(formData.price) : undefined
       })
-
-      if (!response.ok) {
-        throw new Error("Failed to update course")
-      }
 
       toast.success("Course updated successfully!")
       router.refresh()
     } catch (error) {
-      toast.error("Something went wrong. Please try again.")
+      if (error instanceof Error) {
+        if (error.message === 'UNAUTHORIZED') {
+          toast.error("You are not authorized to update this course")
+        } else if (error.message === 'FORBIDDEN') {
+          toast.error("Access denied")
+        } else {
+          toast.error(error.message || "Something went wrong. Please try again.")
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.")
+      }
       console.error(error)
     } finally {
       setIsLoading(false)

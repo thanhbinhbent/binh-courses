@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, BookOpen, Clock, Award, CheckCircle2, PlayCircle } from "lucide-react"
 import Link from "next/link"
@@ -17,8 +17,9 @@ import { courseService, type CourseDetailsResponse } from "@/lib/services/course
 export default function CourseDetailPage({
   params
 }: {
-  params: { courseId: string }
+  params: Promise<{ courseId: string }>
 }) {
+  const { courseId } = use(params)
   const router = useRouter()
   const [data, setData] = useState<CourseDetailsResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -28,7 +29,7 @@ export default function CourseDetailPage({
     async function loadCourseData() {
       try {
         setIsLoading(true)
-        const result = await courseService.getCourseDetails(params.courseId)
+        const result = await courseService.getCourseDetails(courseId)
         setData(result)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
@@ -43,7 +44,7 @@ export default function CourseDetailPage({
     }
 
     loadCourseData()
-  }, [params.courseId, router])
+  }, [courseId, router])
 
   // Loading state
   if (isLoading) {

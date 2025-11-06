@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { PlayCircle } from "lucide-react"
+import { quizService } from "@/lib/services"
 
 interface StartQuizButtonProps {
   quizId: string
@@ -19,10 +19,10 @@ export function StartQuizButton({ quizId }: StartQuizButtonProps) {
     try {
       setIsLoading(true)
 
-      const response = await axios.post(`/api/quizzes/${quizId}/attempt`)
+      const response = await quizService.startQuizAttempt(quizId)
       
       toast.success("Quiz started!")
-      router.push(`/quizzes/${quizId}/take/${response.data.attemptId}`)
+      router.push(`/quizzes/${quizId}/take/${response.id}`)
     } catch (error) {
       toast.error("Failed to start quiz")
     } finally {

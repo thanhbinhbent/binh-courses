@@ -17,6 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Plus, GripVertical, Pencil, Trash2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { instructorCourseService } from "@/lib/services"
 
 interface Chapter {
   id: string
@@ -49,26 +50,24 @@ export function ChaptersList({ courseId, chapters }: ChaptersListProps) {
     try {
       setIsLoading(true)
 
-      const response = await fetch(`/api/courses/${courseId}/chapters`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title: newChapterTitle
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to create chapter")
-      }
+      await instructorCourseService.createChapter(courseId, newChapterTitle)
 
       toast.success("Chapter created successfully!")
       setNewChapterTitle("")
       setIsOpen(false)
       router.refresh()
     } catch (error) {
-      toast.error("Something went wrong. Please try again.")
+      if (error instanceof Error) {
+        if (error.message === 'UNAUTHORIZED') {
+          toast.error("You are not authorized to create chapters")
+        } else if (error.message === 'FORBIDDEN') {
+          toast.error("Access denied")
+        } else {
+          toast.error(error.message || "Something went wrong. Please try again.")
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.")
+      }
       console.error(error)
     } finally {
       setIsLoading(false)
@@ -83,18 +82,22 @@ export function ChaptersList({ courseId, chapters }: ChaptersListProps) {
     try {
       setDeletingId(chapterId)
 
-      const response = await fetch(`/api/courses/${courseId}/chapters/${chapterId}`, {
-        method: "DELETE"
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to delete chapter")
-      }
+      await instructorCourseService.deleteChapter(courseId, chapterId)
 
       toast.success("Chapter deleted successfully!")
       router.refresh()
     } catch (error) {
-      toast.error("Something went wrong. Please try again.")
+      if (error instanceof Error) {
+        if (error.message === 'UNAUTHORIZED') {
+          toast.error("You are not authorized to delete chapters")
+        } else if (error.message === 'FORBIDDEN') {
+          toast.error("Access denied")
+        } else {
+          toast.error(error.message || "Something went wrong. Please try again.")
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.")
+      }
       console.error(error)
     } finally {
       setDeletingId(null)
@@ -103,24 +106,24 @@ export function ChaptersList({ courseId, chapters }: ChaptersListProps) {
 
   const handleTogglePublish = async (chapterId: string, isPublished: boolean) => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/chapters/${chapterId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          isPublished: !isPublished
-        })
+      await instructorCourseService.updateChapter(courseId, chapterId, {
+        isPublished: !isPublished
       })
-
-      if (!response.ok) {
-        throw new Error("Failed to update chapter")
-      }
 
       toast.success(`Chapter ${!isPublished ? "published" : "unpublished"}!`)
       router.refresh()
     } catch (error) {
-      toast.error("Something went wrong. Please try again.")
+      if (error instanceof Error) {
+        if (error.message === 'UNAUTHORIZED') {
+          toast.error("You are not authorized to update chapters")
+        } else if (error.message === 'FORBIDDEN') {
+          toast.error("Access denied")
+        } else {
+          toast.error(error.message || "Something went wrong. Please try again.")
+        }
+      } else {
+        toast.error("Something went wrong. Please try again.")
+      }
       console.error(error)
     }
   }

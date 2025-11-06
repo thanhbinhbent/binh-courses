@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { courseService } from "@/lib/services"
 
 interface CompleteButtonProps {
   chapterId: string
@@ -18,13 +19,7 @@ export function CompleteButton({ chapterId }: CompleteButtonProps) {
     try {
       setIsLoading(true)
 
-      const response = await fetch(`/api/chapters/${chapterId}/progress`, {
-        method: "POST"
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to mark chapter as complete")
-      }
+      await courseService.markChapterComplete(chapterId)
 
       toast.success("Chapter marked as complete!")
       router.refresh()

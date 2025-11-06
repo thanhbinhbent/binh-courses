@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import axios from "axios"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -28,6 +27,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { Pencil } from "lucide-react"
+import { instructorQuizService } from "@/lib/services"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -72,9 +72,9 @@ export function QuizSettings({ quiz, categories }: QuizSettingsProps) {
     try {
       setIsSubmitting(true)
 
-      await axios.patch(`/api/quizzes/${quiz.id}`, {
+      await instructorQuizService.updateQuiz(quiz.id, {
         ...values,
-        timeLimit: values.timeLimit ? parseInt(values.timeLimit) : null,
+        timeLimit: values.timeLimit ? parseInt(values.timeLimit) : undefined,
         passingScore: parseInt(values.passingScore),
       })
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -14,8 +14,9 @@ import type { QuizDetailsResponse } from "@/lib/types/instructor-quiz.types"
 export default function QuizEditPage({
   params
 }: {
-  params: { quizId: string }
+  params: Promise<{ quizId: string }>
 }) {
+  const { quizId } = use(params)
   const router = useRouter()
   const [data, setData] = useState<QuizDetailsResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -25,7 +26,7 @@ export default function QuizEditPage({
     async function loadQuizData() {
       try {
         setIsLoading(true)
-        const result = await instructorQuizService.getQuizWithDetails(params.quizId)
+        const result = await instructorQuizService.getQuizWithDetails(quizId)
         setData(result)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
@@ -43,7 +44,7 @@ export default function QuizEditPage({
     }
 
     loadQuizData()
-  }, [params.quizId, router])
+  }, [quizId, router])
 
   // Loading state
   if (isLoading) {

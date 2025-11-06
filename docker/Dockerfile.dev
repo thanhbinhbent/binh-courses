@@ -1,0 +1,34 @@
+# Multi-stage Dockerfile for Development
+# Stage 1: Base
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+RUN apk add --no-cache libc6-compat curl
+
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Stage 2: Development
+FROM base AS development
+
+# Install all dependencies including devDependencies
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Expose port
+EXPOSE 3000
+
+# Set environment to development
+ENV NODE_ENV=development
+
+# Start development server
+CMD ["npm", "run", "dev"]

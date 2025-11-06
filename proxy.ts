@@ -10,6 +10,8 @@ export default auth((req) => {
     pathname.startsWith('/sign-in') ||
     pathname.startsWith('/sign-up') ||
     pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/courses') ||  // Allow public access to courses API
+    pathname.startsWith('/api/test') ||     // Allow test API
     pathname.startsWith('/courses') ||
     pathname.startsWith('/search')
 

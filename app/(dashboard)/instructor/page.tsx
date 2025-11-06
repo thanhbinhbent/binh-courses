@@ -181,7 +181,7 @@ export default function InstructorDashboard() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Chapters:</span>
-                      <span className="font-medium">{course._count.chapters}</span>
+                      <span className="font-medium">{course._count?.chapters || 0}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Price:</span>

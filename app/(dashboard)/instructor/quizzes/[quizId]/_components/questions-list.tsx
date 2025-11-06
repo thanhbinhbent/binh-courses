@@ -6,29 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { PlusCircle, Pencil, Trash2, GripVertical } from "lucide-react"
 import { QuestionBuilder } from "./question-builder"
-import axios from "axios"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-
-interface Question {
-  id: string
-  type: string
-  text: string
-  order: number
-  points: number
-  options: Array<{
-    id: string
-    text: string
-    isCorrect: boolean
-    order: number
-  }>
-}
+import { QuizQuestion } from "@/lib/types"
+import { instructorQuizService } from "@/lib/services"
 
 interface QuestionsListProps {
   quiz: {
     id: string
   }
-  questions: Question[]
+  questions: QuizQuestion[]
 }
 
 export function QuestionsList({ quiz, questions }: QuestionsListProps) {
@@ -44,7 +31,7 @@ export function QuestionsList({ quiz, questions }: QuestionsListProps) {
 
     try {
       setDeletingId(questionId)
-      await axios.delete(`/api/quizzes/${quiz.id}/questions/${questionId}`)
+      await instructorQuizService.deleteQuestion(quiz.id, questionId)
       toast.success("Question deleted")
       router.refresh()
     } catch (error) {
@@ -141,7 +128,7 @@ export function QuestionsList({ quiz, questions }: QuestionsListProps) {
                           ({question.points} {question.points === 1 ? "point" : "points"})
                         </span>
                       </p>
-                      <p className="text-sm text-muted-foreground">{question.text}</p>
+                      <p className="text-sm text-muted-foreground">{question.question}</p>
                     </div>
                     <Badge variant="outline">{getQuestionTypeLabel(question.type)}</Badge>
                   </div>

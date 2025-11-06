@@ -96,5 +96,67 @@ export const quizService = {
     }
     
     return res.json()
+  },
+
+  /**
+   * Start a new quiz attempt
+   */
+  async startQuizAttempt(quizId: string): Promise<{ id: string }> {
+    const res = await fetch(`/api/quizzes/${quizId}/attempt`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 400) {
+        throw new Error('QUIZ_NOT_PUBLISHED')
+      }
+      throw new Error('Failed to start quiz')
+    }
+    
+    return res.json()
+  },
+
+  /**
+   * Save quiz answers
+   */
+  async saveQuizAnswers(quizId: string, attemptId: string, answers: Array<{ questionId: string; answer: string }>): Promise<void> {
+    const res = await fetch(`/api/quizzes/${quizId}/attempt/${attemptId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ answers }),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      throw new Error('Failed to save answers')
+    }
+  },
+
+  /**
+   * Submit quiz attempt
+   */
+  async submitQuizAttempt(quizId: string, attemptId: string): Promise<{ score: number; passed: boolean }> {
+    const res = await fetch(`/api/quizzes/${quizId}/attempt/${attemptId}/submit`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      throw new Error('Failed to submit quiz')
+    }
+    
+    return res.json()
   }
 }

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { BookOpen } from "lucide-react"
+import { authService } from "@/lib/services"
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -37,22 +38,12 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      await authService.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: "STUDENT"
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        toast.error(data.message || "Failed to create account")
-        return
-      }
 
       toast.success("Account created! Signing you in...")
 
@@ -69,8 +60,15 @@ export default function SignUpPage() {
         router.push("/dashboard")
         router.refresh()
       }
-    } catch {
-      toast.error("Something went wrong")
+    } catch (error) {
+      const err = error as Error
+      if (err.message === 'USER_EXISTS') {
+        toast.error("User already exists")
+      } else if (err.message === 'INVALID_DATA') {
+        toast.error("Invalid registration data")
+      } else {
+        toast.error("Something went wrong")
+      }
     } finally {
       setIsLoading(false)
     }

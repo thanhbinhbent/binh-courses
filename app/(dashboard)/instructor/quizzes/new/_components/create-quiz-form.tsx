@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
+import { instructorQuizService } from "@/lib/services"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -62,14 +62,16 @@ export function CreateQuizForm({ categories }: CreateQuizFormProps) {
     try {
       setIsSubmitting(true)
 
-      const response = await axios.post("/api/quizzes", {
+      const response = await instructorQuizService.createQuiz({
         ...values,
-        timeLimit: values.timeLimit ? parseInt(values.timeLimit) : null,
+        timeLimit: values.timeLimit ? parseInt(values.timeLimit) : undefined,
         passingScore: parseInt(values.passingScore),
+        allowRetake: true,
+        showCorrectAnswers: true,
       })
 
       toast.success("Quiz created successfully!")
-      router.push(`/instructor/quizzes/${response.data.id}`)
+      router.push(`/instructor/quizzes/${response.id}`)
     } catch (error) {
       toast.error("Failed to create quiz")
     } finally {

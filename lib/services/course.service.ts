@@ -117,5 +117,90 @@ export const courseService = {
     }
     
     return res.json()
+  },
+
+  /**
+   * Enroll in a course
+   */
+  async enrollInCourse(courseId: string): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}/enroll`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 400) {
+        throw new Error('ALREADY_ENROLLED')
+      }
+      if (res.status === 402) {
+        throw new Error('PURCHASE_REQUIRED')
+      }
+      throw new Error('Failed to enroll in course')
+    }
+  },
+
+  /**
+   * Mark chapter as complete
+   */
+  async markChapterComplete(chapterId: string): Promise<void> {
+    const res = await fetch(`/api/chapters/${chapterId}/progress`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      if (res.status === 403) {
+        throw new Error('FORBIDDEN')
+      }
+      throw new Error('Failed to mark chapter as complete')
+    }
+  },
+
+  /**
+   * Add or update course review
+   */
+  async addReview(courseId: string, rating: number, comment: string): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ rating, comment }),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      throw new Error('Failed to add review')
+    }
+  },
+
+  /**
+   * Update course review
+   */
+  async updateReview(courseId: string, reviewId: string, rating: number, comment: string): Promise<void> {
+    const res = await fetch(`/api/courses/${courseId}/reviews/${reviewId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ rating, comment }),
+    })
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        throw new Error('UNAUTHORIZED')
+      }
+      throw new Error('Failed to update review')
+    }
   }
 }
