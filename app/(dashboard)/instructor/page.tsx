@@ -72,17 +72,20 @@ export default function InstructorDashboard() {
   return (
     <DashboardLayout showBrowseCoursesButton={false}>
       <Container className="py-8">
-        <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Instructor Dashboard</h1>
-        <div className="flex gap-2">
-          <Link href="/instructor/quizzes">
-            <Button variant="outline">
+        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Instructor Dashboard</h1>
+          <p className="text-muted-foreground">Manage your courses and track student progress</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Link href="/instructor/quizzes" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto">
               <BookOpen className="mr-2 h-4 w-4" />
               Quizzes
             </Button>
           </Link>
-          <Link href="/instructor/courses/new">
-            <Button>
+          <Link href="/instructor/courses/new" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Create Course
             </Button>
@@ -92,39 +95,39 @@ export default function InstructorDashboard() {
 
       {/* Stats Cards */}
       <div className="mb-8 grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCourses}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.totalCourses}</div>
             <p className="text-xs text-muted-foreground">
               {stats.publishedCount} published
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Students</CardTitle>
+            <Users className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalStudents}</div>
+            <div className="text-2xl font-bold text-foreground">{stats.totalStudents}</div>
             <p className="text-xs text-muted-foreground">
               Across all courses
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-foreground">${stats.totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
               From all enrollments
             </p>
@@ -133,14 +136,23 @@ export default function InstructorDashboard() {
       </div>
 
       {/* Courses List */}
-        <h2 className="mb-4 text-xl font-semibold">Your Courses</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-foreground">Your Courses</h2>
+          {courses.length > 0 && (
+            <Badge variant="secondary" className="text-xs">
+              {courses.length} course{courses.length !== 1 ? 's' : ''}
+            </Badge>
+          )}
+        </div>
         {courses.length === 0 ? (
-          <Card>
+          <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <BookOpen className="mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No courses yet</h3>
-              <p className="mb-4 text-center text-muted-foreground">
-                Create your first course to start teaching
+              <div className="rounded-full bg-primary/10 p-3 mb-4">
+                <BookOpen className="h-12 w-12 text-primary" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">No courses yet</h3>
+              <p className="mb-4 text-center text-muted-foreground max-w-md">
+                Create your first course to start teaching and sharing your knowledge with students
               </p>
               <Link href="/instructor/courses/new">
                 <Button>

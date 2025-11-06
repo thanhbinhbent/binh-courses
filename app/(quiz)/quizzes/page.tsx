@@ -66,24 +66,28 @@ export default function QuizzesPage() {
 
       <Container className="py-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Practice Quizzes</h1>
-          <p className="text-muted-foreground">
-            Test your knowledge with our comprehensive quiz library
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="text-3xl font-bold mb-2 text-foreground">Practice Quizzes</h1>
+          <p className="text-muted-foreground max-w-2xl">
+            Test your knowledge with our comprehensive quiz library across various subjects and difficulty levels
           </p>
         </div>
+        
         {/* Filters */}
-        <div className="mb-8 flex items-center gap-4">
-          <Filter className="h-5 w-5 text-muted-foreground" />
+        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Filter className="h-5 w-5 text-primary" />
+            <span className="text-sm font-medium text-foreground">Filter by category:</span>
+          </div>
           <div className="flex flex-wrap gap-2">
             <Link href="/quizzes">
-              <Badge variant="default" className="cursor-pointer">
-                All
+              <Badge variant="default" className="cursor-pointer hover:bg-primary/90 transition-colors">
+                All Categories
               </Badge>
             </Link>
             {categories.map((category) => (
               <Link key={category.id} href={`/quizzes?category=${category.slug || category.id}`}>
-                <Badge variant="outline" className="cursor-pointer hover:bg-gray-100">
+                <Badge variant="outline" className="cursor-pointer hover:bg-secondary transition-colors">
                   {category.name}
                 </Badge>
               </Link>
@@ -93,19 +97,21 @@ export default function QuizzesPage() {
 
         {/* Quiz Grid */}
         {quizzes.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <BookOpen className="mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No quizzes available yet</h3>
-              <p className="text-center text-muted-foreground">
-                Check back later for new practice quizzes
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <div className="rounded-full bg-primary/10 p-4 mb-4">
+                <BookOpen className="h-12 w-12 text-primary" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">No quizzes available yet</h3>
+              <p className="text-center text-muted-foreground max-w-md">
+                We&apos;re working hard to bring you amazing practice quizzes. Check back soon!
               </p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {quizzes.map((quiz) => (
-              <Card key={quiz.id} className="transition-shadow hover:shadow-lg">
+              <Card key={quiz.id} className="group transition-all hover:shadow-lg hover:scale-[1.02] border-border bg-card">
                 <CardHeader>
                   <div className="mb-2 flex items-center justify-between">
                     <div className="flex flex-col gap-1">

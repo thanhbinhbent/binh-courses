@@ -78,44 +78,56 @@ export default function StudentDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-8 grid gap-4 md:grid-cols-4">
-          <Card>
+        <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Courses</CardTitle>
+              <BookOpen className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalCourses}</div>
+              <div className="text-2xl font-bold text-foreground">{stats.totalCourses}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Enrolled courses
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">In Progress</CardTitle>
+              <Clock className="h-4 w-4 text-warning" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.inProgress}</div>
+              <div className="text-2xl font-bold text-foreground">{stats.inProgress}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Currently learning
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
+              <TrendingUp className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.completed}</div>
+              <div className="text-2xl font-bold text-foreground">{stats.completed}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Courses finished
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Certificates</CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Certificates</CardTitle>
+              <Award className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.certificatesCount}</div>
+              <div className="text-2xl font-bold text-foreground">{stats.certificatesCount}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Earned certificates
+              </p>
             </CardContent>
           </Card>
         </div>

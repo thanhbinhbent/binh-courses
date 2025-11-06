@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -9,13 +10,13 @@ interface PublicLayoutProps {
 
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="w-full border-b bg-white">
+      <header className="w-full border-b bg-card/50 backdrop-blur-sm">
         <Container className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center gap-2">
-            <BookOpen className="h-6 w-6" />
-            <span className="text-xl font-bold">Modern LMS</span>
+            <BookOpen className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold text-foreground">Modern LMS</span>
           </Link>
           <nav className="flex items-center gap-4">
             <Link href="/courses">
@@ -30,6 +31,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             <Link href="/sign-in">
               <Button>Sign In</Button>
             </Link>
+            <ThemeToggle />
           </nav>
         </Container>
       </header>

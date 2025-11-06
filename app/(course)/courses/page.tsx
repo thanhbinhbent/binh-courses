@@ -66,21 +66,26 @@ export default function CoursesPage() {
 
       <Container className="py-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold">Explore Courses</h1>
-          <p className="text-lg text-muted-foreground">
-            Choose from {courses.length} courses to advance your career
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="mb-2 text-4xl font-bold text-foreground">Explore Courses</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl">
+            Choose from {courses.length} expertly crafted courses to advance your career and achieve your learning goals
           </p>
         </div>
 
         {/* Categories */}
         {categories.length > 0 && (
           <div className="mb-8">
-            <h2 className="mb-4 text-xl font-semibold">Browse by Category</h2>
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Browse by Category</h2>
             <div className="flex flex-wrap gap-2">
+              <Link href="/courses">
+                <Badge variant="default" className="cursor-pointer px-4 py-2 text-sm hover:bg-primary/90 transition-colors">
+                  All Courses
+                </Badge>
+              </Link>
               {categories.map(category => (
                 <Link key={category.id} href={`/courses?category=${category.slug}`}>
-                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm hover:bg-blue-50">
+                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm hover:bg-secondary transition-colors">
                     {category.name}
                   </Badge>
                 </Link>
@@ -93,9 +98,9 @@ export default function CoursesPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {courses.map(course => (
             <Link key={course.id} href={`/courses/${course.id}`}>
-              <Card className="group h-full cursor-pointer transition-all hover:shadow-lg">
+              <Card className="group h-full cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] bg-card border-border">
                 {/* Course Image */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-gray-200">
+                <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
                   {course.imageUrl ? (
                     <Image
                       src={course.imageUrl}
@@ -105,7 +110,7 @@ export default function CoursesPage() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <BookOpen className="h-12 w-12 text-gray-400" />
+                      <BookOpen className="h-12 w-12 text-muted-foreground" />
                     </div>
                   )}
                 </div>

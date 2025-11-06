@@ -70,14 +70,14 @@ export default function InstructorQuizzesPage() {
   return (
     <DashboardLayout showBrowseCoursesButton={false}>
       <Container className="py-6">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Your Quizzes</h1>
+            <h1 className="text-2xl font-bold text-foreground">Your Quizzes</h1>
             <p className="text-sm text-muted-foreground">
               Create and manage quizzes for your students
             </p>
           </div>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/instructor/quizzes/new">
               <PlusCircle className="mr-2 h-4 w-4" />
               New Quiz

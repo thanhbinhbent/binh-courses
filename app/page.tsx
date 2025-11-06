@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { BookOpen, Award, Users, TrendingUp, CheckCircle2, Star } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="w-full border-b">
+      <header className="w-full border-b bg-card/50 backdrop-blur-sm">
         <Container className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <BookOpen className="h-6 w-6" />
-            <span className="text-xl font-bold">Modern LMS</span>
+            <BookOpen className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold text-foreground">Modern LMS</span>
           </div>
           <nav className="flex items-center gap-4">
             <Link href="/courses">
@@ -26,45 +27,46 @@ export default function Home() {
             <Link href="/sign-up">
               <Button>Get Started</Button>
             </Link>
+            <ThemeToggle />
           </nav>
         </Container>
       </header>
 
       {/* Hero Section */}
-      <section className="flex-1 bg-gradient-to-b from-blue-50 to-white py-20">
+      <section className="flex-1 bg-gradient-to-br from-background via-secondary/20 to-primary/10 py-20">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
+            <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl">
               Learn. Practice. Excel.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground">
               Master AWS, Azure, ISTQB, and more with our comprehensive learning platform.
               Expert-led courses, hands-on practice, and real certifications.
             </p>
-            <div className="mt-10 flex justify-center gap-4">
+            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/sign-up">
-                <Button size="lg" className="h-12">
+                <Button size="lg" className="h-12 w-full sm:w-auto">
                   Start Learning Free
                 </Button>
               </Link>
               <Link href="/courses">
-                <Button size="lg" variant="outline" className="h-12">
+                <Button size="lg" variant="outline" className="h-12 w-full sm:w-auto">
                   Browse Courses
                 </Button>
               </Link>
             </div>
             
-            <div className="mt-10 flex justify-center gap-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 text-sm text-muted-foreground">
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-success" />
                 <span>1000+ Students</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-success" />
                 <span>50+ Courses</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <div className="flex items-center justify-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-success" />
                 <span>Expert Instructors</span>
               </div>
             </div>
@@ -119,7 +121,7 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-20">
         <Container>
-          <div className="rounded-lg bg-blue-600 px-6 py-16 text-center text-white">
+          <div className="rounded-lg bg-primary px-6 py-16 text-center text-primary-foreground">
             <h2 className="text-3xl font-bold">Ready to Start Learning?</h2>
             <p className="mt-4 text-lg opacity-90">
               Join thousands of students already learning on Modern LMS
@@ -145,9 +147,9 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="flex flex-col items-center text-center">
-      <div className="mb-4 rounded-lg bg-blue-50 p-3 text-blue-600">{icon}</div>
-      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+    <div className="flex flex-col items-center text-center p-6 rounded-lg border bg-card hover:shadow-md transition-shadow">
+      <div className="mb-4 rounded-lg bg-primary/10 p-3 text-primary">{icon}</div>
+      <h3 className="mb-2 text-lg font-semibold text-foreground">{title}</h3>
       <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   );
@@ -156,12 +158,12 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
 function CategoryCard({ name, courses }: { name: string; courses: number }) {
   return (
     <Link href={`/courses?category=${name.toLowerCase().replace(/\s+/g, "-")}`}>
-      <div className="group cursor-pointer rounded-lg border bg-white p-6 transition-all hover:border-blue-500 hover:shadow-lg">
-        <h3 className="text-lg font-semibold group-hover:text-blue-600">{name}</h3>
+      <div className="group cursor-pointer rounded-lg border bg-card p-6 transition-all hover:border-primary hover:shadow-lg">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary">{name}</h3>
         <p className="mt-2 text-sm text-muted-foreground">{courses} courses</p>
-        <div className="mt-4 flex items-center gap-1 text-yellow-500">
+        <div className="mt-4 flex items-center gap-1 text-warning">
           <Star className="h-4 w-4 fill-current" />
-          <span className="text-sm font-medium text-gray-900">4.8</span>
+          <span className="text-sm font-medium text-foreground">4.8</span>
         </div>
       </div>
     </Link>
