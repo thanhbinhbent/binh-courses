@@ -104,7 +104,7 @@ export const CourseSidebar = ({
                       return (
                         <Link
                           key={lesson.id}
-                          href={isLessonLocked ? '#' : `/courses/${course.id}/chapters/${chapter.id}/lessons/${lesson.id}`}
+                          href={isLessonLocked ? '#' : `/courses/${course.id}/learn?chapter=${chapter.id}&lesson=${lesson.id}`}
                           className={`block ${isLessonLocked ? 'cursor-not-allowed opacity-50' : ''}`}
                         >
                           <div className={`flex items-center gap-2 rounded-lg p-2 text-sm transition-colors ${

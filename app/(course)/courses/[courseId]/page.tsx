@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, BookOpen, Clock, Award, CheckCircle2, PlayCircle } from "lucide-react"
+import { Loader2, BookOpen, Award, CheckCircle2, PlayCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,8 +14,9 @@ import { PublicLayout } from "@/components/layout/public-layout"
 import { EnrollButton } from "./_components/enroll-button"
 import { CourseReviews } from "./_components/course-reviews"
 import { AddReviewForm } from "./_components/add-review-form"
+import { CourseContent } from "./_components/course-content"
 import { courseService, type CourseDetailsResponse } from "@/lib/services/course.service"
-import type { ChapterWithLessons, Lesson } from "@/types/course.d"
+import type { ChapterWithLessons } from "@/types/course.d"
 
 export default function CourseDetailPage({
   params
@@ -80,13 +81,13 @@ export default function CourseDetailPage({
 
   return (
     <PublicLayout>
-      <Container className="py-8">
-        <div className="grid gap-6 lg:grid-cols-3">
+      <Container className="py-6 lg:py-8">
+        <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-8">
             {/* Course Image */}
             {course.imageUrl && (
-              <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-lg">
+              <div className="relative aspect-video w-full overflow-hidden rounded-xl border shadow-sm">
                 <Image
                   src={course.imageUrl}
                   alt={course.title}
@@ -97,45 +98,51 @@ export default function CourseDetailPage({
             )}
 
             {/* Course Info */}
-            <div className="mb-6">
-              <div className="mb-4 flex items-center gap-2">
-                {course.category && (
-                  <Badge variant="secondary">{course.category.name}</Badge>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  {course.category && (
+                    <Badge variant="secondary" className="px-3 py-1">
+                      {course.category.name}
+                    </Badge>
+                  )}
+                  <Badge variant="outline" className="px-3 py-1">
+                    {course.level}
+                  </Badge>
+                </div>
+
+                <h1 className="text-3xl lg:text-4xl font-bold leading-tight">
+                  {course.title}
+                </h1>
+
+                {course.description && (
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    {course.description}
+                  </p>
                 )}
-                <Badge variant="outline">{course.level}</Badge>
               </div>
 
-              <h1 className="mb-4 text-3xl font-bold">{course.title}</h1>
-
-              {course.description && (
-                <p className="mb-6 text-lg text-muted-foreground">
-                  {course.description}
-                </p>
-              )}
-
               {/* Stats */}
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-8 text-sm">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <BookOpen className="h-4 w-4" />
-                  <span>{course.chapters.length} chapters</span>
+                  <span className="font-medium">{course.chapters.length} chapters</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Award className="h-4 w-4" />
-                  <span>{course._count?.enrollments || 0} students</span>
+                  <span className="font-medium">{course._count?.enrollments || 0} students</span>
                 </div>
               </div>
             </div>
 
-            <Separator className="my-6" />
-
             {/* Instructor */}
             {course.instructor && (
-              <>
-                <div className="mb-6">
-                  <h2 className="mb-4 text-xl font-semibold">Instructor</h2>
+              <Card className="border-l-4 border-l-primary">
+                <CardContent className="pt-6">
+                  <h3 className="text-lg font-semibold mb-4">Meet Your Instructor</h3>
                   <div className="flex items-start gap-4">
                     {course.instructor.image && (
-                      <div className="relative h-16 w-16 overflow-hidden rounded-full">
+                      <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-muted">
                         <Image
                           src={course.instructor.image}
                           alt={course.instructor.name || "Instructor"}
@@ -144,128 +151,38 @@ export default function CourseDetailPage({
                         />
                       </div>
                     )}
-                    <div>
-                      <p className="font-semibold">{course.instructor.name}</p>
+                    <div className="flex-1">
+                      <p className="font-semibold text-lg">{course.instructor.name}</p>
+                      <p className="text-sm text-muted-foreground">Course Instructor</p>
                     </div>
                   </div>
-                </div>
-
-                <Separator className="my-6" />
-              </>
+                </CardContent>
+              </Card>
             )}
 
-            {/* Chapters */}
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Course Content</h2>
-              <div className="space-y-2">
-                {chapters.map((chapter, index) => (
-                  <Card key={chapter.id} className="overflow-hidden">
-                    <CardContent className="p-0">
-                      {/* Chapter Header */}
-                      <div className="flex items-center justify-between border-b p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                            {index + 1}
-                          </div>
-                          <div>
-                            <p className="font-medium">{chapter.title}</p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <PlayCircle className="h-3 w-3" />
-                                <span>{chapter.lessons?.length || 0} lessons</span>
-                              </div>
-                              {/* Calculate total duration of lessons */}
-                              {chapter.lessons?.some(lesson => lesson.duration) && (
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  <span>
-                                    {Math.round(
-                                      chapter.lessons.reduce(
-                                        (total, lesson) => total + (lesson.duration || 0), 
-                                        0
-                                      ) / 60
-                                    )} min
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {chapter.isFree && (
-                            <Badge variant="outline" className="text-xs">
-                              Preview
-                            </Badge>
-                          )}
-                          {isEnrolled && chapter.userProgress?.[0]?.isCompleted && (
-                            <CheckCircle2 className="h-5 w-5 text-success" />
-                          )}
-                          {(isEnrolled || chapter.isFree) && (
-                            <Link href={`/courses/${course.id}/chapters/${chapter.id}`}>
-                              <Button size="sm" variant="ghost">
-                                <PlayCircle className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Lessons List */}
-                      {chapter.lessons && chapter.lessons.length > 0 && (
-                        <div className="divide-y bg-muted/50">
-                          {chapter.lessons.map((lesson, lessonIndex) => (
-                            <div
-                              key={lesson.id}
-                              className="flex items-center justify-between px-4 py-2"
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="text-sm text-muted-foreground">
-                                  {lessonIndex + 1}.
-                                </div>
-                                <div>
-                                  <p className="text-sm">{lesson.title}</p>
-                                  {lesson.duration && lesson.duration > 0 && (
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                      <Clock className="h-3 w-3" />
-                                      <span>{Math.round(lesson.duration / 60)} min</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {lesson.isFree && (
-                                  <Badge variant="outline" className="text-xs">
-                                    Free
-                                  </Badge>
-                                )}
-                                {(isEnrolled || lesson.isFree) && (
-                                  <Link href={`/courses/${course.id}/chapters/${chapter.id}/lessons/${lesson.id}`}>
-                                    <Button size="sm" variant="ghost">
-                                      <PlayCircle className="h-3 w-3" />
-                                    </Button>
-                                  </Link>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+            {/* Course Content */}
+            <CourseContent 
+              chapters={chapters}
+              courseId={course.id}
+              isEnrolled={isEnrolled}
+            />
 
             {/* Reviews Section */}
-            <div>
-              <h2 className="mb-4 text-xl font-semibold">Student Reviews</h2>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold">Student Reviews</h2>
+                <p className="text-muted-foreground">
+                  See what other students are saying about this course
+                </p>
+              </div>
               
               {/* Add/Edit Review Form (only for enrolled students) */}
               {isEnrolled && user && (
-                <div className="mb-6">
-                  <AddReviewForm courseId={course.id} existingReview={userReview || undefined} />
-                </div>
+                <Card className="border-dashed">
+                  <CardContent className="pt-6">
+                    <AddReviewForm courseId={course.id} existingReview={userReview || undefined} />
+                  </CardContent>
+                </Card>
               )}
 
               {/* Reviews List */}
@@ -288,39 +205,57 @@ export default function CourseDetailPage({
           </div>
 
           {/* Sidebar */}
-          <div>
-            <Card className="sticky top-4">
-              <CardHeader>
-                <CardTitle>
+          <div className="space-y-6">
+            <Card className="sticky top-6 shadow-lg border-2">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-center">
                   {isEnrolled ? (
-                    <div className="text-success">Enrolled</div>
+                    <div className="space-y-2">
+                      <Badge className="bg-green-100 text-green-800 border-green-200 px-4 py-2">
+                        ✓ Enrolled
+                      </Badge>
+                    </div>
                   ) : isFree ? (
-                    <div className="text-2xl font-bold text-foreground">Free</div>
+                    <div className="space-y-2">
+                      <div className="text-3xl font-bold text-green-600">Free</div>
+                      <p className="text-sm text-muted-foreground font-normal">
+                        No cost to start learning
+                      </p>
+                    </div>
                   ) : (
-                    <div className="text-2xl font-bold text-foreground">${course.price}</div>
+                    <div className="space-y-2">
+                      <div className="text-3xl font-bold text-primary">${course.price}</div>
+                      <p className="text-sm text-muted-foreground font-normal">
+                        One-time payment
+                      </p>
+                    </div>
                   )}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 {isEnrolled ? (
                   <>
                     {/* Progress */}
-                    <div>
-                      <div className="mb-2 flex items-center justify-between text-sm">
-                        <span>Your Progress</span>
-                        <span className="font-semibold">{progress}%</span>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Your Progress</span>
+                        <span className="text-lg font-bold text-primary">{progress}%</span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div className="h-3 w-full overflow-hidden rounded-full bg-muted border">
                         <div
-                          className="h-full bg-success"
+                          className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
+                      <p className="text-xs text-muted-foreground text-center">
+                        Keep going! You&apos;re doing great
+                      </p>
                     </div>
 
                     {/* Continue Learning Button */}
-                    <Link href={`/courses/${course.id}/chapters/${course.chapters[0]?.id}`}>
-                      <Button className="w-full" size="lg">
+                    <Link href={`/courses/${course.id}/learn?chapter=${course.chapters[0]?.id}`}>
+                      <Button className="w-full h-12 text-base font-semibold" size="lg">
+                        <PlayCircle className="mr-2 h-5 w-5" />
                         Continue Learning
                       </Button>
                     </Link>
@@ -332,7 +267,7 @@ export default function CourseDetailPage({
                       <EnrollButton courseId={course.id} isFree={isFree} />
                     ) : (
                       <Link href="/sign-in">
-                        <Button className="w-full" size="lg">
+                        <Button className="w-full h-12 text-base font-semibold" size="lg">
                           Sign In to Enroll
                         </Button>
                       </Link>
@@ -343,20 +278,52 @@ export default function CourseDetailPage({
                 <Separator />
 
                 {/* What's Included */}
-                <div>
-                  <h3 className="mb-3 font-semibold">This course includes:</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-success" />
-                      <span>{course.chapters.length} chapters</span>
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">This course includes:</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <span className="font-medium">{course.chapters.length} chapters</span>
+                        <p className="text-xs text-muted-foreground">
+                          Comprehensive curriculum
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-success" />
-                      <span>Lifetime access</span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <span className="font-medium">Lifetime access</span>
+                        <p className="text-xs text-muted-foreground">
+                          Learn at your own pace
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-success" />
-                      <span>Certificate of completion</span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <span className="font-medium">Certificate of completion</span>
+                        <p className="text-xs text-muted-foreground">
+                          Validate your skills
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <span className="font-medium">Mobile friendly</span>
+                        <p className="text-xs text-muted-foreground">
+                          Learn anywhere, anytime
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

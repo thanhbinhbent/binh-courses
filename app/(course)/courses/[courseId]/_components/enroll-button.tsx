@@ -41,7 +41,7 @@ export function EnrollButton({ courseId, isFree }: EnrollButtonProps) {
 
   return (
     <Button
-      className="w-full"
+      className="w-full h-12 text-base font-semibold"
       size="lg"
       onClick={handleEnroll}
       disabled={isLoading}
