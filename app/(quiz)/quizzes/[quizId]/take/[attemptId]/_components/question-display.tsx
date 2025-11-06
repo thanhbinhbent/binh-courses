@@ -42,7 +42,7 @@ export function QuestionDisplay({
             {question.options.map((option) => (
               <div
                 key={option.id}
-                className="flex items-start space-x-3 rounded-lg border p-4 hover:bg-gray-50"
+                className="flex items-start space-x-3 rounded-lg border p-4 hover:bg-muted/50"
               >
                 <RadioGroupItem value={option.id} id={option.id} />
                 <Label htmlFor={option.id} className="flex-1 cursor-pointer font-normal">
@@ -63,7 +63,7 @@ export function QuestionDisplay({
             {question.options.map((option) => (
               <div
                 key={option.id}
-                className="flex items-start space-x-3 rounded-lg border p-4 hover:bg-gray-50"
+                className="flex items-start space-x-3 rounded-lg border p-4 hover:bg-muted/50"
               >
                 <RadioGroupItem value={option.id} id={option.id} />
                 <Label htmlFor={option.id} className="flex-1 cursor-pointer font-normal">

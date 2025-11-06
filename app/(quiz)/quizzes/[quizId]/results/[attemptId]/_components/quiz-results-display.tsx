@@ -26,9 +26,9 @@ export function QuizResultsDisplay({
   quizId
 }: QuizResultsDisplayProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b bg-white">
+      <div className="border-b bg-card">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="mb-4 flex items-center justify-center">
@@ -186,7 +186,7 @@ export function QuizResultsDisplay({
 
                         {/* For text answers */}
                         {(question.type === "SHORT_ANSWER" || question.type === "ESSAY") && answer?.answer && (
-                          <div className="rounded-lg border bg-gray-50 p-3">
+                          <div className="rounded-lg border bg-muted p-3">
                             <p className="text-sm font-medium">Your Answer:</p>
                             <p className="mt-1 text-sm text-muted-foreground">
                               {answer.answer}

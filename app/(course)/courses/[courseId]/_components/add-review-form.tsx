@@ -76,7 +76,7 @@ export function AddReviewForm({ courseId, existingReview }: AddReviewFormProps) 
                     className={`h-8 w-8 ${
                       value <= (hoveredRating || rating)
                         ? "fill-yellow-400 text-yellow-400"
-                        : "text-gray-300"
+                        : "text-muted-foreground"
                     }`}
                   />
                 </button>

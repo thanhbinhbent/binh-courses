@@ -148,9 +148,9 @@ export function QuizTakingInterface({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b bg-white shadow-sm">
+      <div className="sticky top-0 z-10 border-b bg-card shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -260,7 +260,7 @@ export function QuizTakingInterface({
                         aspect-square rounded-lg border-2 text-sm font-semibold transition-colors
                         ${isCurrent ? "border-blue-600 bg-blue-100 text-blue-900" : ""}
                         ${!isCurrent && isAnswered ? "border-green-600 bg-green-100 text-green-900" : ""}
-                        ${!isCurrent && !isAnswered ? "border-gray-300 bg-white hover:bg-gray-100" : ""}
+                        ${!isCurrent && !isAnswered ? "border-border bg-card hover:bg-muted/50" : ""}
                       `}
                     >
                       {index + 1}

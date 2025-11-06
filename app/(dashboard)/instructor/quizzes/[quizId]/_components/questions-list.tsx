@@ -112,7 +112,7 @@ export function QuestionsList({ quiz, questions }: QuestionsListProps) {
           return (
             <div
               key={question.id}
-              className="rounded-lg border bg-white p-4 transition-colors hover:bg-gray-50"
+              className="rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50"
             >
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 cursor-move pt-1">

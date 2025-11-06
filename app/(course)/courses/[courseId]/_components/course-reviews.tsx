@@ -46,7 +46,7 @@ export function CourseReviews({ reviews, averageRating, totalReviews }: CourseRe
                     className={`h-4 w-4 ${
                       star <= Math.round(averageRating)
                         ? "fill-yellow-400 text-yellow-400"
-                        : "text-gray-300"
+                        : "text-muted-foreground"
                     }`}
                   />
                 ))}
@@ -65,7 +65,7 @@ export function CourseReviews({ reviews, averageRating, totalReviews }: CourseRe
                       <span className="text-sm">{rating}</span>
                       <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                     </div>
-                    <div className="h-2 flex-1 rounded-full bg-gray-200">
+                    <div className="h-2 flex-1 rounded-full bg-muted">
                       <div
                         className="h-full rounded-full bg-yellow-400"
                         style={{ width: `${percentage}%` }}
@@ -95,8 +95,8 @@ export function CourseReviews({ reviews, averageRating, totalReviews }: CourseRe
                     className="h-10 w-10 rounded-full"
                   />
                 ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                    <User className="h-5 w-5 text-gray-500" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                    <User className="h-5 w-5 text-muted-foreground" />
                   </div>
                 )}
 
@@ -112,7 +112,7 @@ export function CourseReviews({ reviews, averageRating, totalReviews }: CourseRe
                               className={`h-4 w-4 ${
                                 star <= review.rating
                                   ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
+                                  : "text-muted-foreground"
                               }`}
                             />
                           ))}

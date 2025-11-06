@@ -193,7 +193,7 @@ export function ChaptersList({ courseId, chapters }: ChaptersListProps) {
           {chapters.map((chapter) => (
             <div
               key={chapter.id}
-              className="flex items-center gap-2 rounded-lg border bg-white p-3"
+              className="flex items-center gap-2 rounded-lg border bg-card p-3"
             >
               <div className="cursor-grab text-muted-foreground">
                 <GripVertical className="h-5 w-5" />
