@@ -7,6 +7,8 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
+import { Container } from "@/components/ui/container"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { studentService } from "@/lib/services/student.service"
 import type { StudentDashboardResponse } from "@/lib/types"
 
@@ -66,23 +68,9 @@ export default function StudentDashboard() {
   const { enrollments, inProgressCourses, completedCourses, certificates, stats, user } = data
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              <span className="text-xl font-bold">Modern LMS</span>
-            </div>
-            <Link href="/courses">
-              <Button>Browse Courses</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+    <DashboardLayout>
 
-      <div className="container mx-auto px-4 py-8">
+      <Container className="py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Welcome back, {user.name}! 👋</h1>
@@ -220,7 +208,7 @@ export default function StudentDashboard() {
             </Link>
           </Card>
         )}
-      </div>
-    </div>
+      </Container>
+    </DashboardLayout>
   )
 }

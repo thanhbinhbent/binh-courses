@@ -6,6 +6,8 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Container } from "@/components/ui/container"
+import { PublicLayout } from "@/components/layout/public-layout"
 import { quizService } from "@/lib/services/quiz.service"
 import type { QuizzesListResponse } from "@/lib/types"
 
@@ -60,31 +62,9 @@ export default function QuizzesPage() {
   const { quizzes, categories } = data
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              <span className="text-xl font-bold">Modern LMS</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/courses">
-                <Button variant="ghost">Courses</Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button variant="ghost">Dashboard</Button>
-              </Link>
-              <Link href="/sign-in">
-                <Button>Sign In</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+    <PublicLayout>
 
-      <div className="container mx-auto px-4 py-8">
+      <Container className="py-8">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Practice Quizzes</h1>
@@ -92,9 +72,6 @@ export default function QuizzesPage() {
             Test your knowledge with our comprehensive quiz library
           </p>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
         {/* Filters */}
         <div className="mb-8 flex items-center gap-4">
           <Filter className="h-5 w-5 text-muted-foreground" />
@@ -203,7 +180,7 @@ export default function QuizzesPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </Container>
+    </PublicLayout>
   )
 }

@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
 import { BookOpen, Award, Users, TrendingUp, CheckCircle2, Star } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between px-4">
+      <header className="w-full border-b">
+        <Container className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="h-6 w-6" />
             <span className="text-xl font-bold">Modern LMS</span>
@@ -26,12 +27,12 @@ export default function Home() {
               <Button>Get Started</Button>
             </Link>
           </nav>
-        </div>
+        </Container>
       </header>
 
       {/* Hero Section */}
       <section className="flex-1 bg-gradient-to-b from-blue-50 to-white py-20">
-        <div className="container px-4">
+        <Container>
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
               Learn. Practice. Excel.
@@ -68,12 +69,12 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Features Section */}
       <section className="py-20">
-        <div className="container px-4">
+        <Container>
           <h2 className="mb-12 text-center text-3xl font-bold">Why Choose Modern LMS?</h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
@@ -97,12 +98,12 @@ export default function Home() {
               description="Monitor your learning journey with detailed analytics"
             />
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Popular Categories */}
       <section className="bg-gray-50 py-20">
-        <div className="container px-4">
+        <Container>
           <h2 className="mb-12 text-center text-3xl font-bold">Popular Categories</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <CategoryCard name="AWS Certification" courses={15} />
@@ -112,12 +113,12 @@ export default function Home() {
             <CategoryCard name="Cloud Architecture" courses={7} />
             <CategoryCard name="Software Development" courses={20} />
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* CTA Section */}
       <section className="py-20">
-        <div className="container px-4">
+        <Container>
           <div className="rounded-lg bg-blue-600 px-6 py-16 text-center text-white">
             <h2 className="text-3xl font-bold">Ready to Start Learning?</h2>
             <p className="mt-4 text-lg opacity-90">
@@ -129,14 +130,14 @@ export default function Home() {
               </Button>
             </Link>
           </div>
-        </div>
+        </Container>
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container px-4 text-center text-sm text-muted-foreground">
+      <footer className="w-full border-t py-8">
+        <Container className="text-center text-sm text-muted-foreground">
           <p>© 2025 Modern LMS. All rights reserved.</p>
-        </div>
+        </Container>
       </footer>
     </div>
   );

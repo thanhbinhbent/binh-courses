@@ -7,6 +7,8 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Container } from "@/components/ui/container"
+import { PublicLayout } from "@/components/layout/public-layout"
 import { courseService, type CoursesListResponse } from "@/lib/services/course.service"
 
 export default function CoursesPage() {
@@ -60,31 +62,9 @@ export default function CoursesPage() {
   const { courses, categories } = data
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6" />
-              <span className="text-xl font-bold">Modern LMS</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/quizzes">
-                <Button variant="ghost">Quizzes</Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button variant="ghost">Dashboard</Button>
-              </Link>
-              <Link href="/sign-in">
-                <Button>Sign In</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+    <PublicLayout>
 
-      <div className="container mx-auto px-4 py-8">
+      <Container className="py-8">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-4xl font-bold">Explore Courses</h1>
@@ -202,7 +182,7 @@ export default function CoursesPage() {
             </p>
           </Card>
         )}
-      </div>
-    </div>
+      </Container>
+    </PublicLayout>
   )
 }
