@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChapterDetailsForm } from "./_components/chapter-details-form"
-import { ChapterVideoForm } from "./_components/chapter-video-form"
+// import { ChapterVideoForm } from "./_components/chapter-video-form" // Removed component
 import { ChapterAccessForm } from "./_components/chapter-access-form"
 import { instructorCourseService } from "@/lib/services/instructor-course.service"
 import type { ChapterDetailsResponse } from "@/lib/services/instructor-course.service"
@@ -147,19 +147,15 @@ export default function ChapterEditPage({
 
         {/* Video & Resources */}
         <div className="space-y-6">
+          {/* Video management moved to lesson level */}
           <Card>
             <CardHeader>
-              <CardTitle>Chapter Video</CardTitle>
+              <CardTitle>Chapter Lessons</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChapterVideoForm
-                courseId={courseId}
-                chapterId={chapterId}
-                initialData={{
-                  videoUrl: chapter.videoUrl || "",
-                  duration: chapter.duration || 0
-                }}
-              />
+              <p className="text-sm text-muted-foreground">
+                Lesson management coming soon. Videos are managed at lesson level.
+              </p>
             </CardContent>
           </Card>
 
@@ -171,23 +167,6 @@ export default function ChapterEditPage({
               <p className="text-sm text-muted-foreground">
                 Resource management coming soon...
               </p>
-              {chapter.resources && chapter.resources.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {chapter.resources.map((resource: { id: string; name: string; url: string }) => (
-                    <div key={resource.id} className="rounded-lg border p-3">
-                      <p className="font-medium">{resource.name}</p>
-                      <a
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        {resource.url}
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>

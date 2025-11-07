@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { CourseSettingsForm } from "./_components/course-settings-form"
-import { ChaptersList } from "./_components/chapters-list"
+// import { ChaptersList } from "./_components/chapters-list" // Removed component
 import { PublishButton } from "./_components/publish-button"
 import { instructorCourseService } from "@/lib/services/instructor-course.service"
 import type { CourseDetailsResponse } from "@/lib/services/instructor-course.service"
@@ -89,11 +89,7 @@ export default function CourseEditPage({
             <Badge variant={course.isPublished ? "default" : "secondary"}>
               {course.isPublished ? "Published" : "Draft"}
             </Badge>
-            {(course._count?.enrollments || 0) > 0 && (
-              <Badge variant="outline">
-                {course._count?.enrollments || 0} student{(course._count?.enrollments || 0) !== 1 ? "s" : ""}
-              </Badge>
-            )}
+            {/* Enrollment count will be added later */}
           </div>
         </div>
 
@@ -149,7 +145,9 @@ export default function CourseEditPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ChaptersList courseId={course.id} chapters={course.chapters} />
+              <p className="text-sm text-muted-foreground">
+                Chapters management coming soon...
+              </p>
             </CardContent>
           </Card>
         </div>

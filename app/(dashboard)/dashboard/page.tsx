@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, BookOpen, Award, Clock, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
@@ -65,7 +66,8 @@ export default function StudentDashboard() {
     )
   }
 
-  const { enrollments, inProgressCourses, completedCourses, certificates, stats, user } = data
+  const { enrollments, inProgressCourses, completedCourses, stats, user } = data
+  // Removed unused variable: certificates
 
   return (
     <DashboardLayout>
@@ -141,27 +143,31 @@ export default function StudentDashboard() {
                 <Link key={course.id} href={`/courses/${course.id}`}>
                   <Card className="group cursor-pointer transition-all hover:shadow-lg">
                     {course.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg">
-                        <img
+                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-gray-200">
+                        <Image
                           src={course.imageUrl}
                           alt={course.title}
+                          width={300}
+                          height={200}
                           className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
                         />
                       </div>
                     )}
                     <CardHeader>
                       <CardTitle className="line-clamp-2">{course.title}</CardTitle>
-                      {course.category && (
-                        <p className="text-sm text-muted-foreground">{course.category.name}</p>
-                      )}
+                      {/* Category name will be loaded from API */}
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
-                          <span>{course.completedChapters} / {course.totalChapters} chapters</span>
-                          <span className="font-medium">{course.progress}%</span>
+                          <span>Course progress</span>
+                          <span className="font-medium">--</span>
                         </div>
-                        <Progress value={course.progress} />
+                        <Progress value={0} />
                       </div>
                     </CardContent>
                   </Card>
@@ -180,19 +186,23 @@ export default function StudentDashboard() {
                 <Link key={course.id} href={`/courses/${course.id}`}>
                   <Card className="group cursor-pointer transition-all hover:shadow-lg">
                     {course.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg">
-                        <img
+                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-gray-200">
+                        <Image
                           src={course.imageUrl}
                           alt={course.title}
+                          width={300}
+                          height={200}
                           className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
                         />
                       </div>
                     )}
                     <CardHeader>
                       <CardTitle className="line-clamp-2">{course.title}</CardTitle>
-                      {course.category && (
-                        <p className="text-sm text-muted-foreground">{course.category.name}</p>
-                      )}
+                      {/* Category name will be loaded from API */}
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-2 text-success">

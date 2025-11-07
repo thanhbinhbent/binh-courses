@@ -4,9 +4,10 @@ import { db } from "@/lib/db"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { quizId: string; attemptId: string } }
+  { params }: { params: Promise<{ quizId: string; attemptId: string }> }
 ) {
   try {
+    const { quizId, attemptId } = await params
     const user = await getCurrentUser()
 
     if (!user) {
@@ -15,9 +16,9 @@ export async function GET(
 
     const attempt = await db.quizAttempt.findUnique({
       where: {
-        id: params.attemptId,
+        id: attemptId,
         userId: user.id,
-        quizId: params.quizId
+        quizId: quizId
       },
       include: {
         quiz: {
@@ -43,7 +44,7 @@ export async function GET(
       return NextResponse.json(
         { 
           error: 'NOT_COMPLETED',
-          redirectTo: `/quizzes/${params.quizId}/take/${params.attemptId}`
+          redirectTo: `/quizzes/${quizId}/take/${attemptId}`
         },
         { status: 400 }
       )

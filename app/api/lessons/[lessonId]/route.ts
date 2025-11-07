@@ -4,15 +4,16 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   req: Request,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
+  const { lessonId } = await params
   try {
     const session = await auth()
     const userId = session?.user?.id
 
     const lesson = await db.lesson.findUnique({
       where: {
-        id: params.lessonId,
+        id: lessonId,
       },
       include: {
         chapter: {
@@ -85,9 +86,10 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   try {
+    const { lessonId } = await params
     const session = await auth()
     const userId = session?.user?.id
 
@@ -102,12 +104,12 @@ export async function PATCH(
       where: {
         userId_lessonId: {
           userId,
-          lessonId: params.lessonId,
+          lessonId: lessonId,
         },
       },
       create: {
         userId,
-        lessonId: params.lessonId,
+        lessonId: lessonId,
         isCompleted: true,
       },
       update: {

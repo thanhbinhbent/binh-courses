@@ -37,7 +37,7 @@ async function main() {
     const hashedPassword = await bcrypt.hash('password123', 10)
 
     // Create admin user
-    const admin = await db.user.upsert({
+    await db.user.upsert({
       where: { email: 'admin@example.com' },
       update: {},
       create: {

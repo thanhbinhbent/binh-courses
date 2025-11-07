@@ -3,12 +3,8 @@
  * Handles API calls for instructor course management
  */
 
-import type {
-  Course,
-  CourseCategory,
-  Chapter,
-  CourseWithEnrollmentCount
-} from "@/lib/types"
+import type { Course, Category as CourseCategory, Chapter } from "@prisma/client"
+import type { CourseWithEnrollmentCount } from "@/lib/types"
 
 export interface CourseDetailsResponse {
   course: Course

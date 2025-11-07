@@ -1,106 +1,226 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { PlayCircle, Clock, FileText, CheckCircle2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { 
+  Play, 
+  FileText, 
+  Clock, 
+  CheckCircle2, 
+  Lock,
+  ArrowRight,
+  BookOpen
+} from "lucide-react"
 
 interface ChapterContentProps {
-  chapter: {
-    id: string
-    title: string
-    description?: string | null
-    lessons: Array<{
-      id: string
-      title: string
-      type: 'VIDEO' | 'ARTICLE' | 'QUIZ' | 'EXERCISE'
-      duration?: number | null
-      isFree: boolean
-      progress?: Array<{ isCompleted: boolean }>
-    }>
-    userProgress?: Array<{ isCompleted: boolean }>
-  }
+  chapter: any
   course: any
   courseId: string
   chapterId: string
 }
 
-export function ChapterContent({ chapter, courseId, chapterId }: ChapterContentProps) {
-  const totalDuration = chapter.lessons?.reduce((total: number, lesson: any) => total + (lesson.duration || 0), 0) || 0
-  const isCompleted = chapter.userProgress?.[0]?.isCompleted
+export function ChapterContent({ chapter, course, courseId, chapterId }: ChapterContentProps) {
+  const router = useRouter()
+
+  const lessons = chapter.lessons || []
+  const completedLessons = lessons.filter((lesson: any) => lesson.progress?.[0]?.isCompleted).length
+  const totalDuration = lessons.reduce((acc: number, lesson: any) => acc + (lesson.duration || 0), 0)
+  const progressPercentage = lessons.length > 0 ? (completedLessons / lessons.length) * 100 : 0
+
+  const startLesson = (lessonId: string) => {
+    router.push(`/courses/${courseId}/learn?chapter=${chapterId}&lesson=${lessonId}`)
+  }
+
+  const startFirstIncompleteLesson = () => {
+    const firstIncomplete = lessons.find((lesson: any) => !lesson.progress?.[0]?.isCompleted)
+    if (firstIncomplete) {
+      startLesson(firstIncomplete.id)
+    } else if (lessons.length > 0) {
+      startLesson(lessons[0].id)
+    }
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <div className="flex items-center gap-2 mb-4">
-        <h1 className="text-2xl font-bold">{chapter.title}</h1>
-        {isCompleted && (
-          <Badge variant="secondary">
-            <CheckCircle2 className="h-4 w-4 mr-2" />
-            Completed
-          </Badge>
-        )}
-      </div>
+    <div className="h-full overflow-y-auto bg-gray-50">
+      <div className="max-w-4xl mx-auto p-8">
+        {/* Chapter Header */}
+        <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <BookOpen className="h-6 w-6 text-blue-600" />
+            <Badge variant="outline" className="text-sm">
+              Chapter Overview
+            </Badge>
+          </div>
 
-      <p className="text-sm text-muted-foreground mb-4">{chapter.description}</p>
-      
-      <div className="flex items-center gap-4 mb-8">
-        <Badge variant="outline">
-          <Clock className="h-4 w-4 mr-2" />
-          {Math.ceil(totalDuration / 60)} min
-        </Badge>
-        <Badge variant="outline">
-          {chapter.lessons?.length || 0} lessons
-        </Badge>
-      </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            {chapter.title}
+          </h1>
 
-      <div className="grid gap-4">
-        {chapter.lessons?.map((lesson: any) => (
-          <Card key={lesson.id}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{lesson.title}</h3>
-                    {lesson.progress?.[0]?.isCompleted && (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    )}
+          {chapter.description && (
+            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+              {chapter.description}
+            </p>
+          )}
+
+          {/* Chapter Stats */}
+          <div className="flex flex-wrap items-center gap-6 mb-6">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>{completedLessons} of {lessons.length} lessons completed</span>
+            </div>
+            
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Clock className="h-4 w-4" />
+              <span>{Math.ceil(totalDuration / 60)} minutes total</span>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+              <span>Chapter Progress</span>
+              <span>{Math.round(progressPercentage)}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
+
+          {/* Action Button */}
+          <Button 
+            onClick={startFirstIncompleteLesson}
+            size="lg" 
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={lessons.length === 0}
+          >
+            <Play className="h-4 w-4 mr-2" />
+            {completedLessons === lessons.length 
+              ? "Review Chapter" 
+              : completedLessons > 0 
+                ? "Continue Learning" 
+                : "Start Chapter"
+            }
+          </Button>
+        </div>
+
+        {/* Lessons List */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Lessons in this chapter
+          </h2>
+
+          {lessons.map((lesson: any, index: number) => {
+            const isCompleted = lesson.progress?.[0]?.isCompleted
+            const isLocked = !lesson.isFree
+
+            return (
+              <Card 
+                key={lesson.id} 
+                className={`
+                  transition-all duration-200 hover:shadow-md cursor-pointer
+                  ${isLocked ? 'opacity-60' : ''}
+                  ${isCompleted ? 'border-green-200 bg-green-50/50' : ''}
+                `}
+                onClick={() => !isLocked && startLesson(lesson.id)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    {/* Lesson Number & Type Icon */}
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className={`
+                        w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                        ${isCompleted 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-gray-100 text-gray-600'
+                        }
+                      `}>
+                        {isCompleted ? (
+                          <CheckCircle2 className="h-4 w-4" />
+                        ) : (
+                          index + 1
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        {lesson.type === 'VIDEO' && (
+                          <Play className="h-4 w-4 text-blue-600" />
+                        )}
+                        {lesson.type === 'ARTICLE' && (
+                          <FileText className="h-4 w-4 text-purple-600" />
+                        )}
+                        {isLocked && (
+                          <Lock className="h-4 w-4 text-gray-400" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Lesson Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2">
+                            {lesson.title}
+                          </h3>
+                          
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <Badge variant="secondary" className="text-xs">
+                              {lesson.type}
+                            </Badge>
+                            
+                            {lesson.duration && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                <span>{Math.ceil(lesson.duration / 60)} min</span>
+                              </div>
+                            )}
+
+                            {isCompleted && (
+                              <Badge className="bg-green-100 text-green-700 text-xs">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Completed
+                              </Badge>
+                            )}
+
+                            {isLocked && (
+                              <Badge variant="secondary" className="text-xs">
+                                <Lock className="h-3 w-3 mr-1" />
+                                Premium
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex-shrink-0"
+                          disabled={isLocked}
+                        >
+                          {isCompleted ? "Review" : "Start"}
+                          <ArrowRight className="h-3 w-3 ml-1" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
 
-                <div className="flex items-center gap-2">
-                  {lesson.type === 'VIDEO' && (
-                    <Badge variant="secondary">
-                      <PlayCircle className="h-4 w-4 mr-2" />
-                      Video
-                    </Badge>
-                  )}
-                  {lesson.type === 'ARTICLE' && (
-                    <Badge variant="secondary">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Article
-                    </Badge>
-                  )}
-                  {lesson.duration && (
-                    <Badge variant="outline">
-                      <Clock className="h-4 w-4 mr-2" />
-                      {Math.ceil(lesson.duration / 60)} min
-                    </Badge>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="ml-4"
-                    asChild
-                  >
-                    <a href={`/courses/${courseId}/learn?chapter=${chapterId}&lesson=${lesson.id}`}>
-                      Start Lesson
-                    </a>
-                  </Button>
-                </div>
-              </div>
+        {lessons.length === 0 && (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="font-semibold text-gray-900 mb-2">No lessons yet</h3>
+              <p className="text-gray-600">
+                This chapter doesn't have any lessons available yet.
+              </p>
             </CardContent>
           </Card>
-        ))}
+        )}
       </div>
     </div>
   )

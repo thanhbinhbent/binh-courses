@@ -7,15 +7,16 @@ interface PageProps {
   params: Promise<{
     courseId: string
   }>
-  searchParams: {
+  searchParams: Promise<{
     chapter?: string
     lesson?: string
-  }
+  }>
 }
 
 export default async function Page({ params, searchParams }: PageProps) {
-  // Await params first (Next.js 15 requirement)
+  // Await params and searchParams (Next.js 15 requirement)
   const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
   
   // Fetch course data
   const response = await courseService.getCourseDetails(resolvedParams.courseId)
@@ -24,7 +25,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   }
 
   const { course } = response
-  const { chapter: chapterId, lesson: lessonId } = searchParams
+  const { chapter: chapterId, lesson: lessonId } = resolvedSearchParams
 
   // If no chapter selected, show first chapter
   if (!chapterId) {
@@ -49,8 +50,11 @@ export default async function Page({ params, searchParams }: PageProps) {
 
     return (
       <LessonContent
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         course={course as any}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any  
         chapter={currentChapter as any}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         lesson={currentLesson as any}
         courseId={resolvedParams.courseId}
         chapterId={chapterId}
@@ -62,7 +66,9 @@ export default async function Page({ params, searchParams }: PageProps) {
   // Show chapter overview
   return (
     <ChapterContent
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       course={course as any}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chapter={currentChapter as any}
       courseId={resolvedParams.courseId}
       chapterId={chapterId} 

@@ -3,7 +3,8 @@
  * Centralized type definitions for student dashboard and progress
  */
 
-import type { Course, Chapter, Enrollment } from "./course.types"
+import type { Enrollment } from "./course.types"
+import type { Course, Chapter } from "@prisma/client"
 import type { Quiz, QuizAttempt } from "./quiz.types"
 
 export interface EnrollmentWithCourse extends Enrollment {

@@ -10,6 +10,12 @@ import type {
   Enrollment,
 } from "@prisma/client"
 
+// Helper function to get base URL for fetch calls
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') return '' // Client side
+  return process.env.NEXTAUTH_URL || 'http://localhost:3000' // Server side
+}
+
 export interface CoursesListResponse {
   courses: (Course & {
     category: Category | null
@@ -124,7 +130,7 @@ export const courseService = {
    * Get all published courses with categories
    */
   async getCourses(): Promise<CoursesListResponse> {
-    const res = await fetch('/api/courses', {
+    const res = await fetch(`${getBaseUrl()}/api/courses`, {
       cache: 'no-store'
     })
     
@@ -139,7 +145,7 @@ export const courseService = {
    * Get course details with enrollment and reviews
    */
   async getCourseDetails(courseId: string): Promise<CourseDetailsResponse> {
-    const res = await fetch(`/api/courses/${courseId}/details`, {
+    const res = await fetch(`${getBaseUrl()}/api/courses/${courseId}/details`, {
       cache: 'no-store'
     })
     
@@ -157,7 +163,7 @@ export const courseService = {
    * Get chapter view data with navigation
    */
   async getChapterView(courseId: string, chapterId: string): Promise<ChapterViewResponse> {
-    const res = await fetch(`/api/courses/${courseId}/chapters/${chapterId}/view`, {
+    const res = await fetch(`${getBaseUrl()}/api/courses/${courseId}/chapters/${chapterId}/view`, {
       credentials: 'include',
       cache: 'no-store'
     })
@@ -181,8 +187,8 @@ export const courseService = {
   /**
    * Enroll in a course
    */
-  async enrollInCourse(courseId: string): Promise<void> {
-    const res = await fetch(`/api/courses/${courseId}/enroll`, {
+  async enrollCourse(courseId: string): Promise<{ success: boolean }> {
+    const res = await fetch(`${getBaseUrl()}/api/courses/${courseId}/enroll`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -204,8 +210,8 @@ export const courseService = {
   /**
    * Mark chapter as complete
    */
-  async markChapterComplete(chapterId: string): Promise<void> {
-    const res = await fetch(`/api/chapters/${chapterId}/progress`, {
+  async updateProgress(chapterId: string, isCompleted: boolean): Promise<void> {
+    const res = await fetch(`${getBaseUrl()}/api/chapters/${chapterId}/progress`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -225,7 +231,7 @@ export const courseService = {
    * Add or update course review
    */
   async addReview(courseId: string, rating: number, comment: string): Promise<void> {
-    const res = await fetch(`/api/courses/${courseId}/reviews`, {
+    const res = await fetch(`${getBaseUrl()}/api/courses/${courseId}/reviews`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -245,8 +251,8 @@ export const courseService = {
   /**
    * Update course review
    */
-  async updateReview(courseId: string, reviewId: string, rating: number, comment: string): Promise<void> {
-    const res = await fetch(`/api/courses/${courseId}/reviews/${reviewId}`, {
+  async deleteReview(courseId: string, reviewId: string): Promise<void> {
+    const res = await fetch(`${getBaseUrl()}/api/courses/${courseId}/reviews/${reviewId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
