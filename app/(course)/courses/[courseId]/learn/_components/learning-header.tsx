@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Menu, MoreVertical, BookOpen, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
 import { PaymentStatusBadge } from "@/components/payment-status-badge"
 
 interface Course {
@@ -55,7 +56,7 @@ export function LearningHeader({
   }
 
   return (
-    <header className="learning-header">
+    <header className="bg-background border-b border-border">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left side */}
         <div className="flex items-center gap-3">
@@ -78,7 +79,7 @@ export function LearningHeader({
             Back to course
           </Button>
 
-          <div className="hidden md:block w-px h-6 bg-border" />
+          <Separator orientation="vertical" className="hidden md:block h-6" />
 
           <div className="hidden md:flex items-center gap-3">
             <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -96,23 +97,11 @@ export function LearningHeader({
           </div>
         </div>
 
-        {/* Center - Progress (Desktop only) */}
-        <div className="hidden lg:flex items-center gap-3 flex-1 max-w-md mx-8">
-          <div className="flex-1">
-            <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-              <span>Course progress</span>
-              <span>{Math.round(progressPercentage)}%</span>
-            </div>
-            <Progress 
-              value={progressPercentage} 
-              className="h-1.5 bg-muted"
-            />
-          </div>
-        </div>
+
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1 text-xs text-gray-400">
+          <div className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground">
             <Users className="h-3 w-3" />
             <span>0</span>
           </div>
@@ -120,7 +109,7 @@ export function LearningHeader({
           <Button
             variant="ghost"
             size="sm"
-            className="text-white hover:bg-muted-foreground/90"
+            className="text-foreground hover:bg-accent"
           >
             <MoreVertical className="h-4 w-4" />
           </Button>
@@ -129,13 +118,13 @@ export function LearningHeader({
 
       {/* Mobile progress bar */}
       <div className="lg:hidden px-4 pb-3">
-        <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
+        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
           <span>{completedLessons} of {totalLessons} lessons</span>
           <span>{Math.round(progressPercentage)}%</span>
         </div>
         <Progress 
           value={progressPercentage} 
-          className="h-1.5 bg-muted"
+          className="h-1.5"
         />
       </div>
     </header>

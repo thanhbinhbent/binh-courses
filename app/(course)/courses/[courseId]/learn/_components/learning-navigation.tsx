@@ -142,52 +142,61 @@ export function LearningNavigation({
 
                 <CollapsibleContent>
                   <div className="pb-2">
-                    {chapterLessons.map((lesson, lessonIndex: number) => {
-                      const isActive = lesson.id === currentLessonId
-                      const isCompleted = lesson.progress?.[0]?.isCompleted
-                      const isLocked = !lesson.isFree // You might want to add more complex logic here
+                    {chapterLessons.length > 0 ? (
+                      chapterLessons.map((lesson, lessonIndex: number) => {
+                        const isActive = lesson.id === currentLessonId
+                        const isCompleted = lesson.progress?.[0]?.isCompleted
+                        const isLocked = !lesson.isFree // You might want to add more complex logic here
 
-                      return (
-                        <button
-                          key={lesson.id}
-                          onClick={() => !isLocked && onLessonClick(chapter.id, lesson.id)}
-                          disabled={isLocked}
-                          className={`
-                            w-full text-left p-3 pl-12 hover:bg-muted/50 transition-colors border-l-2
-                            ${isActive ? 'bg-primary/5 border-l-primary' : 'border-l-transparent'}
-                            ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
-                          `}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-xs text-muted-foreground font-mono">
-                                {lessonIndex + 1}.
-                              </span>
-                              
-                              {lesson.type === 'VIDEO' && <Play className="h-3 w-3 text-muted-foreground" />}
-                              {lesson.type === 'ARTICLE' && <FileText className="h-3 w-3 text-muted-foreground" />}
-                              
-                              {isLocked && <Lock className="h-3 w-3 text-gray-400" />}
-                              {isCompleted && <CheckCircle2 className="h-3 w-3 text-success" />}
-                            </div>
+                        return (
+                          <button
+                            key={lesson.id}
+                            onClick={() => !isLocked && onLessonClick(chapter.id, lesson.id)}
+                            disabled={isLocked}
+                            className={`
+                              w-full text-left p-3 pl-12 hover:bg-muted/50 transition-colors border-l-2
+                              ${isActive ? 'bg-primary/5 border-l-primary' : 'border-l-transparent'}
+                              ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-xs text-muted-foreground font-mono">
+                                  {lessonIndex + 1}.
+                                </span>
+                                
+                                {lesson.type === 'VIDEO' && <Play className="h-3 w-3 text-muted-foreground" />}
+                                {lesson.type === 'ARTICLE' && <FileText className="h-3 w-3 text-muted-foreground" />}
+                                
+                                {isLocked && <Lock className="h-3 w-3 text-gray-400" />}
+                                {isCompleted && <CheckCircle2 className="h-3 w-3 text-success" />}
+                              </div>
 
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm truncate ${isActive ? 'font-medium text-primary' : 'text-foreground'}`}>
-                                {lesson.title}
-                              </p>
-                              {lesson.duration && (
-                                <div className="flex items-center gap-1 mt-1">
-                                  <Clock className="h-3 w-3 text-gray-400" />
-                                  <span className="text-xs text-muted-foreground">
-                                    {Math.ceil(lesson.duration / 60)} min
-                                  </span>
-                                </div>
-                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm truncate ${isActive ? 'font-medium text-primary' : 'text-foreground'}`}>
+                                  {lesson.title}
+                                </p>
+                                {lesson.duration && (
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Clock className="h-3 w-3 text-gray-400" />
+                                    <span className="text-xs text-muted-foreground">
+                                      {Math.ceil(lesson.duration / 60)} min
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </button>
-                      )
-                    })}
+                          </button>
+                        )
+                      })
+                    ) : (
+                      <div className="p-3 pl-12 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4" />
+                          <span>No lessons in this section</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CollapsibleContent>
               </Collapsible>

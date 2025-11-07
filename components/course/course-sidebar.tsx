@@ -95,7 +95,7 @@ export const CourseSidebar = ({
                 )}
 
                 {/* Lessons List */}
-                {hasLessons && (
+                {hasLessons ? (
                   <div className="ml-8 space-y-1 border-l-2 border-muted pl-3">
                     {chapter.lessons?.map((lesson, lessonIndex) => {
                       const isLessonCompleted = lesson.progress?.some(p => p.isCompleted)
@@ -137,6 +137,13 @@ export const CourseSidebar = ({
                         </Link>
                       )
                     })}
+                  </div>
+                ) : (
+                  <div className="ml-8 border-l-2 border-muted pl-3 py-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <BookOpen className="h-4 w-4" />
+                      <span>No lessons in this chapter</span>
+                    </div>
                   </div>
                 )}
 
