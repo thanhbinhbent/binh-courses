@@ -171,11 +171,14 @@ export default function InstructorDashboard() {
                 <CardContent className="p-4">
                   <div className="mb-3">
                     <div className="mb-3 h-40 w-full rounded-lg bg-muted overflow-hidden">
-                      {course.imageUrl ? (
-                        <img
+                      {course.imageUrl && !imageErrors.has(course.id) ? (
+                        <Image
                           src={course.imageUrl}
                           alt={course.title}
+                          width={300}
+                          height={160}
                           className="h-full w-full object-cover"
+                          onError={() => setImageErrors(prev => new Set(prev).add(course.id))}
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center bg-primary/10">
