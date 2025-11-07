@@ -16,6 +16,7 @@ export default function InstructorDashboard() {
   const [data, setData] = useState<InstructorCoursesResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     async function loadCoursesData() {
@@ -168,13 +169,22 @@ export default function InstructorDashboard() {
               <Card key={course.id}>
                 <CardContent className="p-4">
                   <div className="mb-3">
-                    {course.imageUrl && (
-                      <img
-                        src={course.imageUrl}
-                        alt={course.title}
-                        className="mb-3 h-40 w-full rounded-lg object-cover"
-                      />
-                    )}
+                    <div className="mb-3 h-40 w-full rounded-lg bg-muted overflow-hidden">
+                      {course.imageUrl ? (
+                        <img
+                          src={course.imageUrl}
+                          alt={course.title}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-primary/10">
+                          <div className="text-center">
+                            <BookOpen className="h-8 w-8 mx-auto text-primary/60 mb-2" />
+                            <p className="text-xs text-muted-foreground font-medium px-2 line-clamp-2">{course.title}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <div className="mb-2 flex items-start justify-between">
                       <h3 className="font-semibold">{course.title}</h3>
                       <Badge variant={course.isPublished ? "default" : "secondary"}>

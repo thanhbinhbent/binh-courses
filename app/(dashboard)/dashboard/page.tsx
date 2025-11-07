@@ -18,6 +18,7 @@ export default function StudentDashboard() {
   const [data, setData] = useState<StudentDashboardResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -139,24 +140,28 @@ export default function StudentDashboard() {
           <div className="mb-8">
             <h2 className="mb-4 text-2xl font-bold">Continue Learning</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {inProgressCourses.map(course => (
+              {inProgressCourses.map((course: any) => (
                 <Link key={course.id} href={`/courses/${course.id}`}>
                   <Card className="group cursor-pointer transition-all hover:shadow-lg">
-                    {course.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+                    <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+                      {course.imageUrl && !imageErrors.has(course.id) ? (
                         <Image
                           src={course.imageUrl}
                           alt={course.title}
                           width={300}
                           height={200}
                           className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
+                          onError={() => setImageErrors(prev => new Set(prev).add(course.id))}
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-primary/10">
+                          <div className="text-center">
+                            <BookOpen className="h-12 w-12 mx-auto text-primary/60 mb-2" />
+                            <p className="text-xs text-muted-foreground font-medium px-2 line-clamp-2">{course.title}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <CardHeader>
                       <CardTitle className="line-clamp-2">{course.title}</CardTitle>
                       {/* Category name will be loaded from API */}
@@ -182,24 +187,28 @@ export default function StudentDashboard() {
           <div className="mb-8">
             <h2 className="mb-4 text-2xl font-bold">Completed Courses</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {completedCourses.map(course => (
+              {completedCourses.map((course: any) => (
                 <Link key={course.id} href={`/courses/${course.id}`}>
                   <Card className="group cursor-pointer transition-all hover:shadow-lg">
-                    {course.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+                    <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+                      {course.imageUrl && !imageErrors.has(course.id) ? (
                         <Image
                           src={course.imageUrl}
                           alt={course.title}
                           width={300}
                           height={200}
                           className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
+                          onError={() => setImageErrors(prev => new Set(prev).add(course.id))}
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-primary/10">
+                          <div className="text-center">
+                            <BookOpen className="h-12 w-12 mx-auto text-primary/60 mb-2" />
+                            <p className="text-xs text-muted-foreground font-medium px-2 line-clamp-2">{course.title}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <CardHeader>
                       <CardTitle className="line-clamp-2">{course.title}</CardTitle>
                       {/* Category name will be loaded from API */}

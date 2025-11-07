@@ -15,6 +15,7 @@ export default function CoursesPage() {
   const [data, setData] = useState<CoursesListResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     async function loadCoursesData() {
@@ -100,12 +101,13 @@ export default function CoursesPage() {
               <Card className="group h-full cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] gap-0 py-0">
                 {/* Course Image */}
                 <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
-                  {course.imageUrl ? (
+                  {course.imageUrl && !imageErrors.has(course.id) ? (
                     <Image
                       src={course.imageUrl}
                       alt={course.title}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
+                      onError={() => setImageErrors(prev => new Set(prev).add(course.id))}
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">

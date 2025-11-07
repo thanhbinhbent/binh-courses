@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Container } from "@/components/ui/container"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import { PublicLayout } from "@/components/layout/public-layout"
 import { EnrollButton } from "./_components/enroll-button"
@@ -28,6 +29,8 @@ export default function CourseDetailPage({
   const [data, setData] = useState<CourseDetailsResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [imageError, setImageError] = useState(false)
+  const [instructorImageError, setInstructorImageError] = useState(false)
 
   useEffect(() => {
     async function loadCourseData() {
@@ -87,16 +90,24 @@ export default function CourseDetailPage({
           {/* Main Content - Left side on desktop, bottom on mobile */}
           <div className="lg:col-span-2 order-2 lg:order-1 space-y-8">
             {/* Course Image */}
-            {course.imageUrl && (
-              <div className="relative aspect-video w-full overflow-hidden rounded-xl border shadow-sm">
+            <div className="relative aspect-video w-full overflow-hidden rounded-xl border shadow-sm bg-muted">
+              {course.imageUrl && !imageError ? (
                 <Image
                   src={course.imageUrl}
                   alt={course.title}
                   fill
                   className="object-cover"
+                  onError={() => setImageError(true)}
                 />
-              </div>
-            )}
+              ) : (
+                <div className="flex h-full items-center justify-center bg-primary/10">
+                  <div className="text-center">
+                    <BookOpen className="h-16 w-16 mx-auto text-primary/60 mb-2" />
+                    <p className="text-sm text-muted-foreground font-medium">{course.title}</p>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Course Info */}
             <div className="space-y-6">
@@ -144,16 +155,18 @@ export default function CourseDetailPage({
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-start gap-4">
-                    {course.instructor.image && (
-                      <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-muted">
-                        <Image
-                          src={course.instructor.image}
+                    <Avatar className="h-16 w-16">
+                      {course.instructor.image && !instructorImageError && (
+                        <AvatarImage 
+                          src={course.instructor.image} 
                           alt={course.instructor.name || "Instructor"}
-                          fill
-                          className="object-cover"
+                          onError={() => setInstructorImageError(true)}
                         />
-                      </div>
-                    )}
+                      )}
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                        {course.instructor.name?.charAt(0).toUpperCase() || 'I'}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex-1">
                       <p className="font-semibold text-lg">{course.instructor.name}</p>
                       <p className="text-sm text-muted-foreground">Course Instructor</p>

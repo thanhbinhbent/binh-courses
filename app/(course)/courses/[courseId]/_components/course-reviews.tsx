@@ -5,7 +5,7 @@ import { Star, MoreVertical, ThumbsUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
   DropdownMenu,
@@ -210,7 +210,13 @@ export function CourseReviews({ courseId, isEnrolled }: CourseReviewsProps) {
                   <div key={review.id} className="flex items-start gap-4 p-4 border rounded-lg">
                     {/* User Avatar */}
                     <Avatar>
-                      <AvatarFallback>
+                      {review.user.image && (
+                        <AvatarImage 
+                          src={review.user.image} 
+                          alt={review.user.name || 'User'} 
+                        />
+                      )}
+                      <AvatarFallback className="bg-primary text-primary-foreground">
                         {review.user.name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
