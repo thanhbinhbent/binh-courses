@@ -64,10 +64,25 @@ export default async function Page({ params, searchParams }: PageProps) {
       return redirect(`/courses/${resolvedParams.courseId}/learn?chapter=${currentChapter.id}`)
     }
 
+    // Create flat list of all lessons with chapter info for navigation
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allLessonsFlat = course.chapters.flatMap((ch: any) => 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ch.lessons.map((lesson: any) => ({
+        ...lesson,
+        chapterId: ch.id,
+        chapterTitle: ch.title
+      }))
+    )
+    
+    // Find current lesson index
+    const currentIndex = allLessonsFlat.findIndex(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (lesson: any) => lesson.id === lessonId && lesson.chapterId === chapterId
+    )
+
     return (
       <LessonContent
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        course={course as any}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any  
         chapter={currentChapter as any}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,6 +90,9 @@ export default async function Page({ params, searchParams }: PageProps) {
         courseId={resolvedParams.courseId}
         chapterId={chapterId}
         lessonId={lessonId}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        allLessonsFlat={allLessonsFlat as any}
+        currentIndex={currentIndex}
       />
     )
   }

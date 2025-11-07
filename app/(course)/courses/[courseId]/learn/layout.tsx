@@ -58,15 +58,15 @@ export default function Layout({ children, params }: LayoutProps) {
 
         <div className="flex-1 flex overflow-hidden">
           {/* Content Area */}
-          <main className="flex-1 overflow-hidden bg-white">
+          <main className="flex-1 overflow-auto bg-white">
             {children}
           </main>
 
           {/* Course Navigation Sidebar - Right Side */}
           <div className={`
-            fixed inset-y-0 right-0 z-50 w-80 bg-white border-l shadow-lg transform transition-transform duration-300 ease-in-out
+            fixed inset-y-0 right-0 z-30 w-80 bg-white border-l shadow-lg transform transition-transform duration-300 ease-in-out
             ${isNavOpen ? 'translate-x-0' : 'translate-x-full'}
-            lg:translate-x-0 lg:static lg:inset-0 lg:shadow-none
+            lg:translate-x-0 lg:static lg:inset-0 lg:shadow-none lg:z-auto
           `}>
             <LearningNavigation
               course={course}
