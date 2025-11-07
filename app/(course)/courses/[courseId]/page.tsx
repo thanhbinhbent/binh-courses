@@ -139,8 +139,10 @@ export default function CourseDetailPage({
             {/* Instructor */}
             {course.instructor && (
               <Card>
-                <CardContent className="pt-6">
-                  <h3 className="text-lg font-semibold mb-4 text-foreground">Meet Your Instructor</h3>
+                <CardHeader>
+                  <CardTitle className="text-lg">Meet Your Instructor</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <div className="flex items-start gap-4">
                     {course.instructor.image && (
                       <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-muted">
@@ -162,17 +164,21 @@ export default function CourseDetailPage({
             )}
 
             {/* Course Content */}
-            <div className="bg-card rounded-lg shadow-sm border p-6">
-              <h3 className="text-xl font-semibold mb-4">Course Content</h3>
-              {course.chapters && course.chapters.length > 0 ? (
-                <CourseContent 
-                  chapters={course.chapters}
-                  isEnrolled={isEnrolled}
-                />
-              ) : (
-                <p className="text-muted-foreground">No course content available yet.</p>
-              )}
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Course Content</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {course.chapters && course.chapters.length > 0 ? (
+                  <CourseContent 
+                    chapters={course.chapters}
+                    isEnrolled={isEnrolled}
+                  />
+                ) : (
+                  <p className="text-muted-foreground">No course content available yet.</p>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Reviews Section */}
             <CourseReviews 

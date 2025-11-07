@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -97,105 +97,116 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
           ).length
           
           return (
-            <Card key={chapter.id} className="overflow-hidden">
-              <div 
-                className="chapter-header"
-                onClick={() => toggleChapter(chapter.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0">
+            <div key={chapter.id} className="border-b">
+              <Collapsible open={isExpanded} onOpenChange={() => toggleChapter(chapter.id)}>
+                <CollapsibleTrigger asChild>
+                  <button className="w-full p-4 text-left hover:bg-accent/50 transition-colors">
+                    <div className="flex items-center gap-3">
                       {isExpanded ? (
-                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h4 className="font-semibold text-foreground">
-                          Chapter {index + 1}: {chapter.title}
-                        </h4>
-                        {isEnrolled && completedLessons > 0 && (
-                          <Badge variant="secondary" className="text-xs">
-                            {completedLessons}/{chapter.lessons.length} completed
-                          </Badge>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold text-foreground">
+                            Chapter {index + 1}: {chapter.title}
+                          </h4>
+                          {isEnrolled && completedLessons > 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              {completedLessons}/{chapter.lessons.length} completed
+                            </Badge>
+                          )}
+                        </div>
+                        {chapter.description && (
+                          <p className="text-sm text-muted-foreground">{chapter.description}</p>
                         )}
+                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                          <span>{chapter.lessons.length} lessons</span>
+                        </div>
                       </div>
-                      {chapter.description && (
-                        <p className="text-sm text-muted-foreground">{chapter.description}</p>
-                      )}
                     </div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {chapter.lessons.length} lessons
-                  </div>
-                </div>
-              </div>
+                  </button>
+                </CollapsibleTrigger>
 
-              {isExpanded && (
-                <CardContent className="pt-0 pb-2 px-3">
-                  <div className="border-t pt-4">
-                    <div className="space-y-2">
-                      {chapter.lessons.map((lesson, lessonIndex) => {
-                        const canAccess = isEnrolled || lesson.isFree
-                        
-                        return (
-                          <div 
-                            key={lesson.id}
-                            className={`course-item ${canAccess ? 'cursor-pointer' : 'locked'}`}
-                          >
-                            <div className="flex-shrink-0">
-                              {lesson.type === 'VIDEO' ? (
-                                <Play className={`h-4 w-4 ${canAccess ? 'text-primary' : 'text-muted-foreground'}`} />
-                              ) : (
-                                <FileText className={`h-4 w-4 ${canAccess ? 'text-success' : 'text-muted-foreground'}`} />
-                              )}
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h5 className={`font-medium truncate text-sm ${
-                                  canAccess ? 'text-foreground' : 'text-muted-foreground'
-                                }`}>
-                                  {lessonIndex + 1}. {lesson.title}
-                                </h5>
-                                
-                                {lesson.isFree && (
-                                  <Badge variant="outline" className="text-xs">
-                                    Free Preview
-                                  </Badge>
-                                )}
-                                
-                                {lesson.progress?.[0]?.isCompleted && isEnrolled && (
-                                  <CheckCircle2 className="h-4 w-4 text-success" />
-                                )}
-                              </div>
+                <CollapsibleContent>
+                  <div className="pb-2">
+                    {chapter.lessons.length > 0 ? (
+                      <div className="px-4 pb-4">
+                        <div className="border-t pt-4">
+                          <div className="space-y-2">
+                            {chapter.lessons.map((lesson, lessonIndex) => {
+                              const canAccess = isEnrolled || lesson.isFree
                               
-                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                <span className="capitalize">{lesson.type.toLowerCase()}</span>
-                                {lesson.duration && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{formatDuration(lesson.duration)}</span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
+                              return (
+                                <div 
+                                  key={lesson.id}
+                                  className={`course-item ${canAccess ? 'cursor-pointer' : 'locked'}`}
+                                >
+                                  <div className="flex-shrink-0">
+                                    {lesson.type === 'VIDEO' ? (
+                                      <Play className={`h-4 w-4 ${canAccess ? 'text-primary' : 'text-muted-foreground'}`} />
+                                    ) : (
+                                      <FileText className={`h-4 w-4 ${canAccess ? 'text-success' : 'text-muted-foreground'}`} />
+                                    )}
+                                  </div>
+                                  
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <h5 className={`font-medium truncate text-sm ${
+                                        canAccess ? 'text-foreground' : 'text-muted-foreground'
+                                      }`}>
+                                        {lessonIndex + 1}. {lesson.title}
+                                      </h5>
+                                      
+                                      {lesson.isFree && (
+                                        <Badge variant="outline" className="text-xs">
+                                          Free Preview
+                                        </Badge>
+                                      )}
+                                      
+                                      {lesson.progress?.[0]?.isCompleted && isEnrolled && (
+                                        <CheckCircle2 className="h-4 w-4 text-success" />
+                                      )}
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                      <span className="capitalize">{lesson.type.toLowerCase()}</span>
+                                      {lesson.duration && (
+                                        <>
+                                          <span>•</span>
+                                          <span>{formatDuration(lesson.duration)}</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
 
-                            <div className="flex-shrink-0">
-                              {!canAccess && (
-                                <Lock className="h-4 w-4 text-muted-foreground" />
-                              )}
-                            </div>
+                                  <div className="flex-shrink-0">
+                                    {!canAccess && (
+                                      <Lock className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            })}
                           </div>
-                        )
-                      })}
-                    </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="px-4 pb-4">
+                        <div className="border-t pt-4">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <FileText className="h-4 w-4" />
+                            <span>No lessons in this chapter</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </CardContent>
-              )}
-            </Card>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
           )
         })}
       </div>

@@ -47,7 +47,7 @@ export function PaymentStatusBadge({ variant = 'light' }: PaymentStatusBadgeProp
   // Show loading state
   if (loading || paymentEnabled === null) {
     return (
-      <Badge className="ml-3 text-xs font-medium bg-gray-100 text-gray-500">
+      <Badge variant="outline" className="ml-3 text-xs">
         💳 ...
       </Badge>
     )
@@ -56,11 +56,8 @@ export function PaymentStatusBadge({ variant = 'light' }: PaymentStatusBadgeProp
   if (variant === 'dark') {
     return (
       <Badge 
-        className={`ml-3 text-xs font-medium border ${
-          paymentEnabled 
-            ? 'bg-orange-900/20 text-orange-300 border-orange-500/30' 
-            : 'bg-green-900/20 text-green-300 border-green-500/30'
-        }`}
+        variant={paymentEnabled ? "destructive" : "secondary"}
+        className="ml-3 text-xs"
       >
         💳 {paymentEnabled ? 'ON' : 'OFF'}
       </Badge>
@@ -70,11 +67,7 @@ export function PaymentStatusBadge({ variant = 'light' }: PaymentStatusBadgeProp
   return (
     <Badge 
       variant={paymentEnabled ? "destructive" : "secondary"}
-      className={`ml-3 text-xs font-medium ${
-        paymentEnabled 
-          ? 'bg-orange-100 text-orange-800 hover:bg-orange-200' 
-          : 'bg-green-100 text-green-800 hover:bg-green-200'
-      }`}
+      className="ml-3 text-xs"
     >
       💳 {paymentEnabled ? 'ON' : 'OFF'}
     </Badge>
