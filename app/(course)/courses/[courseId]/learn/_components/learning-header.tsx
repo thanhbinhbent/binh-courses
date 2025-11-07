@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Menu, MoreVertical, BookOpen, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { PaymentStatusBadge } from "@/components/payment-status-badge"
 
 interface Course {
   id: string
@@ -91,6 +92,7 @@ export function LearningHeader({
                 </p>
               )}
             </div>
+            <PaymentStatusBadge variant="dark" />
           </div>
         </div>
 

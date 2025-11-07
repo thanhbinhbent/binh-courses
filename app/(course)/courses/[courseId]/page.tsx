@@ -11,10 +11,10 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Container } from "@/components/ui/container"
 import { PublicLayout } from "@/components/layout/public-layout"
-// import { EnrollButton } from "./_components/enroll-button" // Removed component
+import { EnrollButton } from "./_components/enroll-button"
 // import { CourseReviews } from "./_components/course-reviews"  
 // import { AddReviewForm } from "./_components/add-review-form"
-// import { CourseContent } from "./_components/course-content"
+import { CourseContent } from "./_components/course-content"
 import { courseService, type CourseDetailsResponse } from "@/lib/services/course.service"
 // import type { ChapterWithLessons } from "@/types/course.d" // Will be used later
 
@@ -82,10 +82,10 @@ export default function CourseDetailPage({
 
   return (
     <PublicLayout>
-      <Container className="py-6 lg:py-8">
-        <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+      <Container className="py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content - Left side on desktop, bottom on mobile */}
+          <div className="lg:col-span-2 order-2 lg:order-1 space-y-8">
             {/* Course Image */}
             {course.imageUrl && (
               <div className="relative aspect-video w-full overflow-hidden rounded-xl border shadow-sm">
@@ -164,7 +164,14 @@ export default function CourseDetailPage({
             {/* Course Content */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h3 className="text-xl font-semibold mb-4">Course Content</h3>
-              <p className="text-gray-600">Course content will be displayed here.</p>
+              {course.chapters && course.chapters.length > 0 ? (
+                <CourseContent 
+                  chapters={course.chapters}
+                  isEnrolled={isEnrolled}
+                />
+              ) : (
+                <p className="text-gray-600">No course content available yet.</p>
+              )}
             </div>
 
             {/* Reviews Section */}
@@ -193,8 +200,8 @@ export default function CourseDetailPage({
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar - Right side on desktop, top on mobile */}
+          <div className="order-1 lg:order-2 space-y-6">
             <Card className="sticky top-6 shadow-lg border-2">
               <CardHeader className="pb-4">
                 <CardTitle className="text-center">
@@ -253,9 +260,12 @@ export default function CourseDetailPage({
                   <>
                     {/* Enroll Button */}
                     {user ? (
-                      <Button className="w-full h-12 text-base font-semibold" size="lg">
-                        {isFree ? "Enroll for Free" : "Enroll Now"}
-                      </Button>
+                      <EnrollButton
+                        courseId={course.id}
+                        coursePrice={course.price}
+                        isEnrolled={isEnrolled}
+                        disabled={false}
+                      />
                     ) : (
                       <Link href="/sign-in">
                         <Button className="w-full h-12 text-base font-semibold" size="lg">

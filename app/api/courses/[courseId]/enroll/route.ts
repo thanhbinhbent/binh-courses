@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getCurrentUser } from "@/lib/current-user"
+import { requiresPaymentForEnrollment, logPaymentStatus } from "@/lib/payment-config"
 
 export async function POST(
   req: Request,
@@ -50,8 +51,11 @@ export async function POST(
       )
     }
 
-    // For paid courses, check if purchased
-    if (course.price && course.price > 0) {
+    // Log payment status in development
+    logPaymentStatus()
+
+    // Check if payment is required for this course
+    if (requiresPaymentForEnrollment(course.price)) {
       const purchase = await db.purchase.findUnique({
         where: {
           userId_courseId: {
@@ -64,7 +68,7 @@ export async function POST(
       if (!purchase) {
         return NextResponse.json(
           { message: "Course not purchased. Please purchase first." },
-          { status: 403 }
+          { status: 402 }
         )
       }
     }

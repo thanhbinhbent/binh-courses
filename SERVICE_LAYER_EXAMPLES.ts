@@ -18,7 +18,7 @@ import {
 // 1. Course Enrollment
 async function handleCourseEnrollment(courseId: string) {
   try {
-    await courseService.enrollInCourse(courseId)
+    await courseService.enrollCourse(courseId)
     console.log("✅ Successfully enrolled in course")
   } catch (error) {
     const err = error as Error
@@ -35,7 +35,7 @@ async function handleCourseEnrollment(courseId: string) {
 // 2. Chapter Progress
 async function handleChapterComplete(chapterId: string) {
   try {
-    await courseService.markChapterComplete(chapterId)
+    await courseService.updateProgress(chapterId, true)
     console.log("✅ Chapter marked as complete")
   } catch (error) {
     const err = error as Error
@@ -51,7 +51,7 @@ async function handleAddReview(courseId: string, rating: number, comment: string
     await courseService.addReview(courseId, rating, comment)
     console.log("✅ Review added successfully")
   } catch (error) {
-    console.log("❌ Failed to add review")
+    console.log("❌ Failed to add review:", error)
   }
 }
 

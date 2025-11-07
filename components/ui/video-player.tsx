@@ -5,12 +5,14 @@ interface VideoPlayerProps {
   lessonId: string
   isCompleted?: boolean
   title: string
+  subtitleUrl?: string
 }
 
 export const VideoPlayer = ({
   videoUrl,
   isCompleted,
   title,
+  subtitleUrl,
 }: VideoPlayerProps) => {
   return (
     <video
@@ -20,12 +22,14 @@ export const VideoPlayer = ({
     >
       <source src={videoUrl} type="video/mp4" />
       Your browser does not support the video tag.
-      <track
-        kind="captions"
-        src=""
-        srcLang="en"
-        label={title}
-      />
+      {subtitleUrl && (
+        <track
+          kind="captions"
+          src={subtitleUrl}
+          srcLang="en"
+          label={title}
+        />
+      )}
     </video>
   )
 }

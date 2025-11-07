@@ -45,30 +45,7 @@ export default function Layout({ children, params }: LayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-black">
-      {/* Course Navigation Sidebar - Udemy Style */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 w-80 bg-white border-r transform transition-transform duration-300 ease-in-out
-        ${isNavOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:inset-0
-      `}>
-        <LearningNavigation
-          course={course}
-          currentChapterId={chapterId}
-          currentLessonId={lessonId}
-          courseId={resolvedParams.courseId}
-          onClose={() => setIsNavOpen(false)}
-        />
-      </div>
-
-      {/* Overlay for mobile */}
-      {isNavOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setIsNavOpen(false)}
-        />
-      )}
-
+    <div className="flex h-screen bg-gray-50">
       {/* Main Learning Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header with controls */}
@@ -79,11 +56,36 @@ export default function Layout({ children, params }: LayoutProps) {
           onToggleNav={() => setIsNavOpen(!isNavOpen)}
         />
 
-        {/* Content Area */}
-        <main className="flex-1 overflow-hidden">
-          {children}
-        </main>
+        <div className="flex-1 flex overflow-hidden">
+          {/* Content Area */}
+          <main className="flex-1 overflow-hidden bg-white">
+            {children}
+          </main>
+
+          {/* Course Navigation Sidebar - Right Side */}
+          <div className={`
+            fixed inset-y-0 right-0 z-50 w-80 bg-white border-l shadow-lg transform transition-transform duration-300 ease-in-out
+            ${isNavOpen ? 'translate-x-0' : 'translate-x-full'}
+            lg:translate-x-0 lg:static lg:inset-0 lg:shadow-none
+          `}>
+            <LearningNavigation
+              course={course}
+              currentChapterId={chapterId}
+              currentLessonId={lessonId}
+              courseId={resolvedParams.courseId}
+              onClose={() => setIsNavOpen(false)}
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Overlay for mobile */}
+      {isNavOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsNavOpen(false)}
+        />
+      )}
     </div>
   )
 }

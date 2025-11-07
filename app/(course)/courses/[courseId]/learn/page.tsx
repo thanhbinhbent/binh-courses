@@ -2,6 +2,8 @@ import { redirect } from "next/navigation"
 import { courseService } from "@/lib/services"
 import { LessonContent } from "./_components/lesson-content"
 import { ChapterContent } from "./_components/chapter-content"
+import { isPaymentEnabled } from "@/lib/payment-config"
+import { getCurrentUser } from "@/lib/current-user"
 
 interface PageProps {
   params: Promise<{
@@ -24,7 +26,21 @@ export default async function Page({ params, searchParams }: PageProps) {
     return redirect("/courses")
   }
 
-  const { course } = response
+  const { course, isEnrolled } = response
+  
+  // Check access permissions
+  const user = await getCurrentUser()
+  const paymentEnabled = isPaymentEnabled()
+  
+  // If payment is enabled and user is not enrolled, redirect to course detail
+  if (paymentEnabled && !isEnrolled) {
+    return redirect(`/courses/${resolvedParams.courseId}`)
+  }
+  
+  // If payment is disabled but user is not logged in, redirect to login
+  if (!paymentEnabled && !user) {
+    return redirect('/sign-in')
+  }
   const { chapter: chapterId, lesson: lessonId } = resolvedSearchParams
 
   // If no chapter selected, show first chapter

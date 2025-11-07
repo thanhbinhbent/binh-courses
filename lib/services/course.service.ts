@@ -205,6 +205,8 @@ export const courseService = {
       }
       throw new Error('Failed to enroll in course')
     }
+
+    return { success: true }
   },
 
   /**
@@ -213,7 +215,11 @@ export const courseService = {
   async updateProgress(chapterId: string, isCompleted: boolean): Promise<void> {
     const res = await fetch(`${getBaseUrl()}/api/chapters/${chapterId}/progress`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       credentials: 'include',
+      body: JSON.stringify({ isCompleted }),
     })
     
     if (!res.ok) {
@@ -249,16 +255,12 @@ export const courseService = {
   },
 
   /**
-   * Update course review
+   * Delete course review
    */
   async deleteReview(courseId: string, reviewId: string): Promise<void> {
     const res = await fetch(`${getBaseUrl()}/api/courses/${courseId}/reviews/${reviewId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      method: 'DELETE',
       credentials: 'include',
-      body: JSON.stringify({ rating, comment }),
     })
     
     if (!res.ok) {
