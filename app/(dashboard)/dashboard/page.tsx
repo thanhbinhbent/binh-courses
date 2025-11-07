@@ -143,7 +143,7 @@ export default function StudentDashboard() {
                 <Link key={course.id} href={`/courses/${course.id}`}>
                   <Card className="group cursor-pointer transition-all hover:shadow-lg">
                     {course.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-gray-200">
+                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
                         <Image
                           src={course.imageUrl}
                           alt={course.title}
@@ -186,7 +186,7 @@ export default function StudentDashboard() {
                 <Link key={course.id} href={`/courses/${course.id}`}>
                   <Card className="group cursor-pointer transition-all hover:shadow-lg">
                     {course.imageUrl && (
-                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-gray-200">
+                      <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
                         <Image
                           src={course.imageUrl}
                           alt={course.title}

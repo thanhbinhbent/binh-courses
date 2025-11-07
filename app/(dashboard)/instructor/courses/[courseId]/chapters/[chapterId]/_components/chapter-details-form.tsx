@@ -65,7 +65,7 @@ export function ChapterDetailsForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="title">
-          Chapter Title <span className="text-red-500">*</span>
+          Chapter Title <span className="text-error">*</span>
         </Label>
         <Input
           id="title"

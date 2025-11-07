@@ -63,7 +63,6 @@ export default function QuizzesPage() {
 
   return (
     <PublicLayout>
-
       <Container className="py-8">
         {/* Page Header */}
         <div className="mb-8 text-center sm:text-left">
@@ -79,13 +78,13 @@ export default function QuizzesPage() {
             <h2 className="mb-4 text-xl font-semibold text-foreground">Browse by Category</h2>
             <div className="flex flex-wrap gap-2">
               <Link href="/quizzes">
-                <Badge variant="default" className="cursor-pointer px-4 py-2 text-sm hover:bg-primary/90 transition-colors">
+                <Badge variant="default" className="cursor-pointer px-4 py-2 text-sm">
                   All Quizzes
                 </Badge>
               </Link>
               {categories.map((category) => (
                 <Link key={category.id} href={`/quizzes?category=${category.slug || category.id}`}>
-                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm hover:bg-secondary transition-colors">
+                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm">
                     {category.name}
                   </Badge>
                 </Link>
@@ -110,8 +109,8 @@ export default function QuizzesPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {quizzes.map((quiz) => (
-              <Card key={quiz.id} className="group transition-all hover:shadow-lg hover:scale-[1.02] border-border bg-card">
-                <CardHeader>
+              <Card key={quiz.id} className="group transition-all hover:shadow-lg hover:scale-[1.02]">
+                <CardHeader className="py-4">
                   <div className="mb-2 flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                       {/* Standalone quiz category */}
@@ -140,7 +139,7 @@ export default function QuizzesPage() {
                     )}
                   </div>
 
-                  <CardTitle className="line-clamp-2 text-lg">
+                  <CardTitle className="line-clamp-2 text-lg mb-2">
                     {quiz.title}
                   </CardTitle>
 
@@ -152,7 +151,7 @@ export default function QuizzesPage() {
                   )}
                 </CardHeader>
 
-                <CardContent>
+                <CardContent className="py-4">
                   {quiz.description && (
                     <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
                       {quiz.description}

@@ -70,16 +70,16 @@ export function LearningNavigation({
   const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-card">
       {/* Header */}
-      <div className="p-4 border-b bg-gray-50">
+      <div className="p-4 border-b bg-muted/50">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-semibold text-gray-900 truncate">
+            <h2 className="text-sm font-semibold text-foreground truncate">
               {course.title}
             </h2>
             <div className="mt-2">
-              <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                 <span>{completedLessons} of {totalLessons} complete</span>
                 <span>{Math.round(progressPercentage)}%</span>
               </div>
@@ -109,27 +109,27 @@ export function LearningNavigation({
             <div key={chapter.id} className="border-b">
               <Collapsible open={isChapterOpen} onOpenChange={() => toggleChapter(chapter.id)}>
                 <CollapsibleTrigger asChild>
-                  <button className="w-full p-4 text-left hover:bg-gray-50 transition-colors">
+                  <button className="w-full p-4 text-left hover:bg-accent/50 transition-colors">
                     <div className="flex items-center gap-3">
                       {isChapterOpen ? (
-                        <ChevronDown className="h-4 w-4 text-gray-600" />
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-600" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       )}
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-medium text-gray-500">
+                          <span className="text-xs font-medium text-muted-foreground">
                             Section {chapterIndex + 1}
                           </span>
                           {chapterProgress === 100 && (
-                            <CheckCircle2 className="h-3 w-3 text-green-600" />
+                            <CheckCircle2 className="h-3 w-3 text-success" />
                           )}
                         </div>
-                        <h3 className="font-medium text-sm text-gray-900 truncate">
+                        <h3 className="font-medium text-sm text-foreground truncate">
                           {chapter.title}
                         </h3>
-                        <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                           <span>{completedChapterLessons}/{chapterLessons.length} lessons</span>
                           {chapterProgress > 0 && chapterProgress < 100 && (
                             <span>{Math.round(chapterProgress)}% complete</span>
@@ -153,32 +153,32 @@ export function LearningNavigation({
                           onClick={() => !isLocked && onLessonClick(chapter.id, lesson.id)}
                           disabled={isLocked}
                           className={`
-                            w-full text-left p-3 pl-12 hover:bg-gray-50 transition-colors border-l-2
-                            ${isActive ? 'bg-blue-50 border-l-blue-600' : 'border-l-transparent'}
+                            w-full text-left p-3 pl-12 hover:bg-muted/50 transition-colors border-l-2
+                            ${isActive ? 'bg-primary/5 border-l-primary' : 'border-l-transparent'}
                             ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
                           `}
                         >
                           <div className="flex items-center gap-3">
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-xs text-gray-500 font-mono">
+                              <span className="text-xs text-muted-foreground font-mono">
                                 {lessonIndex + 1}.
                               </span>
                               
-                              {lesson.type === 'VIDEO' && <Play className="h-3 w-3 text-gray-600" />}
-                              {lesson.type === 'ARTICLE' && <FileText className="h-3 w-3 text-gray-600" />}
+                              {lesson.type === 'VIDEO' && <Play className="h-3 w-3 text-muted-foreground" />}
+                              {lesson.type === 'ARTICLE' && <FileText className="h-3 w-3 text-muted-foreground" />}
                               
                               {isLocked && <Lock className="h-3 w-3 text-gray-400" />}
-                              {isCompleted && <CheckCircle2 className="h-3 w-3 text-green-600" />}
+                              {isCompleted && <CheckCircle2 className="h-3 w-3 text-success" />}
                             </div>
 
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm truncate ${isActive ? 'font-medium text-blue-700' : 'text-gray-700'}`}>
+                              <p className={`text-sm truncate ${isActive ? 'font-medium text-primary' : 'text-foreground'}`}>
                                 {lesson.title}
                               </p>
                               {lesson.duration && (
                                 <div className="flex items-center gap-1 mt-1">
                                   <Clock className="h-3 w-3 text-gray-400" />
-                                  <span className="text-xs text-gray-500">
+                                  <span className="text-xs text-muted-foreground">
                                     {Math.ceil(lesson.duration / 60)} min
                                   </span>
                                 </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Loader2, BookOpen, Clock, Star } from "lucide-react"
+import { Loader2, BookOpen, Clock, Users } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -63,7 +63,6 @@ export default function CoursesPage() {
 
   return (
     <PublicLayout>
-
       <Container className="py-8">
         {/* Page Header */}
         <div className="mb-8 text-center sm:text-left">
@@ -79,13 +78,13 @@ export default function CoursesPage() {
             <h2 className="mb-4 text-xl font-semibold text-foreground">Browse by Category</h2>
             <div className="flex flex-wrap gap-2">
               <Link href="/courses">
-                <Badge variant="default" className="cursor-pointer px-4 py-2 text-sm hover:bg-primary/90 transition-colors">
+                <Badge variant="default" className="cursor-pointer px-4 py-2 text-sm">
                   All Courses
                 </Badge>
               </Link>
               {categories.map(category => (
                 <Link key={category.id} href={`/courses?category=${category.slug}`}>
-                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm hover:bg-secondary transition-colors">
+                  <Badge variant="outline" className="cursor-pointer px-4 py-2 text-sm">
                     {category.name}
                   </Badge>
                 </Link>
@@ -98,7 +97,7 @@ export default function CoursesPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {courses.map(course => (
             <Link key={course.id} href={`/courses/${course.id}`}>
-              <Card className="group h-full cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] bg-card border-border">
+              <Card className="group h-full cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] gap-0 py-0">
                 {/* Course Image */}
                 <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
                   {course.imageUrl ? (
@@ -115,7 +114,7 @@ export default function CoursesPage() {
                   )}
                 </div>
 
-                <CardHeader>
+                <CardHeader className="py-4">
                   {/* Category & Level */}
                   <div className="mb-2 flex items-center justify-between">
                     {course.category && (
@@ -129,7 +128,7 @@ export default function CoursesPage() {
                   </div>
 
                   {/* Title */}
-                  <CardTitle className="line-clamp-2 text-lg">
+                  <CardTitle className="line-clamp-2 text-lg mb-2">
                     {course.title}
                   </CardTitle>
 
@@ -141,7 +140,7 @@ export default function CoursesPage() {
                   )}
                 </CardHeader>
 
-                <CardContent>
+                <CardContent className="py-4">
                   {/* Description */}
                   {course.description && (
                     <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
@@ -156,7 +155,7 @@ export default function CoursesPage() {
                       <span>{course.chapters.length} chapters</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-warning text-warning" />
+                      <Users className="h-4 w-4" />
                       <span>{course._count?.enrollments || 0} students</span>
                     </div>
                   </div>
@@ -166,7 +165,7 @@ export default function CoursesPage() {
                     {course.price && course.price > 0 ? (
                       <p className="text-lg font-bold text-foreground">${course.price}</p>
                     ) : (
-                      <Badge variant="default" className="bg-success text-success-foreground">
+                      <Badge variant="secondary">
                         FREE
                       </Badge>
                     )}

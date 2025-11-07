@@ -77,14 +77,14 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
   return (
     <div className="space-y-4">
       {/* Course Stats */}
-      <div className="flex items-center gap-6 text-sm text-gray-600 mb-6">
+      <div className="flex items-center gap-6 text-sm text-muted-foreground mb-6">
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           <span>{getTotalLessons()} lessons</span>
         </div>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4" />
-          <span>{getTotalDuration()} total length</span>
+          <span>{getTotalDuration()}</span>
         </div>
       </div>
 
@@ -99,21 +99,21 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
           return (
             <Card key={chapter.id} className="overflow-hidden">
               <div 
-                className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                className="chapter-header"
                 onClick={() => toggleChapter(chapter.id)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex-shrink-0">
                       {isExpanded ? (
-                        <ChevronDown className="h-5 w-5 text-gray-500" />
+                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
                       ) : (
-                        <ChevronRight className="h-5 w-5 text-gray-500" />
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h4 className="font-semibold text-gray-900">
+                        <h4 className="font-semibold text-foreground">
                           Chapter {index + 1}: {chapter.title}
                         </h4>
                         {isEnrolled && completedLessons > 0 && (
@@ -123,18 +123,18 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
                         )}
                       </div>
                       {chapter.description && (
-                        <p className="text-sm text-gray-600">{chapter.description}</p>
+                        <p className="text-sm text-muted-foreground">{chapter.description}</p>
                       )}
                     </div>
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-muted-foreground">
                     {chapter.lessons.length} lessons
                   </div>
                 </div>
               </div>
 
               {isExpanded && (
-                <CardContent className="pt-0 pb-4 px-4">
+                <CardContent className="pt-0 pb-2 px-3">
                   <div className="border-t pt-4">
                     <div className="space-y-2">
                       {chapter.lessons.map((lesson, lessonIndex) => {
@@ -143,24 +143,20 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
                         return (
                           <div 
                             key={lesson.id}
-                            className={`flex items-center gap-3 p-3 rounded-lg border ${
-                              canAccess 
-                                ? 'hover:bg-gray-50 cursor-pointer border-gray-200' 
-                                : 'bg-gray-50 border-gray-100'
-                            }`}
+                            className={`course-item ${canAccess ? 'cursor-pointer' : 'locked'}`}
                           >
                             <div className="flex-shrink-0">
                               {lesson.type === 'VIDEO' ? (
-                                <Play className={`h-4 w-4 ${canAccess ? 'text-blue-600' : 'text-gray-400'}`} />
+                                <Play className={`h-4 w-4 ${canAccess ? 'text-primary' : 'text-muted-foreground'}`} />
                               ) : (
-                                <FileText className={`h-4 w-4 ${canAccess ? 'text-green-600' : 'text-gray-400'}`} />
+                                <FileText className={`h-4 w-4 ${canAccess ? 'text-success' : 'text-muted-foreground'}`} />
                               )}
                             </div>
                             
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <h5 className={`font-medium truncate ${
-                                  canAccess ? 'text-gray-900' : 'text-gray-500'
+                                <h5 className={`font-medium truncate text-sm ${
+                                  canAccess ? 'text-foreground' : 'text-muted-foreground'
                                 }`}>
                                   {lessonIndex + 1}. {lesson.title}
                                 </h5>
@@ -172,11 +168,11 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
                                 )}
                                 
                                 {lesson.progress?.[0]?.isCompleted && isEnrolled && (
-                                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                  <CheckCircle2 className="h-4 w-4 text-success" />
                                 )}
                               </div>
                               
-                              <div className="flex items-center gap-3 text-xs text-gray-500">
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                 <span className="capitalize">{lesson.type.toLowerCase()}</span>
                                 {lesson.duration && (
                                   <>
@@ -189,7 +185,7 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
 
                             <div className="flex-shrink-0">
                               {!canAccess && (
-                                <Lock className="h-4 w-4 text-gray-400" />
+                                <Lock className="h-4 w-4 text-muted-foreground" />
                               )}
                             </div>
                           </div>
@@ -206,15 +202,15 @@ export function CourseContent({ chapters, isEnrolled }: CourseContentProps) {
 
       {/* Call to Action */}
       {!isEnrolled && (
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="mt-6 p-4 status-info rounded-lg border">
           <div className="text-center">
-            <h4 className="font-semibold text-blue-900 mb-2">
+            <h4 className="font-semibold text-primary mb-2">
               Get Full Access to All Lessons
             </h4>
-            <p className="text-blue-700 text-sm mb-4">
+            <p className="text-primary text-sm mb-4">
               Enroll now to unlock all {getTotalLessons()} lessons and start learning today!
             </p>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-primary hover:bg-primary/90 text-white">
               Enroll Now
             </Button>
           </div>

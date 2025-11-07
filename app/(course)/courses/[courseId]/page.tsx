@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Container } from "@/components/ui/container"
+
 import { PublicLayout } from "@/components/layout/public-layout"
 import { EnrollButton } from "./_components/enroll-button"
-// import { CourseReviews } from "./_components/course-reviews"  
-// import { AddReviewForm } from "./_components/add-review-form"
+import { CourseReviews } from "./_components/course-reviews"
 import { CourseContent } from "./_components/course-content"
 import { courseService, type CourseDetailsResponse } from "@/lib/services/course.service"
 // import type { ChapterWithLessons } from "@/types/course.d" // Will be used later
@@ -112,7 +112,7 @@ export default function CourseDetailPage({
                   </Badge>
                 </div>
 
-                <h1 className="text-3xl lg:text-4xl font-bold leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-bold leading-tight text-foreground">
                   {course.title}
                 </h1>
 
@@ -138,9 +138,9 @@ export default function CourseDetailPage({
 
             {/* Instructor */}
             {course.instructor && (
-              <Card className="border-l-4 border-l-primary">
+              <Card>
                 <CardContent className="pt-6">
-                  <h3 className="text-lg font-semibold mb-4">Meet Your Instructor</h3>
+                  <h3 className="text-lg font-semibold mb-4 text-foreground">Meet Your Instructor</h3>
                   <div className="flex items-start gap-4">
                     {course.instructor.image && (
                       <div className="relative h-16 w-16 overflow-hidden rounded-full ring-2 ring-muted">
@@ -162,7 +162,7 @@ export default function CourseDetailPage({
             )}
 
             {/* Course Content */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-card rounded-lg shadow-sm border p-6">
               <h3 className="text-xl font-semibold mb-4">Course Content</h3>
               {course.chapters && course.chapters.length > 0 ? (
                 <CourseContent 
@@ -170,50 +170,31 @@ export default function CourseDetailPage({
                   isEnrolled={isEnrolled}
                 />
               ) : (
-                <p className="text-gray-600">No course content available yet.</p>
+                <p className="text-muted-foreground">No course content available yet.</p>
               )}
             </div>
 
             {/* Reviews Section */}
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold">Student Reviews</h2>
-                <p className="text-muted-foreground">
-                  See what other students are saying about this course
-                </p>
-              </div>
-              
-              {/* Add/Edit Review Form (only for enrolled students) */}
-              {isEnrolled && user && (
-                <Card className="border-dashed">
-                  <CardContent className="pt-6">
-                    <p className="text-gray-600">Review form will be here</p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Reviews List */}
-              <div className="space-y-4">
-                <p className="text-gray-600">Reviews will be displayed here</p>
-              </div>
-              {/* Reviews component commented out */}
-            </div>
+            <CourseReviews 
+              courseId={courseId}
+              isEnrolled={isEnrolled}
+            />
           </div>
 
           {/* Sidebar - Right side on desktop, top on mobile */}
           <div className="order-1 lg:order-2 space-y-6">
-            <Card className="sticky top-6 shadow-lg border-2">
+            <Card className="sticky top-6">
               <CardHeader className="pb-4">
                 <CardTitle className="text-center">
                   {isEnrolled ? (
                     <div className="space-y-2">
-                      <Badge className="bg-green-100 text-green-800 border-green-200 px-4 py-2">
+                      <Badge className="status-success px-4 py-2">
                         ✓ Enrolled
                       </Badge>
                     </div>
                   ) : isFree ? (
                     <div className="space-y-2">
-                      <div className="text-3xl font-bold text-green-600">Free</div>
+                      <div className="text-3xl font-bold text-success">Free</div>
                       <p className="text-sm text-muted-foreground font-normal">
                         No cost to start learning
                       </p>
@@ -284,7 +265,7 @@ export default function CourseDetailPage({
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       </div>
                       <div>
                         <span className="font-medium">{course.chapters.length} chapters</span>
@@ -295,7 +276,7 @@ export default function CourseDetailPage({
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       </div>
                       <div>
                         <span className="font-medium">Lifetime access</span>
@@ -306,7 +287,7 @@ export default function CourseDetailPage({
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       </div>
                       <div>
                         <span className="font-medium">Certificate of completion</span>
@@ -317,7 +298,7 @@ export default function CourseDetailPage({
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0">
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       </div>
                       <div>
                         <span className="font-medium">Mobile friendly</span>

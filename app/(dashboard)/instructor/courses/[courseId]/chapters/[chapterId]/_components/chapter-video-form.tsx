@@ -66,7 +66,7 @@ export function ChapterVideoForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="videoUrl">
-          Video URL <span className="text-red-500">*</span>
+          Video URL <span className="text-error">*</span>
         </Label>
         <Input
           id="videoUrl"

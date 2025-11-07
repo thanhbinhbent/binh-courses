@@ -33,12 +33,12 @@ export function QuizResultsDisplay({
           <div className="text-center">
             <div className="mb-4 flex items-center justify-center">
               {attempt.isPassed ? (
-                <div className="rounded-full bg-green-100 p-4">
-                  <CheckCircle2 className="h-12 w-12 text-green-600" />
+                <div className="rounded-full bg-success/10 p-4">
+                  <CheckCircle2 className="h-12 w-12 text-success" />
                 </div>
               ) : (
-                <div className="rounded-full bg-red-100 p-4">
-                  <XCircle className="h-12 w-12 text-red-600" />
+                <div className="rounded-full bg-error/10 p-4">
+                  <XCircle className="h-12 w-12 text-error" />
                 </div>
               )}
             </div>
@@ -83,7 +83,7 @@ export function QuizResultsDisplay({
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">Correct</p>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-2xl font-bold text-success">
                     {correctAnswers}/{totalQuestions}
                   </p>
                 </div>
@@ -126,11 +126,11 @@ export function QuizResultsDisplay({
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0">
                         {isPending ? (
-                          <Clock className="h-5 w-5 text-amber-600" />
+                          <Clock className="h-5 w-5 text-warning" />
                         ) : isCorrect ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          <CheckCircle2 className="h-5 w-5 text-success" />
                         ) : (
-                          <XCircle className="h-5 w-5 text-red-600" />
+                          <XCircle className="h-5 w-5 text-error" />
                         )}
                       </div>
 
@@ -161,20 +161,20 @@ export function QuizResultsDisplay({
                                   key={option.id}
                                   className={`rounded-lg border p-3 ${
                                     isSelected && isCorrectOption
-                                      ? "border-green-600 bg-green-50"
+                                      ? "border-success bg-success/10"
                                       : isSelected && !isCorrectOption
-                                      ? "border-red-600 bg-red-50"
+                                      ? "border-error bg-error/10"
                                       : isCorrectOption
-                                      ? "border-green-600 bg-green-50"
+                                      ? "border-success bg-success/10"
                                       : ""
                                   }`}
                                 >
                                   <div className="flex items-center gap-2">
                                     {isCorrectOption && (
-                                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                      <CheckCircle2 className="h-4 w-4 text-success" />
                                     )}
                                     {isSelected && !isCorrectOption && (
-                                      <XCircle className="h-4 w-4 text-red-600" />
+                                      <XCircle className="h-4 w-4 text-error" />
                                     )}
                                     <span className="text-sm">{option.text}</span>
                                   </div>

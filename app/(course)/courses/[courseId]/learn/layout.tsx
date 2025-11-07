@@ -45,7 +45,7 @@ export default function Layout({ children, params }: LayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-muted/30">
       {/* Main Learning Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header with controls */}
@@ -58,13 +58,13 @@ export default function Layout({ children, params }: LayoutProps) {
 
         <div className="flex-1 flex overflow-hidden">
           {/* Content Area */}
-          <main className="flex-1 overflow-auto bg-white">
+          <main className="flex-1 overflow-auto bg-background">
             {children}
           </main>
 
           {/* Course Navigation Sidebar - Right Side */}
           <div className={`
-            fixed inset-y-0 right-0 z-30 w-80 bg-white border-l shadow-lg transform transition-transform duration-300 ease-in-out
+            fixed inset-y-0 right-0 z-30 w-80 bg-card border-l shadow-lg transform transition-transform duration-300 ease-in-out
             ${isNavOpen ? 'translate-x-0' : 'translate-x-full'}
             lg:translate-x-0 lg:static lg:inset-0 lg:shadow-none lg:z-auto
           `}>

@@ -109,7 +109,7 @@ export default function CourseEditPage({
       </div>
 
       {!isComplete && (
-        <Card className="mb-8 border-warning/20 bg-warning/10">
+        <Card className="mb-8">
           <CardContent className="p-4">
             <p className="text-sm text-warning-foreground">
               <strong>Complete your course:</strong> Add an image, ensure you have a published chapter, 

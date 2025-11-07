@@ -243,7 +243,7 @@ export function ChaptersList({ courseId, chapters }: ChaptersListProps) {
                   {deletingId === chapter.id ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Trash2 className="h-4 w-4 text-red-500" />
+                    <Trash2 className="h-4 w-4 text-error" />
                   )}
                 </Button>
               </div>

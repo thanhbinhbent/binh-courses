@@ -163,8 +163,8 @@ export function QuizTakingInterface({
             <div className="flex items-center gap-4">
               {timeRemaining !== null && (
                 <div className="flex items-center gap-2 rounded-lg border px-3 py-2">
-                  <Clock className={`h-4 w-4 ${timeRemaining < 300000 ? "text-red-600" : ""}`} />
-                  <span className={`font-mono font-semibold ${timeRemaining < 300000 ? "text-red-600" : ""}`}>
+                  <Clock className={`h-4 w-4 ${timeRemaining < 300000 ? "text-error" : ""}`} />
+                  <span className={`font-mono font-semibold ${timeRemaining < 300000 ? "text-error" : ""}`}>
                     {formatTime(timeRemaining)}
                   </span>
                 </div>
@@ -258,8 +258,8 @@ export function QuizTakingInterface({
                       onClick={() => setCurrentQuestionIndex(index)}
                       className={`
                         aspect-square rounded-lg border-2 text-sm font-semibold transition-colors
-                        ${isCurrent ? "border-blue-600 bg-blue-100 text-blue-900" : ""}
-                        ${!isCurrent && isAnswered ? "border-green-600 bg-green-100 text-green-900" : ""}
+                        ${isCurrent ? "border-primary bg-primary/10 text-primary" : ""}
+                        ${!isCurrent && isAnswered ? "border-success bg-success/10 text-success" : ""}
                         ${!isCurrent && !isAnswered ? "border-border bg-card hover:bg-muted/50" : ""}
                       `}
                     >
@@ -280,7 +280,7 @@ export function QuizTakingInterface({
             <AlertDialogTitle>Submit Quiz?</AlertDialogTitle>
             <AlertDialogDescription>
               {answeredCount < questions.length ? (
-                <span className="text-amber-600">
+                <span className="text-warning">
                   You have answered {answeredCount} out of {questions.length} questions.{" "}
                   <strong>{questions.length - answeredCount} questions are unanswered.</strong>
                 </span>

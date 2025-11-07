@@ -1,35 +1,28 @@
+"use client"
+
+import { cn } from "@/lib/utils"
+
 interface VideoPlayerProps {
   videoUrl: string
   courseId: string
   chapterId: string
   lessonId: string
   isCompleted?: boolean
-  title: string
-  subtitleUrl?: string
+  title?: string
+  className?: string
 }
 
-export const VideoPlayer = ({
-  videoUrl,
-  isCompleted,
-  title,
-  subtitleUrl,
-}: VideoPlayerProps) => {
+export function VideoPlayer({ 
+  videoUrl, 
+  className
+}: VideoPlayerProps) {
   return (
-    <video
-      controls
-      className="w-full aspect-video"
-      poster={isCompleted ? '/images/completed-video.png' : undefined}
+    <video 
+      controls 
+      className={cn("w-full aspect-video bg-muted", className)}
+      src={videoUrl}
     >
-      <source src={videoUrl} type="video/mp4" />
       Your browser does not support the video tag.
-      {subtitleUrl && (
-        <track
-          kind="captions"
-          src={subtitleUrl}
-          srcLang="en"
-          label={title}
-        />
-      )}
     </video>
   )
 }

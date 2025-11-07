@@ -148,7 +148,7 @@ export function QuestionBuilder({
   }
 
   return (
-    <Card className="border-blue-200 bg-blue-50/50">
+    <Card>
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -290,7 +290,7 @@ export function QuestionBuilder({
             )}
 
             {(questionType === "SHORT_ANSWER" || questionType === "ESSAY") && (
-              <div className="rounded-lg bg-amber-50 p-4 text-sm">
+              <div className="rounded-lg status-warning p-4 text-sm">
                 <p className="font-medium">Manual Grading Required</p>
                 <p className="text-muted-foreground">
                   This question type requires manual grading by the instructor after submission.

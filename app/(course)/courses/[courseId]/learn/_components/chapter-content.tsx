@@ -44,35 +44,35 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50">
+    <div className="h-full overflow-y-auto bg-muted/50">
       <div className="max-w-4xl mx-auto p-8">
         {/* Chapter Header */}
-        <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
+        <div className="bg-card rounded-lg shadow-sm border p-8 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <BookOpen className="h-6 w-6 text-blue-600" />
+            <BookOpen className="h-6 w-6 text-primary" />
             <Badge variant="outline" className="text-sm">
               Chapter Overview
             </Badge>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             {chapter.title}
           </h1>
 
           {chapter.description && (
-            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
               {chapter.description}
             </p>
           )}
 
           {/* Chapter Stats */}
           <div className="flex flex-wrap items-center gap-6 mb-6">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <CheckCircle2 className="h-4 w-4" />
               <span>{completedLessons} of {lessons.length} lessons completed</span>
             </div>
             
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
               <span>{Math.ceil(totalDuration / 60)} minutes total</span>
             </div>
@@ -80,7 +80,7 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
 
           {/* Progress Bar */}
           <div className="mb-6">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+            <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
               <span>Chapter Progress</span>
               <span>{Math.round(progressPercentage)}%</span>
             </div>
@@ -91,7 +91,7 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
           <Button 
             onClick={startFirstIncompleteLesson}
             size="lg" 
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-primary hover:bg-primary/90"
             disabled={lessons.length === 0}
           >
             <Play className="h-4 w-4 mr-2" />
@@ -106,7 +106,7 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
 
         {/* Lessons List */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <h2 className="text-xl font-semibold text-foreground mb-4">
             Lessons in this chapter
           </h2>
 
@@ -120,7 +120,7 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
                 className={`
                   transition-all duration-200 hover:shadow-md cursor-pointer
                   ${isLocked ? 'opacity-60' : ''}
-                  ${isCompleted ? 'border-green-200 bg-green-50/50' : ''}
+                  ${isCompleted ? 'border-success/20 bg-success/5' : ''}
                 `}
                 onClick={() => !isLocked && startLesson(lesson.id)}
               >
@@ -131,8 +131,8 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
                       <div className={`
                         w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
                         ${isCompleted 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-success/10 text-success' 
+                          : 'bg-muted text-muted-foreground'
                         }
                       `}>
                         {isCompleted ? (
@@ -144,10 +144,10 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
 
                       <div className="flex items-center gap-1">
                         {lesson.type === 'VIDEO' && (
-                          <Play className="h-4 w-4 text-blue-600" />
+                          <Play className="h-4 w-4 text-primary" />
                         )}
                         {lesson.type === 'ARTICLE' && (
-                          <FileText className="h-4 w-4 text-purple-600" />
+                          <FileText className="h-4 w-4 text-accent" />
                         )}
                         {isLocked && (
                           <Lock className="h-4 w-4 text-gray-400" />
@@ -159,11 +159,11 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2">
+                          <h3 className="font-semibold text-foreground text-lg mb-2 line-clamp-2">
                             {lesson.title}
                           </h3>
                           
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
                             <Badge variant="secondary" className="text-xs">
                               {lesson.type}
                             </Badge>
@@ -176,7 +176,7 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
                             )}
 
                             {isCompleted && (
-                              <Badge className="bg-green-100 text-green-700 text-xs">
+                              <Badge variant="secondary" className="text-xs">
                                 <CheckCircle2 className="h-3 w-3 mr-1" />
                                 Completed
                               </Badge>
@@ -214,8 +214,8 @@ export function ChapterContent({ chapter, course, courseId, chapterId }: Chapter
           <Card>
             <CardContent className="p-8 text-center">
               <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="font-semibold text-gray-900 mb-2">No lessons yet</h3>
-              <p className="text-gray-600">
+              <h3 className="font-semibold text-foreground mb-2">No lessons yet</h3>
+              <p className="text-muted-foreground">
                 This chapter doesn't have any lessons available yet.
               </p>
             </CardContent>

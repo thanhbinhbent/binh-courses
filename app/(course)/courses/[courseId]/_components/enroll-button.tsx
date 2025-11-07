@@ -99,7 +99,7 @@ export function EnrollButton({
     return (
       <Button 
         onClick={() => router.push(`/courses/${courseId}/learn`)}
-        className="w-full bg-green-600 hover:bg-green-700 text-white"
+        className="w-full bg-success hover:bg-success/90 text-white"
       >
         Continue Learning
       </Button>
@@ -112,8 +112,8 @@ export function EnrollButton({
       disabled={disabled || isLoading || justEnrolled}
       className={`w-full text-white ${
         justEnrolled 
-          ? 'bg-green-600 hover:bg-green-700' 
-          : 'bg-blue-600 hover:bg-blue-700'
+          ? 'bg-success hover:bg-success/90' 
+          : 'bg-primary hover:bg-primary/90'
       }`}
     >
       {justEnrolled ? (

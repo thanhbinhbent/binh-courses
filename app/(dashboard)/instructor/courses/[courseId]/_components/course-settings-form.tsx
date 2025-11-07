@@ -84,7 +84,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title">
-          Course Title <span className="text-red-500">*</span>
+          Course Title <span className="text-error">*</span>
         </Label>
         <Input
           id="title"
@@ -99,7 +99,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
       {/* Description */}
       <div className="space-y-2">
         <Label htmlFor="description">
-          Description <span className="text-red-500">*</span>
+          Description <span className="text-error">*</span>
         </Label>
         <Textarea
           id="description"
@@ -147,7 +147,7 @@ export function CourseSettingsForm({ course, categories }: CourseSettingsFormPro
       {/* Category */}
       <div className="space-y-2">
         <Label htmlFor="category">
-          Category <span className="text-red-500">*</span>
+          Category <span className="text-error">*</span>
         </Label>
         <Select
           value={formData.categoryId}

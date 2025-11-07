@@ -55,7 +55,7 @@ export function LearningHeader({
   }
 
   return (
-    <header className="bg-gray-900 text-white border-b border-gray-700">
+    <header className="learning-header">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left side */}
         <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export function LearningHeader({
             variant="ghost"
             size="sm"
             onClick={onToggleNav}
-            className="lg:hidden text-white hover:bg-gray-800"
+            className="lg:hidden text-foreground hover:bg-accent"
           >
             <Menu className="h-4 w-4" />
           </Button>
@@ -72,22 +72,22 @@ export function LearningHeader({
             variant="ghost"
             size="sm"
             onClick={handleBackToCourse}
-            className="text-white hover:bg-gray-800"
+            className="text-foreground hover:bg-accent"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to course
           </Button>
 
-          <div className="hidden md:block w-px h-6 bg-gray-700" />
+          <div className="hidden md:block w-px h-6 bg-border" />
 
           <div className="hidden md:flex items-center gap-3">
-            <BookOpen className="h-4 w-4 text-gray-400" />
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
             <div className="min-w-0">
               <h1 className="text-sm font-medium truncate max-w-xs">
                 {course.title}
               </h1>
               {currentLesson && (
-                <p className="text-xs text-gray-400 truncate max-w-xs">
+                <p className="text-xs text-muted-foreground truncate max-w-xs">
                   {currentLesson.title}
                 </p>
               )}
@@ -105,7 +105,7 @@ export function LearningHeader({
             </div>
             <Progress 
               value={progressPercentage} 
-              className="h-1.5 bg-gray-800"
+              className="h-1.5 bg-muted"
             />
           </div>
         </div>
@@ -120,7 +120,7 @@ export function LearningHeader({
           <Button
             variant="ghost"
             size="sm"
-            className="text-white hover:bg-gray-800"
+            className="text-white hover:bg-muted-foreground/90"
           >
             <MoreVertical className="h-4 w-4" />
           </Button>
@@ -135,7 +135,7 @@ export function LearningHeader({
         </div>
         <Progress 
           value={progressPercentage} 
-          className="h-1.5 bg-gray-800"
+          className="h-1.5 bg-muted"
         />
       </div>
     </header>

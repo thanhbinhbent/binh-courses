@@ -1,18 +1,27 @@
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+"use client";
+
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface MarkdownRendererProps {
-  content: string
+  content: string;
+  className?: string;
 }
 
-export const MarkdownRenderer = ({
-  content
-}: MarkdownRendererProps) => {
+export function MarkdownRenderer({ content, className }: MarkdownRendererProps) {
   return (
-    <div className="prose dark:prose-invert">
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-        {content}
-      </ReactMarkdown>
-    </div>
-  )
+    <div
+      className={cn(
+        "prose prose-slate max-w-none",
+        "prose-headings:text-foreground",
+        "prose-p:text-muted-foreground",
+        "prose-a:text-primary hover:prose-a:text-primary/80",
+        "prose-strong:text-foreground",
+        "prose-ul:text-muted-foreground",
+        "prose-ol:text-muted-foreground",
+        className
+      )}
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  );
 }

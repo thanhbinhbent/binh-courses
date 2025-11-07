@@ -140,7 +140,7 @@ export function QuestionsList({ quiz, questions }: QuestionsListProps) {
                           key={option.id}
                           className={`text-xs ${
                             option.isCorrect
-                              ? "font-medium text-green-600"
+                              ? "font-medium text-success"
                               : "text-muted-foreground"
                           }`}
                         >
