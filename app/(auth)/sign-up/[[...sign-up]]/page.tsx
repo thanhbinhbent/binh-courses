@@ -2,7 +2,6 @@
 
 import { signIn } from "next-auth/react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +13,6 @@ import { BookOpen } from "lucide-react"
 import { authService } from "@/lib/services"
 
 export default function SignUpPage() {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -58,8 +56,8 @@ export default function SignUpPage() {
       if (result?.error) {
         toast.error("Failed to sign in")
       } else {
-        router.push("/dashboard")
-        router.refresh()
+        // Redirect to dashboard which will handle role-based routing
+        window.location.href = "/dashboard"
       }
     } catch (error) {
       const err = error as Error
@@ -78,7 +76,8 @@ export default function SignUpPage() {
   const handleOAuthSignIn = async (provider: "google" | "github") => {
     setIsLoading(true)
     try {
-      await signIn(provider, { callbackUrl: "/dashboard" })
+      // Use callback URL to let the system determine the right dashboard
+      await signIn(provider, { callbackUrl: window.location.origin + "/dashboard" })
     } catch {
       toast.error("Failed to sign in")
     } finally {

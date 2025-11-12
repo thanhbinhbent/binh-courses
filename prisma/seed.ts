@@ -44,12 +44,12 @@ async function main() {
         email: 'admin@example.com',
         name: 'System Admin',
         password: hashedPassword,
-        role: 'ADMIN',
+        globalRoles: ['SYSTEM_ADMIN', 'USER'], // Admin user has both roles
         bio: 'Platform administrator with full access to all features.',
       },
     })
 
-    // Create instructors
+    // Create instructors (now just regular users who can create courses)
     const instructor1 = await db.user.upsert({
       where: { email: 'john.instructor@example.com' },
       update: {},
@@ -57,7 +57,7 @@ async function main() {
         email: 'john.instructor@example.com',
         name: 'John Smith',
         password: hashedPassword,
-        role: 'INSTRUCTOR',
+        globalRoles: ['USER'],
         bio: 'Senior Cloud Architect with 10+ years of experience in AWS and Azure. Certified Solutions Architect Professional.',
         image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
       },
@@ -70,7 +70,7 @@ async function main() {
         email: 'sarah.instructor@example.com',
         name: 'Sarah Johnson',
         password: hashedPassword,
-        role: 'INSTRUCTOR',
+        globalRoles: ['USER'],
         bio: 'Software Testing Expert and ISTQB Advanced Level trainer. Specialized in test automation and quality assurance.',
         image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400',
       },
@@ -83,13 +83,13 @@ async function main() {
         email: 'mike.instructor@example.com',
         name: 'Michael Chen',
         password: hashedPassword,
-        role: 'INSTRUCTOR',
+        globalRoles: ['USER'],
         bio: 'DevOps Engineer and Kubernetes expert. Passionate about containerization and CI/CD pipelines.',
         image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
       },
     })
 
-    // Create students
+    // Create students (regular users)
     const student1 = await db.user.upsert({
       where: { email: 'jane.student@example.com' },
       update: {},
@@ -97,7 +97,7 @@ async function main() {
         email: 'jane.student@example.com',
         name: 'Jane Doe',
         password: hashedPassword,
-        role: 'STUDENT',
+        globalRoles: ['USER'],
         bio: 'Aspiring cloud developer looking to get AWS certified.',
         image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
       },
@@ -110,7 +110,7 @@ async function main() {
         email: 'alex.student@example.com',
         name: 'Alex Rodriguez',
         password: hashedPassword,
-        role: 'STUDENT',
+        globalRoles: ['USER'],
         bio: 'Software developer transitioning to cloud technologies.',
       },
     })
@@ -122,7 +122,7 @@ async function main() {
         email: 'emma.student@example.com',
         name: 'Emma Wilson',
         password: hashedPassword,
-        role: 'STUDENT',
+        globalRoles: ['USER'],
         bio: 'QA Engineer studying for ISTQB Foundation certification.',
         image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400',
       },
@@ -135,12 +135,68 @@ async function main() {
         email: 'david.student@example.com',
         name: 'David Kim',
         password: hashedPassword,
-        role: 'STUDENT',
+        globalRoles: ['USER'],
         bio: 'System administrator learning DevOps practices.',
       },
     })
 
     console.log('✅ Created test users (1 admin, 3 instructors, 4 students)')
+
+    // Create default role permission templates
+    const instructorPermissions = [
+      'MANAGE_COURSE',
+      'MANAGE_CONTENT', 
+      'MANAGE_USERS',
+      'GRADE_ASSIGNMENTS',
+      'VIEW_ANALYTICS',
+      'MODERATE_COMMENTS'
+    ]
+
+    const taPermissions = [
+      'MANAGE_CONTENT',
+      'GRADE_ASSIGNMENTS',
+      'MODERATE_COMMENTS'
+    ]
+
+    const studentPermissions: string[] = [] // Students have implicit read permissions
+
+    // Create permission templates for INSTRUCTOR role
+    for (const permission of instructorPermissions) {
+      await db.rolePermissionTemplate.upsert({
+        where: {
+          roleType_permission: {
+            roleType: 'INSTRUCTOR',
+            permission: permission as any
+          }
+        },
+        update: {},
+        create: {
+          roleType: 'INSTRUCTOR',
+          permission: permission as any,
+          isDefault: true
+        }
+      })
+    }
+
+    // Create permission templates for TEACHING_ASSISTANT role
+    for (const permission of taPermissions) {
+      await db.rolePermissionTemplate.upsert({
+        where: {
+          roleType_permission: {
+            roleType: 'TEACHING_ASSISTANT',
+            permission: permission as any
+          }
+        },
+        update: {},
+        create: {
+          roleType: 'TEACHING_ASSISTANT',
+          permission: permission as any,
+          isDefault: true
+        }
+      })
+    }
+
+    console.log('✅ Created role permission templates')
 
     // Create sample courses
     const awsCategoryId = createdCategories.find((c) => c.slug === 'aws-certification')?.id
@@ -161,7 +217,7 @@ async function main() {
         isPublished: true,
         level: 'INTERMEDIATE',
         categoryId: awsCategoryId,
-        instructorId: instructor1.id,
+        ownerId: instructor1.id,
       },
     })
 
@@ -372,7 +428,7 @@ Amazon S3 provides several mechanisms to control access to your buckets and obje
         isPublished: true,
         level: 'BEGINNER',
         categoryId: azureCategoryId,
-        instructorId: instructor1.id,
+        ownerId: instructor1.id,
         chapters: {
           create: [
             {
@@ -404,7 +460,7 @@ Amazon S3 provides several mechanisms to control access to your buckets and obje
         isPublished: true,
         level: 'INTERMEDIATE',
         categoryId: istqbCategoryId,
-        instructorId: instructor2.id,
+        ownerId: instructor2.id,
         chapters: {
           create: [
             {
@@ -562,7 +618,7 @@ The ISTQB Foundation Level defines seven key principles that form the foundation
           isPublished: true,
           level: 'ADVANCED',
           categoryId: devOpsCategoryId,
-          instructorId: instructor3.id,
+          ownerId: instructor3.id,
           chapters: {
             create: [
               {
@@ -671,7 +727,7 @@ DevOps is a collaborative approach that bridges the gap between development and 
           isPublished: true,
           level: 'EXPERT',
           categoryId: k8sCategoryId,
-          instructorId: instructor3.id,
+          ownerId: instructor3.id,
           chapters: {
             create: [
               {
@@ -697,7 +753,7 @@ DevOps is a collaborative approach that bridges the gap between development and 
           isPublished: false, // Draft course
           level: 'BEGINNER',
           categoryId: cyberCategoryId,
-          instructorId: instructor2.id,
+          ownerId: instructor2.id,
           chapters: {
             create: [
               {
@@ -758,7 +814,7 @@ DevOps is a collaborative approach that bridges the gap between development and 
         title: 'AWS Solutions Architect Practice Quiz',
         description: 'Test your knowledge of AWS core services and architecture best practices',
         categoryId: awsCategoryId,
-        instructorId: instructor1.id,
+        creatorId: instructor1.id,
         timeLimit: 30,
         passingScore: 70,
         isPublished: true,
@@ -814,7 +870,7 @@ DevOps is a collaborative approach that bridges the gap between development and 
         title: 'Azure Fundamentals AZ-900 Practice',
         description: 'Practice quiz for Azure Fundamentals certification exam',
         categoryId: azureCategoryId,
-        instructorId: instructor1.id,
+        creatorId: instructor1.id,
         timeLimit: 45,
         passingScore: 75,
         isPublished: true,
@@ -862,7 +918,7 @@ DevOps is a collaborative approach that bridges the gap between development and 
         title: 'ISTQB Foundation Level Practice Test',
         description: 'Comprehensive practice test for ISTQB Foundation Level certification',
         categoryId: istqbCategoryId,
-        instructorId: instructor2.id,
+        creatorId: instructor2.id,
         timeLimit: 60,
         passingScore: 65,
         isPublished: true,
@@ -906,6 +962,155 @@ DevOps is a collaborative approach that bridges the gap between development and 
     })
 
     console.log('✅ Created sample quizzes')
+
+    // Create course role assignments to demonstrate the new system
+    // This shows how:
+    // 1. System admin can create courses and assign instructors
+    // 2. Regular users become instructors when assigned to courses  
+    // 3. Some users can be both instructors and students in different courses
+
+    // Get all courses to assign roles
+    const allCourses = await db.course.findMany()
+
+    // Scenario 1: Assign instructor roles to course owners (they created the courses)
+    for (const course of allCourses) {
+      await db.courseRole.upsert({
+        where: {
+          userId_courseId_role: {
+            userId: course.ownerId,
+            courseId: course.id,
+            role: 'INSTRUCTOR'
+          }
+        },
+        create: {
+          userId: course.ownerId,
+          courseId: course.id,
+          role: 'INSTRUCTOR',
+          permissions: ['MANAGE_COURSE', 'MANAGE_CONTENT', 'MANAGE_USERS', 'GRADE_ASSIGNMENTS', 'VIEW_ANALYTICS', 'MODERATE_COMMENTS'],
+          assignedBy: course.ownerId, // Self-assigned as course creator
+          isActive: true
+        },
+        update: {
+          permissions: ['MANAGE_COURSE', 'MANAGE_CONTENT', 'MANAGE_USERS', 'GRADE_ASSIGNMENTS', 'VIEW_ANALYTICS', 'MODERATE_COMMENTS'],
+          isActive: true
+        }
+      })
+    }
+
+    // Scenario 2: System admin assigns a teaching assistant for AWS course
+    const awsCourseForTA = await db.course.findFirst({ where: { title: { contains: 'AWS Solutions Architect' } } })
+    const adminUser = await db.user.findFirst({ where: { globalRoles: { has: 'SYSTEM_ADMIN' } } })
+    
+    if (awsCourseForTA && adminUser) {
+      await db.courseRole.upsert({
+        where: {
+          userId_courseId_role: {
+            userId: instructor2.id,
+            courseId: awsCourseForTA.id,
+            role: 'TEACHING_ASSISTANT'
+          }
+        },
+        create: {
+          userId: instructor2.id, // Sarah becomes TA for AWS course
+          courseId: awsCourseForTA.id,
+          role: 'TEACHING_ASSISTANT',
+          permissions: ['MANAGE_CONTENT', 'GRADE_ASSIGNMENTS', 'MODERATE_COMMENTS'],
+          assignedBy: adminUser.id, // Assigned by system admin
+          isActive: true
+        },
+        update: {
+          permissions: ['MANAGE_CONTENT', 'GRADE_ASSIGNMENTS', 'MODERATE_COMMENTS'],
+          assignedBy: adminUser.id,
+          isActive: true
+        }
+      })
+    }
+
+    // Scenario 3: Instructors enroll as students in other courses (cross-learning)
+    const azureCourseForLearning = await db.course.findFirst({ where: { title: { contains: 'Azure Fundamentals' } } })
+    const istqbCourseForLearning = await db.course.findFirst({ where: { title: { contains: 'ISTQB Foundation' } } })
+    
+    if (azureCourseForLearning) {
+      // Mike (DevOps instructor) becomes student in Azure course
+      await db.courseRole.upsert({
+        where: {
+          userId_courseId_role: {
+            userId: instructor3.id,
+            courseId: azureCourseForLearning.id,
+            role: 'STUDENT'
+          }
+        },
+        create: {
+          userId: instructor3.id,
+          courseId: azureCourseForLearning.id,
+          role: 'STUDENT',
+          permissions: [],
+          assignedBy: instructor1.id, // Assigned by Azure course instructor
+          isActive: true
+        },
+        update: {
+          permissions: [],
+          assignedBy: instructor1.id,
+          isActive: true
+        }
+      })
+    }
+
+    if (istqbCourseForLearning) {
+      // John (AWS instructor) becomes student in ISTQB course
+      await db.courseRole.upsert({
+        where: {
+          userId_courseId_role: {
+            userId: instructor1.id,
+            courseId: istqbCourseForLearning.id,
+            role: 'STUDENT'
+          }
+        },
+        create: {
+          userId: instructor1.id,
+          courseId: istqbCourseForLearning.id,
+          role: 'STUDENT',
+          permissions: [],
+          assignedBy: instructor2.id, // Assigned by ISTQB instructor
+          isActive: true
+        },
+        update: {
+          permissions: [],
+          assignedBy: instructor2.id,
+          isActive: true
+        }
+      })
+    }
+
+    // Scenario 4: Regular students enrolled in courses
+    const enrolledStudents = await db.enrollment.findMany({ include: { course: true } })
+    
+    for (const enrollment of enrolledStudents) {
+      await db.courseRole.upsert({
+        where: {
+          userId_courseId_role: {
+            userId: enrollment.userId,
+            courseId: enrollment.courseId,
+            role: 'STUDENT'
+          }
+        },
+        create: {
+          userId: enrollment.userId,
+          courseId: enrollment.courseId,
+          role: 'STUDENT', 
+          permissions: [],
+          assignedBy: enrollment.course.ownerId, // Assigned by course owner
+          isActive: true
+        },
+        update: {
+          permissions: [],
+          assignedBy: enrollment.course.ownerId,
+          isActive: true
+        }
+      })
+    }
+
+    console.log('✅ Created course role assignments demonstrating flexible role system')
 
     console.log('\n🎉 Database seeded successfully!')
     console.log('\n� Data Summary:')

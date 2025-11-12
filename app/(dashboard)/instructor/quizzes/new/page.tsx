@@ -8,9 +8,11 @@ import { CreateQuizForm } from "./_components/create-quiz-form"
 export default async function NewQuizPage() {
   const user = await getCurrentUser()
 
-  if (!user || user.role !== "INSTRUCTOR") {
-    redirect("/")
+  if (!user) {
+    redirect("/sign-in")
   }
+
+  // In new system, all authenticated users can create quizzes
 
   const categories = await db.category.findMany({
     orderBy: { name: "asc" }

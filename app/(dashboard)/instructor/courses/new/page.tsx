@@ -1,11 +1,12 @@
-import { requireInstructor } from "@/lib/current-user"
+import { requireUser } from "@/lib/current-user"
 import { db } from "@/lib/db"
 import { Container } from "@/components/ui/container"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { CreateCourseForm } from "./_components/create-course-form"
 
 export default async function NewCoursePage() {
-  await requireInstructor()
+  // In new system, any authenticated user can create courses
+  await requireUser()
 
   // Get all categories
   const categories = await db.category.findMany({

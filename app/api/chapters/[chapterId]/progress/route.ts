@@ -97,7 +97,7 @@ export async function POST(
         const course = await db.course.findUnique({
           where: { id: chapter.courseId },
           include: {
-            instructor: true
+            owner: true
           }
         })
 
@@ -110,7 +110,7 @@ export async function POST(
               certificateId,
               userId: user.id,
               courseName: course.title,
-              instructorName: course.instructor.name || 'Unknown Instructor',
+              ownerName: course.owner.name || 'Unknown Instructor',
               completionDate: new Date()
             }
           })

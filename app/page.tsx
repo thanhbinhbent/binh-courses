@@ -1,33 +1,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AppHeader } from "@/components/app-header";
+import { HomeAuthRedirect } from "@/components/home-auth-redirect";
 import { BookOpen, Award, Users, TrendingUp, CheckCircle2, Star } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Header */}
-      <header className="w-full border-b bg-card/50 backdrop-blur-sm">
-        <Container className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-foreground">Binh Courses</span>
-          </div>
-          <nav className="flex items-center gap-4">
-            <Link href="/courses">
-              <Button variant="ghost">Courses</Button>
-            </Link>
-            <Link href="/quizzes">
-              <Button variant="ghost">Quizzes</Button>
-            </Link>
-            <Link href="/sign-in">
-              <Button variant="ghost">Sign In</Button>
-            </Link>
-            <ThemeToggle />
-          </nav>
-        </Container>
-      </header>
+      <HomeAuthRedirect />
+      <AppHeader />
 
       {/* Hero Section */}
       <section className="flex-1 bg-gradient-to-br from-background via-secondary/20 to-primary/10 py-20">

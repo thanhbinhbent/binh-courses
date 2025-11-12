@@ -8,12 +8,14 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Container } from "@/components/ui/container"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { studentService } from "@/lib/services/student.service"
+import { AuthGuard } from "@/components/auth-guard"
+import { dashboardService } from "@/lib/services/dashboard.service"
 import type { StudentDashboardResponse } from "@/lib/types"
 
-export default function StudentDashboard() {
+export default function Dashboard() {
   const router = useRouter()
   const [data, setData] = useState<StudentDashboardResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -24,7 +26,7 @@ export default function StudentDashboard() {
     async function loadDashboardData() {
       try {
         setIsLoading(true)
-        const result = await studentService.getDashboard()
+        const result = await dashboardService.getDashboard()
         setData(result)
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
@@ -71,13 +73,31 @@ export default function StudentDashboard() {
   // Removed unused variable: certificates
 
   return (
-    <DashboardLayout>
+    <AuthGuard>
+      <DashboardLayout>
 
       <Container className="py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Welcome back, {user.name}! 👋</h1>
-          <p className="text-muted-foreground">Continue your learning journey</p>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold">Welcome back, {user.name}! 👋</h1>
+            <Badge variant={user.globalRoles.includes('SYSTEM_ADMIN') ? 'default' : 'secondary'}>
+              {user.globalRoles.includes('SYSTEM_ADMIN') ? 'Admin' : 'User'}
+            </Badge>
+          </div>
+          <p className="text-muted-foreground">
+            {user.globalRoles.includes('SYSTEM_ADMIN') ? 'Admin dashboard' : 'Your learning dashboard'}
+          </p>
+          {!user.globalRoles.includes('SYSTEM_ADMIN') && (
+            <p className="text-sm text-blue-600 mt-2">
+              Visit <Link href="/my-courses" className="font-medium hover:underline">My Courses</Link> to see all your enrolled courses
+            </p>
+          )}
+          {user.globalRoles.includes('SYSTEM_ADMIN') && (
+            <p className="text-sm text-green-600 mt-2">
+              Go to your <Link href="/instructor" className="font-medium hover:underline">Instructor Panel</Link> to manage courses and students
+            </p>
+          )}
         </div>
 
         {/* Stats Cards */}
@@ -138,7 +158,14 @@ export default function StudentDashboard() {
         {/* Courses in Progress */}
         {inProgressCourses.length > 0 && (
           <div className="mb-8">
-            <h2 className="mb-4 text-2xl font-bold">Continue Learning</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Continue Learning</h2>
+              <Link href="/my-courses">
+                <Button variant="outline" size="sm">
+                  View All Courses
+                </Button>
+              </Link>
+            </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {inProgressCourses.map((course: any) => (
                 <Link key={course.id} href={`/courses/${course.id}`}>
@@ -185,7 +212,14 @@ export default function StudentDashboard() {
         {/* Completed Courses */}
         {completedCourses.length > 0 && (
           <div className="mb-8">
-            <h2 className="mb-4 text-2xl font-bold">Completed Courses</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Completed Courses</h2>
+              <Link href="/my-courses">
+                <Button variant="outline" size="sm">
+                  View All Courses
+                </Button>
+              </Link>
+            </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {completedCourses.map((course: any) => (
                 <Link key={course.id} href={`/courses/${course.id}`}>
@@ -241,5 +275,6 @@ export default function StudentDashboard() {
         )}
       </Container>
     </DashboardLayout>
+    </AuthGuard>
   )
 }

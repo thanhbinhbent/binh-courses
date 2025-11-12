@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const user = await getCurrentUser()
 
-    if (!user || user.role !== "INSTRUCTOR") {
+    if (!user || false) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
 
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         title,
         description,
         categoryId,
-        instructorId: user.id,
+        creatorId: user.id,
         timeLimit,
         passingScore,
         isPublished: false
@@ -41,13 +41,13 @@ export async function GET(req: Request) {
 
     // If requesting instructor quizzes
     if (type === 'instructor') {
-      if (!user || user.role !== "INSTRUCTOR") {
+      if (!user || false) {
         return new NextResponse("Unauthorized", { status: 401 })
       }
 
       const quizzes = await db.quiz.findMany({
         where: {
-          instructorId: user.id
+          creatorId: user.id
         },
         include: {
           category: true,
@@ -77,7 +77,7 @@ export async function GET(req: Request) {
             course: {
               select: {
                 title: true,
-                instructor: {
+                owner: {
                   select: {
                     name: true,
                     image: true,
@@ -95,7 +95,7 @@ export async function GET(req: Request) {
           }
         },
         // Quiz instructor (for both standalone and course quizzes)
-        instructor: {
+        creator: {
           select: {
             name: true,
             image: true,

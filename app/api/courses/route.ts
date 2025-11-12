@@ -9,7 +9,7 @@ export async function GET() {
       where: { isPublished: true },
       include: {
         category: true,
-        instructor: {
+        owner: {
           select: {
             name: true,
             image: true,
@@ -52,10 +52,8 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
 
-    // Check if user is instructor or admin
-    if (user.role !== "INSTRUCTOR" && user.role !== "ADMIN") {
-      return new NextResponse("Forbidden - Instructor access required", { status: 403 })
-    }
+    // In new system: All authenticated users can create courses
+    // System admin has full access, regular users can create their own courses
 
     const body = await req.json()
     const { title, description, categoryId, price } = body
@@ -71,7 +69,7 @@ export async function POST(req: Request) {
         description,
         categoryId,
         price: price ? parseFloat(price) : null,
-        instructorId: user.id,
+        ownerId: user.id,
         isPublished: false
       }
     })

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
-  const isLoggedIn = !!req.auth
+  const session = req.auth
 
   const isPublicRoute = 
     pathname === '/' ||
@@ -16,9 +16,34 @@ export default auth((req) => {
     pathname.startsWith('/quizzes') ||      // Allow public access to quizzes pages
     pathname.startsWith('/search')
 
-  // Redirect to sign-in if accessing protected route while not logged in
-  if (!isPublicRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/sign-in', req.url))
+  // If user is not authenticated and trying to access protected route
+  if (!session && !isPublicRoute) {
+    const signInUrl = new URL('/sign-in', req.url)
+    signInUrl.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(signInUrl)
+  }
+
+  // If user is authenticated and trying to access auth pages
+  if (session && (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up'))) {
+    // Redirect to appropriate dashboard based on role
+    const redirectUrl = session.user?.role === 'INSTRUCTOR' || session.user?.role === 'ADMIN' 
+      ? '/instructor' 
+      : '/dashboard'
+    return NextResponse.redirect(new URL(redirectUrl, req.url))
+  }
+
+  // Role-based access control for instructor routes
+  if (pathname.startsWith('/instructor') && session) {
+    if (session.user?.role !== 'INSTRUCTOR' && session.user?.role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+  }
+
+  // Role-based access control for student-only routes
+  if (pathname.startsWith('/my-courses') && session) {
+    if (session.user?.role !== 'STUDENT') {
+      return NextResponse.redirect(new URL('/instructor', req.url))
+    }
   }
 
   return NextResponse.next()
@@ -26,9 +51,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    // Skip Next.js internals and all static files, but include all other routes
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 }

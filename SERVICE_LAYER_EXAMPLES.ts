@@ -60,17 +60,17 @@ async function handleQuizFlow(quizId: string) {
   try {
     // Start quiz
     const attempt = await quizService.startQuizAttempt(quizId)
-    console.log("🎯 Quiz started:", attempt.id)
+    console.log("🎯 Quiz started:", attempt.attemptId)
     
     // Save answers during quiz
-    await quizService.saveQuizAnswers(quizId, attempt.id, [
+    await quizService.saveQuizAnswers(quizId, attempt.attemptId, [
       { questionId: "q1", answer: "option1" },
       { questionId: "q2", answer: "option2" }
     ])
     console.log("💾 Answers saved")
     
     // Submit quiz
-    const result = await quizService.submitQuizAttempt(quizId, attempt.id)
+    const result = await quizService.submitQuizAttempt(quizId, attempt.attemptId)
     console.log("📊 Quiz submitted, score:", result.score)
     
   } catch (error) {

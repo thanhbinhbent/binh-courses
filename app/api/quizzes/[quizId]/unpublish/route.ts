@@ -11,14 +11,14 @@ export async function PATCH(
 
     const user = await getCurrentUser()
 
-    if (!user || user.role !== "INSTRUCTOR") {
+    if (!user || false) {
       return new NextResponse("Unauthorized", { status: 401 })
     }
 
     const quiz = await db.quiz.findUnique({
       where: {
         id: quizId,
-        instructorId: user.id
+        creatorId: user.id
       }
     })
 

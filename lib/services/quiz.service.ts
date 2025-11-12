@@ -101,7 +101,7 @@ export const quizService = {
   /**
    * Start a new quiz attempt
    */
-  async startQuizAttempt(quizId: string): Promise<{ id: string }> {
+  async startQuizAttempt(quizId: string): Promise<{ attemptId: string }> {
     const res = await fetch(`/api/quizzes/${quizId}/attempt`, {
       method: 'POST',
       credentials: 'include',

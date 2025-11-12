@@ -17,7 +17,7 @@ export async function GET(
       },
       include: {
         category: true,
-        instructor: {
+        owner: {
           select: {
             name: true,
             image: true,

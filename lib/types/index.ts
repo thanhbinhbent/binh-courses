@@ -10,3 +10,6 @@ export * from "./common.types"
 export * from "./course.types"
 export * from "./quiz.types"
 export * from "./student.types"
+
+// Service types  
+export type { MyCoursesResponse, MyCourse } from "../services/my-courses.service"

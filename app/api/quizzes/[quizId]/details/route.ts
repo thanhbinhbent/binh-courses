@@ -17,7 +17,7 @@ export async function GET(
       },
       include: {
         category: true,
-        instructor: {
+        creator: {
           select: {
             name: true,
             image: true

@@ -18,7 +18,7 @@ model User {
   emailVerified DateTime?
   password      String?   // Hashed password
   image         String?
-  role          UserRole  @default(STUDENT)
+  globalRoles   GlobalRole[] @default([USER])  // User can have multiple global roles
   bio           String?   @db.Text
   
   createdAt     DateTime  @default(now())
@@ -29,7 +29,7 @@ model User {
   sessions      Session[]
 
   // Application relations
-  ownedCourses  Course[]  @relation("CourseInstructor")
+  ownedCourses  Course[]  @relation("CourseOwner")
   enrollments   Enrollment[]
   purchases     Purchase[]
   reviews       Review[]
@@ -37,8 +37,10 @@ model User {
   progress      Progress[]
   lessonProgress LessonProgress[] // Add this relation
   comments      Comment[]
-  quizzes       Quiz[]    @relation("InstructorQuizzes")
+  quizzes       Quiz[]    @relation("QuizCreator")
   quizAttempts  QuizAttempt[]
+  courseRoles   CourseRole[] // Course-specific role assignments
+  assignedRoles CourseRole[] @relation("RoleAssigner") // Roles this user has assigned to others
 
   @@index([email])
 }
@@ -82,10 +84,24 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-enum UserRole {
-  ADMIN
-  INSTRUCTOR
-  STUDENT
+enum GlobalRole {
+  SYSTEM_ADMIN  // Full system administration access - can manage all courses and assign any roles
+  USER          // Regular user - can create courses and enroll in courses
+}
+
+enum CourseRoleType {
+  INSTRUCTOR        // Primary instructor - can manage all course content
+  TEACHING_ASSISTANT // Assistant instructor with limited permissions
+  STUDENT           // Course participant/learner
+}
+
+enum CoursePermission {
+  MANAGE_COURSE     // Edit course settings, description, etc.
+  MANAGE_CONTENT    // Create/edit chapters, lessons, quizzes
+  MANAGE_USERS      // Assign roles, enroll/remove students
+  GRADE_ASSIGNMENTS // Grade quizzes and assignments
+  VIEW_ANALYTICS    // View course analytics and reports
+  MODERATE_COMMENTS // Moderate course comments and discussions
 }
 
 model Category {
@@ -112,8 +128,8 @@ model Course {
   categoryId  String?
   category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
-  instructorId String
-  instructor   User     @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: Cascade)
+  ownerId      String   // Course creator/owner
+  owner        User     @relation("CourseOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -124,9 +140,10 @@ model Course {
   enrollments Enrollment[]
   purchases   Purchase[]
   reviews     Review[]
+  courseRoles CourseRole[] // Role assignments for this course
 
   @@index([categoryId])
-  @@index([instructorId])
+  @@index([ownerId])
   @@index([isPublished])
 }
 
@@ -253,6 +270,44 @@ enum ResourceType {
   DOCUMENT
 }
 
+// Default permissions for each role type (can be customized per course)
+model RolePermissionTemplate {
+  id          String   @id @default(uuid())
+  roleType    CourseRoleType
+  permission  CoursePermission
+  isDefault   Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  
+  @@unique([roleType, permission])
+  @@index([roleType])
+}
+
+model CourseRole {
+  id          String   @id @default(uuid())
+  role        CourseRoleType
+  permissions CoursePermission[] // Specific permissions for this role assignment
+  isActive    Boolean  @default(true) // Can temporarily disable role without deleting
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  assignedAt  DateTime @default(now())
+  assignedBy  String?  // ID of user who assigned this role (for auditing)
+  assignedByUser User? @relation("RoleAssigner", fields: [assignedBy], references: [id], onDelete: SetNull)
+  
+  expiresAt   DateTime? // Optional role expiration
+  
+  @@unique([userId, courseId, role]) // A user can have multiple roles in same course
+  @@index([userId])
+  @@index([courseId])
+  @@index([role])
+  @@index([isActive])
+}
+
 model Enrollment {
   id        String   @id @default(uuid())
   
@@ -335,8 +390,8 @@ model Certificate {
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  courseName    String
-  instructorName String
+  courseName     String
+  ownerName      String
   completionDate DateTime
   
   createdAt     DateTime @default(now())
@@ -364,8 +419,8 @@ model Quiz {
   categoryId  String?
   category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
-  instructorId String
-  instructor  User     @relation("InstructorQuizzes", fields: [instructorId], references: [id], onDelete: Cascade)
+  creatorId   String   // Quiz creator
+  creator     User     @relation("QuizCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -377,7 +432,7 @@ model Quiz {
   @@index([chapterId])
   @@index([lessonId])
   @@index([categoryId])
-  @@index([instructorId])
+  @@index([creatorId])
 }
 
 model Question {

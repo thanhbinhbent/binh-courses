@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        role: "STUDENT", // Default role
+        globalRoles: ["USER"], // Default role - all new users are regular users
       },
     })
 

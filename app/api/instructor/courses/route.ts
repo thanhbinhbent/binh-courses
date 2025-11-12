@@ -11,16 +11,16 @@ export async function GET() {
       return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
     }
 
-    // Check authorization
-    if (user.role !== "INSTRUCTOR" && user.role !== "ADMIN") {
-      return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
-    }
+    // In new system, all authenticated users can manage their own courses
+    // System admins can see all courses
+    
+    const whereClause = user.globalRoles.includes("SYSTEM_ADMIN") 
+      ? {} // System admin sees all courses
+      : { ownerId: user.id } // Regular users see only their own courses
 
-    // Get all courses created by this instructor
+    // Get courses based on access level
     const courses = await db.course.findMany({
-      where: {
-        instructorId: user.id
-      },
+      where: whereClause,
       include: {
         _count: {
           select: {

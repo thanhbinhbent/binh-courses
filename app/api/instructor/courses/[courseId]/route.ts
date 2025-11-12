@@ -15,11 +15,7 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 })
     }
 
-    if (user.role !== "INSTRUCTOR" && user.role !== "ADMIN") {
-      return new NextResponse("Forbidden - Instructor access required", { status: 403 })
-    }
-
-    // Fetch course with all related data
+    // Fetch course with all related data first
     const course = await db.course.findUnique({
       where: { id: courseId },
       include: {
@@ -37,9 +33,24 @@ export async function GET(
       return new NextResponse("Course not found", { status: 404 })
     }
 
-    // Check ownership
-    if (course.instructorId !== user.id && user.role !== "ADMIN") {
-      return new NextResponse("Forbidden - Not your course", { status: 403 })
+    // Check access: System admin or course owner or user with instructor role in this course
+    const hasAccess = user.globalRoles.includes("SYSTEM_ADMIN") || course.ownerId === user.id
+
+    if (!hasAccess) {
+      // Check if user has instructor role in this course
+      const courseRole = await db.courseRole.findFirst({
+        where: {
+          userId: user.id,
+          courseId: courseId,
+          role: { in: ['INSTRUCTOR', 'TEACHING_ASSISTANT'] },
+          isActive: true,
+          permissions: { has: 'MANAGE_CONTENT' }
+        }
+      })
+
+      if (!courseRole) {
+        return new NextResponse("Forbidden - No access to this course", { status: 403 })
+      }
     }
 
     // Fetch categories for course settings

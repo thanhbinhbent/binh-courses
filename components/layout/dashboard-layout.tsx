@@ -1,9 +1,8 @@
-import Link from "next/link";
-import { BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { PaymentStatusBadge } from "@/components/payment-status-badge";
+"use client"
+
+// Removed unused imports after AppHeader refactor
+import { AppHeader } from "@/components/app-header";
+// Removed useUserRole, no longer needed
 import { Toaster } from "@/components/ui/sonner";
 
 interface DashboardLayoutProps {
@@ -12,35 +11,11 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, showBrowseCoursesButton = true }: DashboardLayoutProps) {
+  // Removed isInstructor, no longer needed
+  
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="w-full border-b bg-card">
-        <Container className="flex items-center justify-between py-4">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold text-foreground">Binh Courses</span>
-            </Link>
-            <PaymentStatusBadge />
-          </div>
-          <nav className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost">Dashboard</Button>
-            </Link>
-            <Link href="/instructor">
-              <Button variant="ghost">Instructor</Button>
-            </Link>
-            {showBrowseCoursesButton && (
-              <Link href="/courses">
-                <Button>Browse Courses</Button>
-              </Link>
-            )}
-            <ThemeToggle />
-          </nav>
-        </Container>
-      </header>
-      
+      <AppHeader showBrowseCoursesButton={showBrowseCoursesButton} />
       {/* Content */}
       {children}
       <Toaster />

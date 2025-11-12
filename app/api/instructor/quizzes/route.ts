@@ -11,16 +11,16 @@ export async function GET() {
       return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 })
     }
 
-    // Check authorization
-    if (user.role !== "INSTRUCTOR" && user.role !== "ADMIN") {
-      return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 })
-    }
+    // In new system, all authenticated users can manage their own quizzes
+    // System admins can see all quizzes
+    
+    const whereClause = user.globalRoles.includes("SYSTEM_ADMIN") 
+      ? {} // System admin sees all quizzes
+      : { creatorId: user.id } // Regular users see only their own quizzes
 
-    // Get all quizzes created by this instructor
+    // Get quizzes based on access level
     const quizzes = await db.quiz.findMany({
-      where: {
-        instructorId: user.id
-      },
+      where: whereClause,
       include: {
         category: true,
         _count: {

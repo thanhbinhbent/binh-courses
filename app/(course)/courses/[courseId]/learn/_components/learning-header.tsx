@@ -97,8 +97,6 @@ export function LearningHeader({
           </div>
         </div>
 
-
-
         {/* Right side */}
         <div className="flex items-center gap-2">
           <div className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground">

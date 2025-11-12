@@ -29,6 +29,7 @@ export interface StudentDashboardResponse {
     id: string
     name: string | null
     email: string | null
+    globalRoles: string[]
   }
   stats: DashboardStats
   enrollments: EnrollmentWithCourse[]

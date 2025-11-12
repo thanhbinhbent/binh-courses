@@ -16,9 +16,45 @@ export async function PATCH(
     }
 
     const body = await req.json()
-    const { questionId, answer: answerText } = body
+    console.log('PATCH body:', JSON.stringify(body, null, 2))
+    
+    // Handle single answer format for backward compatibility
+    if (body.questionId && body.answer) {
+      const { questionId, answer: answerText } = body
+      
+      // Check if answer already exists
+      const existingAnswer = await db.answer.findFirst({
+        where: {
+          attemptId,
+          questionId
+        }
+      })
 
-    if (!questionId || !answerText) {
+      let answer
+      if (existingAnswer) {
+        // Update existing answer
+        answer = await db.answer.update({
+          where: { id: existingAnswer.id },
+          data: { answer: answerText }
+        })
+      } else {
+        // Create new answer
+        answer = await db.answer.create({
+          data: {
+            attemptId,
+            questionId,
+            answer: answerText
+          }
+        })
+      }
+
+      return NextResponse.json(answer)
+    }
+
+    // Handle multiple answers format
+    const { answers } = body
+    
+    if (!answers || !Array.isArray(answers)) {
       return new NextResponse("Missing required fields", { status: 400 })
     }
 
@@ -40,33 +76,53 @@ export async function PATCH(
       return new NextResponse("Attempt already completed", { status: 400 })
     }
 
-    // Check if answer already exists
-    const existingAnswer = await db.answer.findFirst({
-      where: {
-        attemptId,
-        questionId
+    // Process multiple answers
+    const savedAnswers = []
+    
+    for (const answerData of answers) {
+      const { questionId, answer: answerText } = answerData
+      
+      if (!questionId) {
+        console.log('Skipping answer with no questionId:', { questionId, answerText })
+        continue // Skip invalid answers
       }
-    })
-
-    let answer
-    if (existingAnswer) {
-      // Update existing answer
-      answer = await db.answer.update({
-        where: { id: existingAnswer.id },
-        data: { answer: answerText }
-      })
-    } else {
-      // Create new answer
-      answer = await db.answer.create({
-        data: {
+      
+      // Allow empty string answers (user might clear an answer)
+      if (answerText === undefined || answerText === null) {
+        console.log('Skipping answer with null/undefined value:', { questionId, answerText })
+        continue
+      }
+      
+      // Check if answer already exists
+      const existingAnswer = await db.answer.findFirst({
+        where: {
           attemptId,
-          questionId,
-          answer: answerText
+          questionId
         }
       })
+
+      let savedAnswer
+      if (existingAnswer) {
+        // Update existing answer
+        savedAnswer = await db.answer.update({
+          where: { id: existingAnswer.id },
+          data: { answer: answerText }
+        })
+      } else {
+        // Create new answer
+        savedAnswer = await db.answer.create({
+          data: {
+            attemptId,
+            questionId,
+            answer: answerText
+          }
+        })
+      }
+      
+      savedAnswers.push(savedAnswer)
     }
 
-    return NextResponse.json(answer)
+    return NextResponse.json({ answers: savedAnswers })
   } catch (error) {
     console.error("[SAVE_ANSWER]", error)
     return new NextResponse("Internal Error", { status: 500 })

@@ -45,7 +45,7 @@ export function CourseReviews({ courseId, isEnrolled }: CourseReviewsProps) {
       const data = await courseService.getCourseDetails(courseId)
       if (data) {
         setReviews(data.reviews || [])
-        setUserReview(data.userReview || null)
+        setUserReview(data.userReview as Review | null)
         setAverageRating(data.averageRating || 0)
       }
     } catch (error) {

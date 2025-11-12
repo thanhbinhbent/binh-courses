@@ -51,7 +51,7 @@ export const authConfig = {
           email: user.email,
           name: user.name,
           image: user.image,
-          role: user.role,
+          role: user.globalRoles[0] || "USER", // Use first role or default to USER
         }
       }
     })
@@ -68,14 +68,20 @@ export const authConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = user.role
+        // Fetch user from database to get updated globalRoles
+        if (user.email) {
+          const dbUser = await db.user.findUnique({
+            where: { email: user.email }
+          })
+          token.role = dbUser?.globalRoles[0] || "USER"
+        }
       }
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string
-        session.user.role = token.role as "STUDENT" | "INSTRUCTOR" | "ADMIN"
+        session.user.role = token.role as "SYSTEM_ADMIN" | "USER"
       }
       return session
     },

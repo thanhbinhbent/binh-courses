@@ -22,8 +22,8 @@ export function StartQuizButton({ quizId }: StartQuizButtonProps) {
       const response = await quizService.startQuizAttempt(quizId)
       
       toast.success("Quiz started!")
-      router.push(`/quizzes/${quizId}/take/${response.id}`)
-    } catch (error) {
+      router.push(`/quizzes/${quizId}/take/${response.attemptId}`)
+    } catch {
       toast.error("Failed to start quiz")
     } finally {
       setIsLoading(false)
